@@ -1,8 +1,9 @@
 package com.github.fakegps.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -12,16 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.fakegps.model.LocPoint;
 import com.tencent.fakegps.R;
 
-import org.osmdroid.config.Configuration;
-import org.osmdroid.config.IConfigurationProvider;
-import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.views.overlay.Marker;
 
-import java.io.File;
 import java.util.Locale;
 
 /**
@@ -40,6 +38,7 @@ public class MapPickerActivity extends AppCompatActivity {
     private MapView mMapView;
     private Marker mMarker;
     private TextView mSelectedView;
+    private TextView mHintView;
 
     private double mLatitude = DEFAULT_LAT;
     private double mLongitude = DEFAULT_LON;
@@ -57,12 +56,15 @@ public class MapPickerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        configureOsmdroid();
         setContentView(R.layout.activity_map_picker);
 
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra(EXTRA_LAT, DEFAULT_LAT);
         double lon = intent.getDoubleExtra(EXTRA_LON, DEFAULT_LON);
+        if (savedInstanceState != null) {
+            lat = savedInstanceState.getDouble(EXTRA_LAT, lat);
+            lon = savedInstanceState.getDouble(EXTRA_LON, lon);
+        }
         if (Double.isNaN(lat) || lat < -90 || lat > 90) {
             lat = DEFAULT_LAT;
         }
@@ -73,6 +75,7 @@ public class MapPickerActivity extends AppCompatActivity {
         mLongitude = lon;
 
         mSelectedView = (TextView) findViewById(R.id.tv_selected);
+        mHintView = (TextView) findViewById(R.id.tv_map_hint);
 
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.setTileSource(TileSourceFactory.MAPNIK);
@@ -137,18 +140,26 @@ public class MapPickerActivity extends AppCompatActivity {
         });
 
         updateSelectedText();
+        updateNetworkHint();
     }
 
-    private void configureOsmdroid() {
-        IConfigurationProvider configuration = Configuration.getInstance();
-        configuration.load(this, getSharedPreferences("osmdroid", Context.MODE_PRIVATE));
-        configuration.setUserAgentValue(getPackageName());
-        // Keep tiles in app-private storage; no storage permission is needed.
-        configuration.setOsmdroidBasePath(new File(getFilesDir(), "osmdroid"));
-        configuration.setOsmdroidTileCache(new File(getCacheDir(), "osmdroid/tiles"));
-        // Keep the tile cache small on low-end devices.
-        configuration.setTileFileSystemCacheMaxBytes(50L * 1024 * 1024);
-        configuration.setTileFileSystemCacheTrimBytes(40L * 1024 * 1024);
+    private void updateNetworkHint() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager == null
+                ? null
+                : connectivityManager.getActiveNetworkInfo();
+        boolean online = networkInfo != null && networkInfo.isConnected();
+        if (!online) {
+            mHintView.setText(R.string.map_offline);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putDouble(EXTRA_LAT, mLatitude);
+        outState.putDouble(EXTRA_LON, mLongitude);
     }
 
     private void selectPoint(GeoPoint point) {

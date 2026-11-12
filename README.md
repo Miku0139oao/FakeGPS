@@ -42,6 +42,8 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 - Map tiles are cached in app-private storage, so no storage permission is needed. `INTERNET` and `ACCESS_NETWORK_STATE` are used only for tile downloads and geolocation-free map rendering.
 - Map attribution: © OpenStreetMap contributors.
 
+**Dependency note:** the map uses `org.osmdroid:osmdroid-android:6.1.20` (Apache-2.0). The upstream osmdroid project was archived in November 2024, so 6.1.20 is the final release and is intentionally pinned. The integration is isolated in `MapPickerActivity` and `FakeGpsApp.initOsmdroid()` to make a future replacement straightforward.
+
 ## Changes in v2.0.1
 - **Release signing fixed**: release builds are signed with a key supplied through a git-ignored `keystore.properties`; the old committed debug keystore and hard-coded password were removed.
 - **Mock-app check**: if FakeGPS is not selected in Developer options, the app now explains how to enable it instead of showing a running notification while injecting nothing.

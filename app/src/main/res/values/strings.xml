@@ -54,6 +54,7 @@
     <string name="pick_on_map">Map</string>
     <string name="use_this_location">Use this location</string>
     <string name="map_hint">Tap, long-press, or drag the marker to choose a location. Map tiles need a network connection; coordinates still work offline.</string>
+    <string name="map_offline">No network connection: tiles may not load, but you can still pick a coordinate.</string>
     <string name="map_selected">Selected: %1$s</string>
     <string name="map_attribution">© OpenStreetMap contributors</string>
 

@@ -6,6 +6,9 @@ import android.content.Context;
 import com.litesuits.orm.LiteOrm;
 import com.tencent.fakegps.BuildConfig;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.config.IConfigurationProvider;
+
 import java.io.File;
 
 import tiger.radio.loggerlibrary.Logger;
@@ -30,6 +33,7 @@ public class FakeGpsApp extends Application {
         if (BuildConfig.DEBUG) {
             initLogger();
         }
+        initOsmdroid();
         JoyStickManager.get().init(this);
     }
 
@@ -56,6 +60,21 @@ public class FakeGpsApp extends Application {
             outputDir.mkdirs();
         }
         Logger.configure(outputDir, "logs");
+    }
+
+    /**
+     * Must run before the first MapView is created. Mapnik rejects the library's
+     * default user agent and would otherwise serve a blank map.
+     */
+    private void initOsmdroid() {
+        IConfigurationProvider configuration = Configuration.getInstance();
+        configuration.load(this, getSharedPreferences("osmdroid", MODE_PRIVATE));
+        configuration.setOsmdroidBasePath(new File(getFilesDir(), "osmdroid"));
+        configuration.setOsmdroidTileCache(new File(getCacheDir(), "osmdroid/tiles"));
+        configuration.setUserAgentValue(getPackageName() + "/" + BuildConfig.VERSION_NAME);
+        // Keep the tile cache small on low-end devices.
+        configuration.setTileFileSystemCacheMaxBytes(50L * 1024 * 1024);
+        configuration.setTileFileSystemCacheTrimBytes(40L * 1024 * 1024);
     }
 
 }

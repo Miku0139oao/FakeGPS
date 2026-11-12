@@ -58,6 +58,7 @@
 
         <activity android:name="com.github.fakegps.ui.MapPickerActivity"
                   android:configChanges="orientation|screenSize"
+                  android:exported="false"
                   android:label="@string/map_picker_title"
                   android:screenOrientation="portrait"/>
 
