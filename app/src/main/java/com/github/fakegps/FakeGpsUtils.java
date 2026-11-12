@@ -2,13 +2,16 @@ package com.github.fakegps;
 
 import android.app.AppOpsManager;
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.os.Process;
 import android.widget.EditText;
 
 import com.github.fakegps.model.LocPoint;
+import com.tencent.fakegps.BuildConfig;
 
 import tiger.radio.loggerlibrary.Logger;
 
@@ -24,7 +27,13 @@ public final class FakeGpsUtils {
     public static void copyToClipboard(Context context, String content) {
         ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cmb != null) {
-            cmb.setPrimaryClip(ClipData.newPlainText("FakeGPS Location", content.trim()));
+            ClipData clip = ClipData.newPlainText("FakeGPS Location", content.trim());
+            if (Build.VERSION.SDK_INT >= 33) {
+                PersistableBundle extras = new PersistableBundle();
+                extras.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true);
+                clip.getDescription().setExtras(extras);
+            }
+            cmb.setPrimaryClip(clip);
         }
     }
 
@@ -68,7 +77,11 @@ public final class FakeGpsUtils {
         String text = editText.getText().toString();
         LocPoint point = CoordinateParser.parse(text);
         if (point == null) {
-            Logger.e(TAG, "Unable to parse location input: " + text, null);
+            if (BuildConfig.DEBUG) {
+                Logger.e(TAG, "Unable to parse location input: " + text, null);
+            } else {
+                Logger.e(TAG, "Unable to parse location input", null);
+            }
         }
         return point;
     }

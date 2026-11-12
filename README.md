@@ -132,7 +132,7 @@ Open **FakeGPS** from the app drawer. Press **Start** and grant what is asked:
 
 | Permission | Why it is needed |
 |---|---|
-| **Location** (precise recommended) | Android 14+ requires it for a location-type foreground service. Approximate is accepted, but precise gives the best results. |
+| **Location** (approximate is enough) | Android 14+ requires a location permission for the location-type foreground service. FakeGPS never reads your real location, so approximate is sufficient. |
 | **Notifications** (Android 13+) | Shows the ongoing "FakeGPS Running" notification. The service still runs if you deny it. |
 | **Display over other apps** | Draws the floating joystick on top of other apps. This is required. |
 
@@ -175,6 +175,10 @@ somewhere convenient.
 - `Move Step (m)` is the distance in **meters** (default `2`).
 - Movement is converted with a latitude-aware longitude scale, so it works near
   the poles too.
+
+> While mock location is running, FakeGPS holds a partial wake lock so the
+> once-per-second injection keeps working with the screen off. Press **Stop**
+> when you are done to release it and save battery.
 
 ### Step 7 — Pick a location on the map
 
@@ -234,7 +238,7 @@ removed. The app may keep the last coordinates for the next launch.
 | "Input is not valid" | Use `lat, lon`, a `geo:` URI, a Google/Apple Maps link, or a DMS string. Latitude must be −90…90, longitude −180…180. |
 | Flight mode does not move | Start mock location first. Check that From/To are valid and Fly Time is a positive integer. |
 | It works for a while, then stops | Disable battery optimization for FakeGPS: **Settings → Apps → FakeGPS → Battery → Unrestricted**. On Xiaomi/OPPO/vivo also allow auto-start and background activity. |
-| Android 12+ asks for "Approximate" location | FakeGPS accepts approximate, but choose **Precise** for the best behaviour. |
+| Android 12+ only offers "Approximate" location | That is fine. FakeGPS never reads your real location; approximate is enough for the foreground service. |
 | The app is killed when the screen is off | Some OEMs kill foreground services anyway. Lock the app in the recent-apps screen and disable battery restrictions. Keep the notification visible. |
 | "App not installed" | Uninstall an older copy signed with a different key and install the release APK again. |
 | Google Maps still shows the real location | Some apps cache location or prefer other providers. Test with GPSTest; toggle GPS off/on; restart the app; make sure the mock app selection is still set. |
@@ -329,6 +333,8 @@ Keep the keystore and this file outside version control. Verify the result with
 - Real speed and bearing derived from consecutive fixes.
 - Coordinate input from plain text, `geo:` URIs, map links, and DMS.
 - Works on Android 5.0–16 (API 21–36), targetSdk 36, edge-to-edge.
+- Light and dark themes (follows the system setting).
+- R8-minified release APK (about 1 MB).
 - No root, no analytics, no account.
 
 ## Project layout

@@ -1,5 +1,6 @@
 package com.github.fakegps;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import androidx.core.app.ServiceCompat;
 
@@ -26,13 +28,22 @@ public class FakeLocationService extends Service {
     private static final String CHANNEL_ID = "fake_gps_channel";
     private static final int NOTIFICATION_ID = 1001;
 
+    private PowerManager.WakeLock mWakeLock;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Logger.d(TAG, "FakeLocationService onCreate");
         createNotificationChannel();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        if (powerManager != null) {
+            mWakeLock = powerManager.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK, "FakeGPS::LocationService");
+            mWakeLock.setReferenceCounted(false);
+        }
     }
 
+    @SuppressLint("WakelockTimeout")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.d(TAG, "FakeLocationService onStartCommand");
@@ -49,6 +60,11 @@ public class FakeLocationService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
+        // Keep the 1 Hz injection loop running while the screen is off.
+        // This is user-initiated and released when the service is stopped.
+        if (mWakeLock != null && !mWakeLock.isHeld()) {
+            mWakeLock.acquire();
+        }
         // The mock loop lives in the app process, not in this service. Restarting
         // it without that state would only post a misleading "active" notification.
         return START_NOT_STICKY;
@@ -57,6 +73,9 @@ public class FakeLocationService extends Service {
     @Override
     public void onDestroy() {
         Logger.d(TAG, "FakeLocationService onDestroy");
+        if (mWakeLock != null && mWakeLock.isHeld()) {
+            mWakeLock.release();
+        }
         super.onDestroy();
     }
 
@@ -74,6 +93,7 @@ public class FakeLocationService extends Service {
             );
             channel.setDescription(getString(R.string.notification_channel_desc));
             channel.setShowBadge(false);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null) {
                 nm.createNotificationChannel(channel);
@@ -102,6 +122,7 @@ public class FakeLocationService extends Service {
                 .setSmallIcon(R.drawable.icon_app)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
+                .setVisibility(Notification.VISIBILITY_SECRET)
                 .build();
     }
 }

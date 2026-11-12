@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- Map tiles are downloaded from OpenStreetMap. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- Required on Android 5.0/5.1 (API 21-22); API 23+ uses the developer-options mock app picker. -->
     <uses-permission
         android:name="android.permission.ACCESS_MOCK_LOCATION"
@@ -27,6 +27,8 @@
     <application
         android:name="com.github.fakegps.FakeGpsApp"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@drawable/icon_app"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -45,7 +47,7 @@
         <activity android:name="com.github.fakegps.ui.BookmarkActivity"
                   android:configChanges="orientation|screenSize"
                   android:label="@string/title_activity_bookmark"
-                  android:theme="@style/Theme.AppCompat.Dialog"
+                  android:theme="@style/Theme.AppCompat.DayNight.Dialog"
                   android:windowSoftInputMode="stateHidden"/>
 
         <activity android:name="com.github.fakegps.ui.FlyToActivity"

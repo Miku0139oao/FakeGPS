@@ -149,17 +149,13 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
      */
     private void checkPermissionsAndStart() {
         // Step 1: Check location permission. COARSE is enough for the location
-        // foreground service type; FINE is an optional upgrade.
-        boolean fineGranted = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        // foreground service type; mock injection itself is gated by the
+        // Developer-options app-op.
         boolean coarseGranted = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-        if (!fineGranted && !coarseGranted) {
+        if (!coarseGranted) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    },
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                     REQUEST_CODE_LOCATION);
             return;
         }
@@ -232,11 +228,9 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_LOCATION) {
-            boolean fineGranted = grantResults.length > 0
+            boolean coarseGranted = grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-            boolean coarseGranted = grantResults.length > 1
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED;
-            if (fineGranted || coarseGranted) {
+            if (coarseGranted) {
                 // Location granted, continue checking next permission
                 checkPermissionsAndStart();
             } else {

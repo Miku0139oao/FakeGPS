@@ -1,6 +1,7 @@
 package com.github.fakegps.ui;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
@@ -40,10 +41,13 @@ public final class UiUtils {
         });
         ViewCompat.requestApplyInsets(root);
 
-        // The window background behind the system bars is light.
+        // Match the system bar icon color to the current theme.
+        int nightMode = activity.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        boolean lightBars = nightMode != Configuration.UI_MODE_NIGHT_YES;
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(activity.getWindow(), root);
-        controller.setAppearanceLightStatusBars(true);
-        controller.setAppearanceLightNavigationBars(true);
+        controller.setAppearanceLightStatusBars(lightBars);
+        controller.setAppearanceLightNavigationBars(lightBars);
     }
 }

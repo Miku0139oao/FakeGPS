@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class MapPickerActivity extends AppCompatActivity {
 
     private double mLatitude = DEFAULT_LAT;
     private double mLongitude = DEFAULT_LON;
+    private long mLastDragTextUpdateMs = 0;
 
     public static void startForResult(Activity activity, int requestCode, LocPoint point) {
         double lat = point != null ? point.getLatitude() : DEFAULT_LAT;
@@ -116,7 +118,11 @@ public class MapPickerActivity extends AppCompatActivity {
 
             @Override
             public void onMarkerDrag(Marker marker) {
-                updateSelectedCoordinates(marker.getPosition());
+                long now = SystemClock.uptimeMillis();
+                if (now - mLastDragTextUpdateMs >= 100) {
+                    mLastDragTextUpdateMs = now;
+                    updateSelectedCoordinates(marker.getPosition());
+                }
             }
 
             @Override

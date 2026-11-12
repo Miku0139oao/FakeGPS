@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:orientation="vertical"
               android:padding="10dp">
 
@@ -11,19 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textColor="@android:color/primary_text_light"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="16sp"
-        tools:text="Name Name Name"
-    />
+        tools:text="Name Name Name"/>
+
     <TextView
         android:id="@+id/tv_loc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textColor="@android:color/secondary_text_light"
+        android:textColor="?android:attr/textColorSecondary"
         android:textSize="14sp"
-        tools:text="23.3353,123.234325"
-    />
-
+        tools:text="23.3353,123.234325"/>
 
 </LinearLayout>

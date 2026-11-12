@@ -38,6 +38,7 @@ public class LocationThread extends HandlerThread {
     private Handler mHandler;
     private LocPoint mLastLocPoint = new LocPoint(0, 0);
     private volatile boolean mProvidersAdded = false;
+    private volatile boolean mStopped = false;
     private boolean mHasLastLocPoint = false;
     private long mLastUpdateElapsedMs = 0;
 
@@ -61,17 +62,31 @@ public class LocationThread extends HandlerThread {
     }
 
     public void stopThread() {
-        if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
-        }
-        removeTestProviders();
-        try {
+        mStopped = true;
+        mJoyStickManager = null;
+        final Handler handler = mHandler;
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+            boolean posted = handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    removeTestProviders();
+                    quit();
+                }
+            });
+            if (!posted) {
+                removeTestProviders();
+                quit();
+            }
+        } else {
+            removeTestProviders();
             quit();
+        }
+        try {
             interrupt();
         } catch (Exception e) {
             Logger.e(TAG, "stopThread fail!", e);
         }
-        mJoyStickManager = null;
     }
 
     /**
@@ -137,7 +152,7 @@ public class LocationThread extends HandlerThread {
     }
 
     private void notifyMockLocationUnavailable() {
-        if (mListener != null) {
+        if (!mStopped && mListener != null) {
             mListener.onMockLocationUnavailable();
         }
     }

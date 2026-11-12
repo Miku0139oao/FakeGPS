@@ -30,7 +30,7 @@ public abstract class BaseBookmarkActivity extends AppCompatActivity
 
     protected void initBookmarkList(ListView listView) {
         mAdapter = new BookmarkAdapter(this);
-        mAdapter.setLocBookmarkList(DbUtils.getAllBookmark());
+        // onStart() loads the list; avoid a duplicate query during onCreate.
         listView.setAdapter(mAdapter);
 
         View emptyView = findViewById(R.id.empty_view);
@@ -106,8 +106,8 @@ public abstract class BaseBookmarkActivity extends AppCompatActivity
                 .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // DbUtils notifies BookmarkEvents, which reloads the list.
                         DbUtils.deleteBookmark(bookmark);
-                        reloadBookmarks();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
