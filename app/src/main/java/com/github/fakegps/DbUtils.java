@@ -1,10 +1,8 @@
 package com.github.fakegps;
 
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.fakegps.model.LocBookmark;
 import com.github.fakegps.model.LocPoint;
@@ -57,8 +55,7 @@ public final class DbUtils {
     }
 
     public static void notifyBookmarkUpdate() {
-        Intent intent = new Intent(BroadcastEvent.BookMark.ACTION_BOOK_MARK_UPDATE);
-        LocalBroadcastManager.getInstance(FakeGpsApp.get()).sendBroadcast(intent);
+        BookmarkEvents.notifyChanged();
     }
 
 }

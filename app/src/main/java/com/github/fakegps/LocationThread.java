@@ -38,6 +38,9 @@ public class LocationThread extends HandlerThread {
     private Handler mHandler;
     private LocPoint mLastLocPoint = new LocPoint(0, 0);
     private volatile boolean mProvidersAdded = false;
+    private boolean mHasLastLocPoint = false;
+    private long mLastUpdateElapsedMs = 0;
+    private final float[] mDistanceResult = new float[1];
 
     public LocationThread(Context context, JoyStickManager joyStickManager, Listener listener) {
         super("LocationThread");
@@ -95,13 +98,13 @@ public class LocationThread extends HandlerThread {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     // Android 12+ uses ProviderProperties
                     mLocationManager.addTestProvider(provider,
-                            false, false, false, false, false,
+                            false, false, false, false, true,
                             true, true,
                             ProviderProperties.POWER_USAGE_LOW,
                             ProviderProperties.ACCURACY_FINE);
                 } else {
                     mLocationManager.addTestProvider(provider,
-                            false, false, false, false, false,
+                            false, false, false, false, true,
                             true, true,
                             android.location.Criteria.POWER_LOW,
                             android.location.Criteria.ACCURACY_FINE);
@@ -168,6 +171,19 @@ public class LocationThread extends HandlerThread {
             }
 
             int successCount = 0;
+            long now = SystemClock.elapsedRealtime();
+            float distanceMeters = 0;
+            long elapsedMs = 0;
+            if (mHasLastLocPoint && mLastUpdateElapsedMs > 0) {
+                Location.distanceBetween(
+                        mLastLocPoint.getLatitude(), mLastLocPoint.getLongitude(),
+                        locPoint.getLatitude(), locPoint.getLongitude(),
+                        mDistanceResult);
+                distanceMeters = mDistanceResult[0];
+                elapsedMs = now - mLastUpdateElapsedMs;
+            }
+            boolean moving = distanceMeters >= 0.5f && elapsedMs > 0;
+
             for (String provider : PROVIDERS) {
                 try {
                     Location location = new Location(provider);
@@ -178,19 +194,17 @@ public class LocationThread extends HandlerThread {
                     location.setTime(System.currentTimeMillis());
                     location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
 
-                    if (mLastLocPoint.getLatitude() != locPoint.getLatitude()
-                            || mLastLocPoint.getLongitude() != locPoint.getLongitude()) {
-                        location.setSpeed(1);
-                    } else {
-                        location.setSpeed(0);
+                    if (moving) {
+                        location.setSpeed(distanceMeters / (elapsedMs / 1000.0f));
+                        location.setBearing(mDistanceResult[1]);
                     }
 
-                    // Set bearing and speed accuracy for newer APIs
-                    location.setBearing(0);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        location.setBearingAccuracyDegrees(0.1f);
                         location.setVerticalAccuracyMeters(1.0f);
-                        location.setSpeedAccuracyMetersPerSecond(0.1f);
+                        if (moving) {
+                            location.setBearingAccuracyDegrees(5.0f);
+                            location.setSpeedAccuracyMetersPerSecond(0.5f);
+                        }
                     }
 
                     mLocationManager.setTestProviderLocation(provider, location);
@@ -210,6 +224,8 @@ public class LocationThread extends HandlerThread {
 
             mLastLocPoint.setLatitude(locPoint.getLatitude());
             mLastLocPoint.setLongitude(locPoint.getLongitude());
+            mHasLastLocPoint = true;
+            mLastUpdateElapsedMs = now;
 
             mHandler.postDelayed(mUpdateLocation, 1000);
         }

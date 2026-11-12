@@ -10,9 +10,9 @@
     <string name="label_fly">飛往地點</string>
     <string name="btn_set_new_loc">設定新地點</string>
     <string name="bookmark">書籤</string>
-    <string name="move_step">移動步長</string>
-    <string name="move_step_hint">移動步長</string>
-    <string name="loc_input_hint">緯度 , 經度</string>
+    <string name="move_step">移動步長（公尺）</string>
+    <string name="move_step_hint">移動步長（公尺）</string>
+    <string name="loc_input_hint">緯度/經度、geo: 或地圖連結</string>
     <string name="location">地點：</string>
     <string name="fly_time">飛行時間（秒）</string>
     <string name="bookmark_name">書籤名稱</string>

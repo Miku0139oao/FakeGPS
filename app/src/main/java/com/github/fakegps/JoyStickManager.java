@@ -25,7 +25,8 @@ public class JoyStickManager implements IJoyStickPresenter {
 
     private static final String TAG = "JoyStickManager";
 
-    public static double STEP_DEFAULT = 0.00002;
+    // Default joystick step in meters.
+    public static double STEP_DEFAULT = 2.0;
 
     private static JoyStickManager INSTANCE = new JoyStickManager();
 
@@ -260,38 +261,28 @@ public class JoyStickManager implements IJoyStickPresenter {
     public synchronized void onArrowUpClick() {
         Logger.d(TAG, "onArrowUpClick");
         if (mCurrentLocPoint == null) return;
-        double lat = mCurrentLocPoint.getLatitude() + mMoveStep;
-        mCurrentLocPoint.setLatitude(Math.max(-90.0, Math.min(90.0, lat)));
+        mCurrentLocPoint = GeoUtils.offset(mCurrentLocPoint, mMoveStep, 0);
     }
 
     @Override
     public synchronized void onArrowDownClick() {
         Logger.d(TAG, "onArrowDownClick");
         if (mCurrentLocPoint == null) return;
-        double lat = mCurrentLocPoint.getLatitude() - mMoveStep;
-        mCurrentLocPoint.setLatitude(Math.max(-90.0, Math.min(90.0, lat)));
+        mCurrentLocPoint = GeoUtils.offset(mCurrentLocPoint, -mMoveStep, 0);
     }
 
     @Override
     public synchronized void onArrowLeftClick() {
         Logger.d(TAG, "onArrowLeftClick");
         if (mCurrentLocPoint == null) return;
-        mCurrentLocPoint.setLongitude(wrapLongitude(mCurrentLocPoint.getLongitude() - mMoveStep));
+        mCurrentLocPoint = GeoUtils.offset(mCurrentLocPoint, 0, -mMoveStep);
     }
 
     @Override
     public synchronized void onArrowRightClick() {
         Logger.d(TAG, "onArrowRightClick");
         if (mCurrentLocPoint == null) return;
-        mCurrentLocPoint.setLongitude(wrapLongitude(mCurrentLocPoint.getLongitude() + mMoveStep));
-    }
-
-    private static double wrapLongitude(double longitude) {
-        double wrapped = (longitude + 180.0) % 360.0;
-        if (wrapped < 0) {
-            wrapped += 360.0;
-        }
-        return wrapped - 180.0;
+        mCurrentLocPoint = GeoUtils.offset(mCurrentLocPoint, 0, mMoveStep);
     }
 
 }

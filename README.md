@@ -47,6 +47,10 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 - Modernized the build: `pluginManagement`/`dependencyResolutionManagement`, removed the Kotlin stdlib force hack and Jetifier, and removed the duplicate lite-orm declaration.
 - Enabled `lint` with `abortOnError`; added GitHub Actions (lint + unit tests + debug build) and Dependabot.
 - Moved UI strings into resources, added Traditional Chinese (`values-zh-rTW`) translations, and added content descriptions to the floating joystick.
+- **Move Step is now in meters** (default 2 m) and is converted with a latitude-aware longitude scale; diagonal/near-pole movement is clamped/wrapped correctly.
+- **Injected locations now carry real speed and bearing** computed from consecutive fixes instead of fixed `speed=1` / `bearing=0`.
+- **Coordinate input accepts** plain `lat, lon`, `geo:` URIs, Google/Apple Maps links, and DMS strings such as `37°48'8.7"N 122°24'6.4"W`.
+- Replaced the deprecated LocalBroadcastManager with an in-process bookmark listener.
 - Removed dead code: the root-era AIDL, internal `R$dimen` reflection, unused styles/attributes, and destructive bookmark helpers.
 
 **Dependency note:** the map uses `org.osmdroid:osmdroid-android:6.1.20` (Apache-2.0). The upstream osmdroid project was archived in November 2024, so 6.1.20 is the final release and is intentionally pinned. The integration is isolated in `MapPickerActivity` and `FakeGpsApp.initOsmdroid()` to make a future replacement straightforward.

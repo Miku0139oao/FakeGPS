@@ -1,10 +1,6 @@
 package com.github.fakegps.ui;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,11 +10,9 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.github.fakegps.BroadcastEvent;
+import com.github.fakegps.BookmarkEvents;
 import com.github.fakegps.DbUtils;
-import com.github.fakegps.FakeGpsApp;
 import com.github.fakegps.model.LocBookmark;
 import com.github.fakegps.model.LocPoint;
 import com.tencent.fakegps.R;
@@ -27,20 +21,12 @@ import com.tencent.fakegps.R;
  * Shared bookmark list, context menu, and refresh handling for the main and
  * flight screens.
  */
-public abstract class BaseBookmarkActivity extends AppCompatActivity {
+public abstract class BaseBookmarkActivity extends AppCompatActivity
+        implements BookmarkEvents.Listener {
 
     protected static final int DELETE_ID = 1001;
 
     protected BookmarkAdapter mAdapter;
-
-    private final BroadcastReceiver mBookmarkReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (BroadcastEvent.BookMark.ACTION_BOOK_MARK_UPDATE.equals(intent.getAction())) {
-                reloadBookmarks();
-            }
-        }
-    };
 
     protected void initBookmarkList(ListView listView) {
         mAdapter = new BookmarkAdapter(this);
@@ -77,17 +63,19 @@ public abstract class BaseBookmarkActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(FakeGpsApp.get()).registerReceiver(
-                mBookmarkReceiver,
-                new IntentFilter(BroadcastEvent.BookMark.ACTION_BOOK_MARK_UPDATE));
+        BookmarkEvents.addListener(this);
         reloadBookmarks();
     }
 
     @Override
     protected void onStop() {
-        LocalBroadcastManager.getInstance(FakeGpsApp.get())
-                .unregisterReceiver(mBookmarkReceiver);
+        BookmarkEvents.removeListener(this);
         super.onStop();
+    }
+
+    @Override
+    public void onBookmarksChanged() {
+        reloadBookmarks();
     }
 
     @Override

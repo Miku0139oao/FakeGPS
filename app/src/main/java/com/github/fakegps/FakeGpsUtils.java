@@ -65,21 +65,10 @@ public final class FakeGpsUtils {
     }
 
     public static LocPoint getLocPointFromInput(Context context, EditText editText) {
-        LocPoint point = null;
-        String text = editText.getText().toString().replace("(", "").replace(")", "");
-        String[] split = text.split(",");
-        if (split.length == 2) {
-            try {
-                double lat = Double.parseDouble(split[0].trim());
-                double lon = Double.parseDouble(split[1].trim());
-                if (isValidLatitude(lat) && isValidLongitude(lon)) {
-                    point = new LocPoint(lat, lon);
-                } else {
-                    Logger.e(TAG, "Location out of range: " + lat + ", " + lon, null);
-                }
-            } catch (NumberFormatException e) {
-                Logger.e(TAG, "Parse loc point error!", e);
-            }
+        String text = editText.getText().toString();
+        LocPoint point = CoordinateParser.parse(text);
+        if (point == null) {
+            Logger.e(TAG, "Unable to parse location input: " + text, null);
         }
         return point;
     }
