@@ -1,10 +1,9 @@
 package com.github.fakegps;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by tiger on 7/22/16.
@@ -12,31 +11,40 @@ import java.lang.reflect.Field;
 public class ScreenUtils {
 
     public static int getStatusBarHeight(Context context) {
-        try {
-            Class<?> c = Class.forName("com.android.internal.R$dimen");
-            Object o = c.newInstance();
-            Field field = c.getField("status_bar_height");
-            int x = (Integer) field.get(o);
-            return context.getResources().getDimensionPixelSize(x);
-        } catch (Exception e) {
-            e.printStackTrace();
+        int resourceId = context.getResources()
+                .getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return context.getResources().getDimensionPixelSize(resourceId);
         }
-
         return 0;
     }
 
 
     public static int getScreenWidth(Context context) {
+        WindowManager windowManager =
+                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager == null) {
+            return context.getResources().getDisplayMetrics().widthPixels;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return windowManager.getCurrentWindowMetrics().getBounds().width();
+        }
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay().getMetrics(metrics);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
         return metrics.widthPixels;
     }
 
     public static int getScreenHeight(Context context) {
+        WindowManager windowManager =
+                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager == null) {
+            return context.getResources().getDisplayMetrics().heightPixels;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return windowManager.getCurrentWindowMetrics().getBounds().height();
+        }
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay().getMetrics(metrics);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
         return metrics.heightPixels;
     }
 
