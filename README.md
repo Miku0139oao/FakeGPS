@@ -1,84 +1,298 @@
 # FakeGPS
 
-[中文Readme](https://github.com/xiangtailiang/FakeGPS/blob/master/README_CN.md)
+[繁體中文說明](README_CN.md)
 
-FakeGPS is a GPS device simulator. GPS location signal keep output according to the given coordinates. By the direction keys on the joystick, the user can simulate walking on the map.
+FakeGPS is a GPS device simulator. It keeps outputting a mock location at the
+coordinates you choose, and the floating joystick lets you "walk" around the
+map. **No root is required** — it uses the standard Android mock-location API.
 
-## Features
-- Simulate the real GPS devices, output GPS location per second.
-- Have two modes to set the new location: **Jump Mode** and **Flight Mode**. **Jump Mode**: jump to the new location in second. **Flight Mode**: fly to the new location according to the given time by linear interpolation.
-- With a global floating joystick, the direction button will do a certain offset at the current position (via Move Step, degrees unit). Click to move a step, long press will move continuously.
-- Bookmarks support. In the Bookmarks List, tap to use it, long press to Delete. Long Press Bookmark button on the joystick to copy the current coordinates to the clipboard, make it easy to share it with other people.
-- **Visual map picker** powered by OpenStreetMap (osmdroid): tap, long-press, or drag a marker to choose a location. No API key or Google Play Services required. Map tiles need a network connection; coordinate entry and mock location still work offline.
+> Mock location is a developer feature intended for app testing, privacy
+> research, and location-based development. Respect the laws and terms of
+> service that apply to the apps and services you use.
+
+## Table of contents
+
+- [Quick start (60 seconds)](#quick-start-60-seconds)
+- [Step-by-step guide](#step-by-step-guide)
+  - [Step 0 — Before you start](#step-0--before-you-start)
+  - [Step 1 — Download and install](#step-1--download-and-install)
+  - [Step 2 — Enable Developer options](#step-2--enable-developer-options)
+  - [Step 3 — Select FakeGPS as the mock location app](#step-3--select-fakegps-as-the-mock-location-app)
+  - [Step 4 — Grant permissions](#step-4--grant-permissions)
+  - [Step 5 — Start and verify](#step-5--start-and-verify)
+  - [Step 6 — Use the floating joystick](#step-6--use-the-floating-joystick)
+  - [Step 7 — Pick a location on the map](#step-7--pick-a-location-on-the-map)
+  - [Step 8 — Flight mode](#step-8--flight-mode)
+  - [Step 9 — Bookmarks](#step-9--bookmarks)
+  - [Step 10 — Stop](#step-10--stop)
+- [Troubleshooting](#troubleshooting)
+- [Accepted coordinate formats](#accepted-coordinate-formats)
+- [FAQ](#faq)
+- [Build from source](#build-from-source)
+
+## Quick start (60 seconds)
+
+1. Download `FakeGPS_v2.1.0.apk` from the
+   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.1.0)
+   and install it.
+2. Enable **Developer options** (Settings → About phone → tap **Build number**
+   seven times).
+3. Go to **Settings → System → Developer options → Select mock location app**
+   and choose **FakeGPS**.
+4. Open FakeGPS, grant **Location**, **Notifications**, and **Display over other
+   apps**, then press **Start**.
+5. Open Google Maps or any GPS test app and check that your location moved.
 
 ## Screenshots
 
-![Screenshot_1](./screenshot/Screenshot_1.png)
+| Main screen | Map picker | Flight mode |
+|---|---|---|
+| <img src="screenshot/guide-main.png" width="260" alt="Main screen"> | <img src="screenshot/guide-map.png" width="260" alt="Map picker"> | <img src="screenshot/guide-fly.png" width="260" alt="Flight mode"> |
 
-![Screenshot_2](./screenshot/Screenshot_2.png)
+## Step-by-step guide
 
-![Screenshot_3](./screenshot/Screenshot_3.png)
+### Step 0 — Before you start
 
-## Download
-[FakeGPS V2.0](https://github.com/xiangtailiang/FakeGPS/releases/tag/2.0)
+You need:
 
-## Requirements
-- Android 5.0 (API 21) or above
-- Tested on Android 16 (API 36)
+- An Android phone or tablet running **Android 5.0 (API 21) or newer**
+  (tested on Android 16 / API 36).
+- The APK from the [Releases page](https://github.com/Miku0139oao/FakeGPS/releases).
+- A map or GPS test app to verify the result (Google Maps, GPSTest, etc.).
+- **No root access.** Do not install Magisk or modify the system.
 
-## Installation
+Notes:
 
-**No root required!** FakeGPS v2.0 uses the standard Android Mock Location API.
+- The app injects locations through Android's **mock location** developer API.
+  The phone itself must be able to run apps and change developer settings.
+- Some apps detect the mock flag and may ignore or warn about it. That is a
+  property of those apps, not a bug in FakeGPS.
+- If your device is managed by a company/school (MDM) or is a work profile, the
+  developer-options entry may be locked.
 
-1. Install the APK on your device.
-2. Enable **Developer Options** on your device (Settings > About Phone > Tap Build Number 7 times).
-3. Go to **Settings > Developer Options > Select mock location app** and choose **FakeGPS**.
-4. Launch FakeGPS, enter coordinates, and click **Start**.
-5. The app will request Location, Notification, and Overlay permissions on first launch. Grant them all.
-6. The floating joystick will appear. Open a Maps app (Google Maps, etc.) to verify the mock location.
+### Step 1 — Download and install
 
-## Changes in v2.1.0
-- **Targets Android 16**: compileSdk/targetSdk 36, AGP 8.13.2, Gradle 8.14.7, Java 17 source/target.
-- **Edge-to-edge support**: system bar insets are applied to the app bar and content; no more content hidden behind the status/navigation bars on Android 15/16.
-- Removed the portrait lock so the layout also works on large screens and in landscape.
-- Added a visual location picker backed by OpenStreetMap tiles (osmdroid 6.1.20). Tap, long-press, or drag the marker; the result fills the location field in the main and flight screens.
-- Map tiles are cached in app-private storage, so no storage permission is needed. `INTERNET` and `ACCESS_NETWORK_STATE` are used only for tile downloads and geolocation-free map rendering.
-- Map attribution: © OpenStreetMap contributors.
-- Modernized the build: `pluginManagement`/`dependencyResolutionManagement`, removed the Kotlin stdlib force hack and Jetifier, and removed the duplicate lite-orm declaration.
-- Enabled `lint` with `abortOnError`; added GitHub Actions (lint + unit tests + debug build) and Dependabot.
-- Moved UI strings into resources, added Traditional Chinese (`values-zh-rTW`) translations, and added content descriptions to the floating joystick.
-- **Move Step is now in meters** (default 2 m) and is converted with a latitude-aware longitude scale; diagonal/near-pole movement is clamped/wrapped correctly.
-- **Injected locations now carry real speed and bearing** computed from consecutive fixes instead of fixed `speed=1` / `bearing=0`.
-- **Coordinate input accepts** plain `lat, lon`, `geo:` URIs, Google/Apple Maps links, and DMS strings such as `37°48'8.7"N 122°24'6.4"W`.
-- Replaced the deprecated LocalBroadcastManager with an in-process bookmark listener.
-- Removed dead code: the root-era AIDL, internal `R$dimen` reflection, unused styles/attributes, and destructive bookmark helpers.
+1. Open the [Releases page](https://github.com/Miku0139oao/FakeGPS/releases).
+2. Download the signed `FakeGPS_v2.1.0.apk` asset.
+3. Tap the downloaded file. If Android blocks it, allow your browser or file
+   manager to **install unknown apps**:
+   - Android 8+: **Settings → Apps → Special app access → Install unknown apps
+     → your browser/file manager → Allow from this source**.
+   - Older Android: **Settings → Security → Unknown sources**.
+4. If Play Protect says "Unsafe app blocked", choose **More details → Install
+   anyway**. The APK is self-signed and distributed on GitHub, not through Play.
 
-**Dependency note:** the map uses `org.osmdroid:osmdroid-android:6.1.20` (Apache-2.0). The upstream osmdroid project was archived in November 2024, so 6.1.20 is the final release and is intentionally pinned. The integration is isolated in `MapPickerActivity` and `FakeGpsApp.initOsmdroid()` to make a future replacement straightforward.
+**"App not installed" / signature error:** uninstall any older FakeGPS build
+signed with a different key, then install this APK. Do not install it over a
+copy from another source.
 
-## Changes in v2.0.1
-- **Release signing fixed**: release builds are signed with a key supplied through a git-ignored `keystore.properties`; the old committed debug keystore and hard-coded password were removed.
-- **Mock-app check**: if FakeGPS is not selected in Developer options, the app now explains how to enable it instead of showing a running notification while injecting nothing.
-- **Flight mode is actually linear now**: interpolation is based on elapsed time from a snapshotted origin instead of compounding on the previous tick.
-- Flight state is reset on start/stop; the Fly screen refreshes its button on resume.
-- Inputs are validated: NaN and out-of-range coordinates, non-positive move steps, and invalid fly times are rejected.
-- Deleting the last bookmark clears the list; a failed bookmark save no longer closes the dialog.
-- Removed unused `INTERNET` / `RECEIVE_BOOT_COMPLETED` permissions and the logger library's storage permissions; auto backup is disabled.
-- Release builds no longer write coordinate logs; lite-orm debug logging follows `BuildConfig.DEBUG`.
-- The foreground service is `START_NOT_STICKY` and declares its foreground service type explicitly.
+### Step 2 — Enable Developer options
 
-## Changes in v2.0
-- **No root required** — uses standard `addTestProvider` / `setTestProviderLocation` API instead of hidden `ILocationManager`.
-- **Supports Android 5.0 ~ 16** (API 21 ~ 36).
-- Migrated from Support Library to **AndroidX**.
-- Added **Foreground Service** with notification for reliable background operation on Android 8.0+.
-- Floating joystick uses `TYPE_APPLICATION_OVERLAY` for Android 8.0+ compatibility.
-- Runtime permission requests for Location, Notification (Android 13+), and Overlay.
-- Scoped Storage compatible logging.
-- Updated build toolchain: Gradle 8.11.1, AGP 8.7.3, Java 17.
+1. Open **Settings → About phone** (on Samsung: **About phone → Software
+   information**).
+2. Find **Build number** and tap it **seven times**.
+3. Enter your PIN/pattern if asked. A toast says "You are now a developer".
 
-## Build
+OEM paths:
 
-Requires JDK 17+ (JDK 21 recommended) and the Android SDK with API 36.
+| Brand | Path |
+|---|---|
+| Pixel / AOSP | Settings → About phone → Build number |
+| Samsung | Settings → About phone → Software information → Build number |
+| Xiaomi / Redmi / POCO | Settings → About phone → MIUI/HyperOS version (tap 7×) |
+| OPPO / OnePlus / realme | Settings → About device → Version → Build number |
+| vivo / iQOO | Settings → System management → About phone → Software version |
+| Huawei / Honor | Settings → About phone → Build number |
+
+### Step 3 — Select FakeGPS as the mock location app
+
+1. Open **Settings → System → Developer options**.
+   (On some phones: **Settings → Developer options**.)
+2. Scroll to the **Location** or **Debugging** section and tap
+   **Select mock location app**.
+3. Choose **FakeGPS**.
+
+<img src="screenshot/guide-dev-options.png" width="320" alt="Developer options showing Mock location app: FakeGPS">
+
+If **FakeGPS is missing from the list**:
+
+- Open FakeGPS once from the app drawer (the picker only updates after the app
+  has been launched once).
+- Make sure the app is installed for the current user and not disabled.
+- Use the magnifier/search icon in Developer options and search for
+  "mock location".
+- Some ROMs hide the picker until Developer options are fully enabled.
+
+> The emulator screenshot above is from a test ROM; on a normal phone the
+> picker lists FakeGPS as an option.
+
+### Step 4 — Grant permissions
+
+Open **FakeGPS** from the app drawer. Press **Start** and grant what is asked:
+
+| Permission | Why it is needed |
+|---|---|
+| **Location** (precise recommended) | Android 14+ requires it for a location-type foreground service. Approximate is accepted, but precise gives the best results. |
+| **Notifications** (Android 13+) | Shows the ongoing "FakeGPS Running" notification. The service still runs if you deny it. |
+| **Display over other apps** | Draws the floating joystick on top of other apps. This is required. |
+
+If the app explains that it is not the selected mock location app, tap **Open
+Settings**, choose FakeGPS, then press **Start** again.
+
+<img src="screenshot/guide-main.png" width="320" alt="FakeGPS main screen">
+
+### Step 5 — Start and verify
+
+1. Enter a location in **Location** (for example `37.802406, -122.401779`), or
+   tap **MAP** and pick a point.
+2. Press **Start**.
+3. A persistent notification appears:
+
+   <img src="screenshot/guide-notification.png" width="320" alt="FakeGPS Running notification">
+
+4. Open Google Maps or GPSTest. Your location should now be the mock location.
+5. The app closes and the **floating joystick** appears on top of other apps:
+
+   <img src="screenshot/guide-overlay.png" width="320" alt="Floating joystick">
+
+If Maps still shows the real location, see [Troubleshooting](#troubleshooting).
+
+### Step 6 — Use the floating joystick
+
+The joystick stays on top of other apps. Drag the background to move it
+somewhere convenient.
+
+| Button | Action |
+|---|---|
+| 📍 location pin | Open the FakeGPS main screen (also where you press **Stop**) |
+| ✈️ plane | Open flight mode / stop an active flight |
+| ⭐ star | Save the current location as a bookmark |
+| ⭐ star (long press) | Copy the current coordinates to the clipboard |
+| ▲ ▼ ◀ ▶ | Move the current location by **Move Step** meters |
+
+- **Tap** an arrow to move one step.
+- **Long press** an arrow to keep moving every 500 ms.
+- `Move Step (m)` is the distance in **meters** (default `2`).
+- Movement is converted with a latitude-aware longitude scale, so it works near
+  the poles too.
+
+### Step 7 — Pick a location on the map
+
+1. On the main or flight screen, tap **MAP** next to a location field.
+2. Pan/zoom the map, then **tap**, **long-press**, or **drag the marker**.
+3. The bottom panel shows the selected coordinates.
+4. Tap **Use this location** to fill the field, or **Cancel** to go back.
+
+<img src="screenshot/guide-map.png" width="320" alt="Map picker">
+
+- Map tiles come from **OpenStreetMap** and need a network connection.
+- The coordinates still work offline; if tiles cannot load, you can type a
+  coordinate or use the map position.
+- Attribution: © OpenStreetMap contributors.
+
+### Step 8 — Flight mode
+
+1. Tap the **plane** button on the joystick.
+2. Fill in **From** and **To** (each has its own **MAP** button).
+3. Set **Fly Time(s)** to the duration in seconds (default 60).
+4. Press **Start Fly**. The location moves **linearly** from From to To over
+   that time; press **Stop Fly** to stop early.
+5. The app must already be running (mock location started) before flight mode
+   works.
+
+<img src="screenshot/guide-fly.png" width="320" alt="Flight mode">
+
+### Step 9 — Bookmarks
+
+- **Save:** long-press the star button on the joystick, enter a name, and tap
+  **Save**.
+- **Use:** open the main screen and tap a bookmark in the list.
+- **Delete:** long-press a bookmark in the list and confirm.
+- Bookmarks are stored locally in the app's database. Auto backup is disabled.
+
+### Step 10 — Stop
+
+Use any of these:
+
+1. Tap the **location pin** on the joystick → press **Stop**.
+2. Open the FakeGPS notification → stop the service from there.
+3. **Settings → Apps → FakeGPS → Force stop** (last resort).
+4. Reboot the phone.
+
+After stopping, the floating joystick disappears and the mock location is
+removed. The app may keep the last coordinates for the next launch.
+
+## Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| The app says "FakeGPS Running" but Maps does not move | Is FakeGPS selected in **Developer options → Select mock location app**? Open Developer options and check the line under the entry. Then force-stop and start FakeGPS again. |
+| "Select mock location app" is missing or greyed out | Developer options are off, the device is managed by an MDM/work profile, or the ROM hides it. Try the Settings search icon and type "mock location". |
+| The floating joystick does not appear | Grant **Display over other apps** for FakeGPS. On MIUI/EMUI also enable "Display pop-up windows while running in background" and disable battery restrictions for FakeGPS. |
+| The notification is missing | Grant **Notifications** (Android 13+). The foreground service can still run without it, but Android may be more aggressive about killing the process. |
+| The map is blank | The phone has no network, OSM tiles are blocked, or the cache is empty. Move the map/zoom out; coordinate entry still works offline. |
+| "Input is not valid" | Use `lat, lon`, a `geo:` URI, a Google/Apple Maps link, or a DMS string. Latitude must be −90…90, longitude −180…180. |
+| Flight mode does not move | Start mock location first. Check that From/To are valid and Fly Time is a positive integer. |
+| It works for a while, then stops | Disable battery optimization for FakeGPS: **Settings → Apps → FakeGPS → Battery → Unrestricted**. On Xiaomi/OPPO/vivo also allow auto-start and background activity. |
+| Android 12+ asks for "Approximate" location | FakeGPS accepts approximate, but choose **Precise** for the best behaviour. |
+| The app is killed when the screen is off | Some OEMs kill foreground services anyway. Lock the app in the recent-apps screen and disable battery restrictions. Keep the notification visible. |
+| "App not installed" | Uninstall an older copy signed with a different key and install the release APK again. |
+| Google Maps still shows the real location | Some apps cache location or prefer other providers. Test with GPSTest; toggle GPS off/on; restart the app; make sure the mock app selection is still set. |
+
+## Accepted coordinate formats
+
+All of these work in the **Location**, **From**, and **To** fields:
+
+| Format | Example |
+|---|---|
+| Decimal degrees | `37.802406, -122.401779` |
+| Parentheses (copied from the app) | `(37.802406 , -122.401779)` |
+| `geo:` URI | `geo:37.802406,-122.401779` |
+| `geo:` URI with a label/zoom | `geo:37.802406,-122.401779?z=15` |
+| Google Maps `@` link | `https://www.google.com/maps/@37.802406,-122.401779,15z` |
+| Google Maps `q=` link | `https://maps.google.com/?q=37.802406,-122.401779` |
+| DMS (degrees/minutes/seconds) | `37°48'8.7"N 122°24'6.4"W` |
+
+Copy a location from the joystick with a long press on the star button, then
+paste it into another app or send it to a friend.
+
+## FAQ
+
+**Do I need root?**
+No. FakeGPS v2.0+ uses the public `addTestProvider` / `setTestProviderLocation`
+API. The only setup is selecting it in Developer options.
+
+**Does it modify the real GPS hardware?**
+No. It registers a test provider and feeds it coordinates. Other apps that use
+the standard location APIs see the mock location; the real hardware is
+untouched.
+
+**Why do some apps still show my real location?**
+They may use their own location source, cache aggressively, or reject mock
+locations. Test with GPSTest first; if GPSTest moves but a specific app does
+not, that app is filtering mock data.
+
+**Does it work with Google Maps?**
+Usually yes, when FakeGPS is selected as the mock location app. If Maps does
+not update, restart Maps after starting FakeGPS and check the troubleshooting
+table.
+
+**Is my data uploaded?**
+No account, no analytics, no telemetry. Map tiles are requested from the
+OpenStreetMap tile server, which needs a network connection. Bookmarks and last
+coordinates stay on the device; automatic backup is disabled.
+
+**Can I use it on a work/school phone?**
+Do not bypass MDM or employer restrictions. Developer options may be disabled
+by policy.
+
+**Where are the logs?**
+Release builds do not write coordinate logs. Debug builds write to the app's
+internal files directory for troubleshooting.
+
+## Build from source
+
+Requires JDK 17+ (JDK 21 recommended) and Android SDK Platform 36.
 
 ```bash
 ./gradlew assembleDebug
@@ -103,8 +317,39 @@ keyPassword=...
 Keep the keystore and this file outside version control. Verify the result with
 `apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.1.0.apk`.
 
+## Features
+
+- Simulates a GPS device and outputs a location every second.
+- **Jump mode**: jump to a new location instantly.
+- **Flight mode**: move linearly from one coordinate to another over a chosen
+  duration, with real elapsed-time interpolation.
+- Floating joystick with meter-based movement; tap or long-press the arrows.
+- Bookmarks with tap-to-use and long-press-to-delete.
+- Visual map picker (OpenStreetMap, no API key, no Google Play Services).
+- Real speed and bearing derived from consecutive fixes.
+- Coordinate input from plain text, `geo:` URIs, map links, and DMS.
+- Works on Android 5.0–16 (API 21–36), targetSdk 36, edge-to-edge.
+- No root, no analytics, no account.
+
+## Project layout
+
+```
+app/                      Android app (Java)
+  src/main/java/...       Activities, service, location thread, map picker
+  src/main/res/           Layouts, strings (en + zh-rTW), drawables
+  src/test/java/...       JVM unit tests
+loggerlibrary/            Small file-logger module
+screenshot/               Screenshots and tutorial images
+.github/workflows/        CI: lint + unit tests + debug build
+```
+
 ## Contribute
-If you would like to contribute code to FakeGPS, you can do so through GitHub by forking the repository and sending a pull request.
+
+Fork the repository, create a branch, run `./gradlew lintDebug
+testDebugUnitTest assembleDebug`, and send a pull request. Please keep new UI
+strings in `values/strings.xml` and `values-zh-rTW/strings.xml`, and add a unit
+test for new pure-Java logic.
 
 ## License
+
 [The MIT License (MIT)](http://opensource.org/licenses/MIT)
