@@ -62,9 +62,10 @@ public class BookmarkAdapter extends BaseAdapter {
     }
 
     public void setLocBookmarkList(List<LocBookmark> locBookmarkList) {
-        if (locBookmarkList == null || locBookmarkList.size() <= 0) return;
         mLocBookmarkList.clear();
-        mLocBookmarkList.addAll(locBookmarkList);
+        if (locBookmarkList != null) {
+            mLocBookmarkList.addAll(locBookmarkList);
+        }
         notifyDataSetChanged();
     }
 

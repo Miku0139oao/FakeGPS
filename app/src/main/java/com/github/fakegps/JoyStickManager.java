@@ -2,18 +2,19 @@ package com.github.fakegps;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
-import android.widget.Toast;
 
 import com.github.fakegps.model.LocPoint;
 import com.github.fakegps.ui.BookmarkActivity;
 import com.github.fakegps.ui.FlyToActivity;
 import com.github.fakegps.ui.JoyStickView;
 import com.github.fakegps.ui.MainActivity;
+import com.tencent.fakegps.R;
 
 import tiger.radio.loggerlibrary.Logger;
 
@@ -30,15 +31,18 @@ public class JoyStickManager implements IJoyStickPresenter {
 
     private Context mContext;
     private LocationThread mLocationThread;
-    private boolean mIsStarted = false;
+    private volatile boolean mIsStarted = false;
     private double mMoveStep = STEP_DEFAULT;
 
     private LocPoint mCurrentLocPoint;
 
-    private LocPoint mTargetLocPoint;
-    private int mFlyTime;
-    private int mFlyTimeIndex;
-    private boolean mIsFlyMode = false;
+    // Linear interpolation state. The path snapshots the origin when the flight
+    // starts, so a tick never compounds on the previous interpolated position.
+    private FlyPath mFlyPath;
+    private long mFlyStartElapsedMs;
+    private volatile boolean mIsFlyMode = false;
+
+    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     private JoyStickView mJoyStickView;
 
@@ -55,9 +59,13 @@ public class JoyStickManager implements IJoyStickPresenter {
     }
 
     public void start(@NonNull LocPoint locPoint) {
-        mCurrentLocPoint = locPoint;
+        synchronized (this) {
+            resetFlyState();
+            mCurrentLocPoint = new LocPoint(locPoint);
+        }
         if (mLocationThread == null || !mLocationThread.isAlive()) {
-            mLocationThread = new LocationThread(mContext.getApplicationContext(), this);
+            mLocationThread = new LocationThread(
+                    mContext.getApplicationContext(), this, mLocationListener);
             mLocationThread.startThread();
         }
 
@@ -78,13 +86,31 @@ public class JoyStickManager implements IJoyStickPresenter {
         stopForegroundService();
 
         hideJoyStick();
+        synchronized (this) {
+            resetFlyState();
+        }
         mIsStarted = false;
     }
+
+    private final LocationThread.Listener mLocationListener = new LocationThread.Listener() {
+        @Override
+        public void onMockLocationUnavailable() {
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    stop();
+                    Toast.makeText(mContext,
+                            R.string.mock_app_not_selected,
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
 
     private void startForegroundService() {
         try {
             Intent serviceIntent = new Intent(mContext, FakeLocationService.class);
-            ContextCompat.startForegroundService(mContext, serviceIntent);
+            androidx.core.content.ContextCompat.startForegroundService(mContext, serviceIntent);
         } catch (Exception e) {
             Logger.e(TAG, "Failed to start foreground service", e);
         }
@@ -120,33 +146,47 @@ public class JoyStickManager implements IJoyStickPresenter {
         }
     }
 
-    public LocPoint getCurrentLocPoint() {
-        return mCurrentLocPoint;
+    public synchronized LocPoint getCurrentLocPoint() {
+        return mCurrentLocPoint == null ? null : new LocPoint(mCurrentLocPoint);
     }
 
-    public LocPoint getUpdateLocPoint() {
-        if (!mIsFlyMode || mFlyTimeIndex > mFlyTime) {
-            return mCurrentLocPoint;
-        } else {
-            float factor = (float) mFlyTimeIndex / (float) mFlyTime;
-            double lat = mCurrentLocPoint.getLatitude() + (factor * (mTargetLocPoint.getLatitude() - mCurrentLocPoint.getLatitude()));
-            double lon = mCurrentLocPoint.getLongitude() + (factor * (mTargetLocPoint.getLongitude() - mCurrentLocPoint.getLongitude()));
-            mCurrentLocPoint.setLatitude(lat);
-            mCurrentLocPoint.setLongitude(lon);
-            mFlyTimeIndex++;
-            return mCurrentLocPoint;
+    /**
+     * Returns a new point every call. When a flight is active the point is the
+     * linear interpolation between the snapshot origin and the target, based on
+     * real elapsed time rather than the number of ticks.
+     */
+    public synchronized LocPoint getUpdateLocPoint() {
+        if (mCurrentLocPoint == null) {
+            return null;
         }
+        if (!mIsFlyMode || mFlyPath == null) {
+            return new LocPoint(mCurrentLocPoint);
+        }
+
+        long elapsedMs = SystemClock.elapsedRealtime() - mFlyStartElapsedMs;
+        LocPoint point = mFlyPath.pointAt(elapsedMs);
+        mCurrentLocPoint = point;
+        if (mFlyPath.isComplete(elapsedMs)) {
+            mIsFlyMode = false;
+        }
+        return new LocPoint(mCurrentLocPoint);
     }
 
-    public void jumpToLocation(@NonNull LocPoint location) {
-        mIsFlyMode = false;
-        mCurrentLocPoint = location;
+    public synchronized void jumpToLocation(@NonNull LocPoint location) {
+        resetFlyState();
+        mCurrentLocPoint = new LocPoint(location);
     }
 
-    public void flyToLocation(@NonNull LocPoint location, int flyTime) {
-        mTargetLocPoint = location;
-        mFlyTime = flyTime;
-        mFlyTimeIndex = 0;
+    public synchronized void flyToLocation(@NonNull LocPoint location, int flyTimeSeconds) {
+        if (flyTimeSeconds <= 0) {
+            return;
+        }
+        LocPoint origin = mCurrentLocPoint == null
+                ? new LocPoint(location)
+                : new LocPoint(mCurrentLocPoint);
+        mFlyPath = new FlyPath(origin, location, flyTimeSeconds * 1000L);
+        mFlyStartElapsedMs = SystemClock.elapsedRealtime();
+        mCurrentLocPoint = new LocPoint(origin);
         mIsFlyMode = true;
     }
 
@@ -154,15 +194,23 @@ public class JoyStickManager implements IJoyStickPresenter {
         return mIsFlyMode;
     }
 
-    public void stopFlyMode() {
+    public synchronized void stopFlyMode() {
+        resetFlyState();
+    }
+
+    private void resetFlyState() {
         mIsFlyMode = false;
+        mFlyPath = null;
+        mFlyStartElapsedMs = 0;
     }
 
-    public void setMoveStep(double moveStep) {
-        mMoveStep = moveStep;
+    public synchronized void setMoveStep(double moveStep) {
+        if (FakeGpsUtils.isValidMoveStep(moveStep)) {
+            mMoveStep = moveStep;
+        }
     }
 
-    public double getMoveStep() {
+    public synchronized double getMoveStep() {
         return mMoveStep;
     }
 
@@ -178,7 +226,7 @@ public class JoyStickManager implements IJoyStickPresenter {
         Logger.d(TAG, "onFlyClick");
         if (mIsFlyMode) {
             stopFlyMode();
-            Toast.makeText(mContext, "Stop Fly", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.stop_fly, Toast.LENGTH_SHORT).show();
         } else {
             FlyToActivity.startPage(mContext);
         }
@@ -188,47 +236,62 @@ public class JoyStickManager implements IJoyStickPresenter {
     @Override
     public void onBookmarkLocationClick() {
         Logger.d(TAG, "onBookmarkLocationClick");
-        if (mCurrentLocPoint != null) {
-            LocPoint locPoint = new LocPoint(mCurrentLocPoint);
+        LocPoint locPoint = getCurrentLocPoint();
+        if (locPoint != null) {
             BookmarkActivity.startPage(mContext, "Bookmark", locPoint);
-            Toast.makeText(mContext, "Current location is copied!" + "\n" + locPoint, Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, mContext.getString(R.string.location_copied) + "\n" + locPoint, Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(mContext, "Service is not start!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.service_not_started, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onCopyLocationClick() {
         Logger.d(TAG, "onCopyLocationClick");
-        if (mCurrentLocPoint != null) {
-            FakeGpsUtils.copyToClipboard(mContext, mCurrentLocPoint.toString());
-            Toast.makeText(mContext, "Current location is copied!" + "\n" + mCurrentLocPoint, Toast.LENGTH_LONG).show();
+        LocPoint locPoint = getCurrentLocPoint();
+        if (locPoint != null) {
+            FakeGpsUtils.copyToClipboard(mContext, locPoint.toString());
+            Toast.makeText(mContext, mContext.getString(R.string.location_copied) + "\n" + locPoint, Toast.LENGTH_LONG).show();
         }
     }
 
 
     @Override
-    public void onArrowUpClick() {
+    public synchronized void onArrowUpClick() {
         Logger.d(TAG, "onArrowUpClick");
-        mCurrentLocPoint.setLatitude(mCurrentLocPoint.getLatitude() + mMoveStep);
+        if (mCurrentLocPoint == null) return;
+        double lat = mCurrentLocPoint.getLatitude() + mMoveStep;
+        mCurrentLocPoint.setLatitude(Math.max(-90.0, Math.min(90.0, lat)));
     }
 
     @Override
-    public void onArrowDownClick() {
+    public synchronized void onArrowDownClick() {
         Logger.d(TAG, "onArrowDownClick");
-        mCurrentLocPoint.setLatitude(mCurrentLocPoint.getLatitude() - mMoveStep);
+        if (mCurrentLocPoint == null) return;
+        double lat = mCurrentLocPoint.getLatitude() - mMoveStep;
+        mCurrentLocPoint.setLatitude(Math.max(-90.0, Math.min(90.0, lat)));
     }
 
     @Override
-    public void onArrowLeftClick() {
+    public synchronized void onArrowLeftClick() {
         Logger.d(TAG, "onArrowLeftClick");
-        mCurrentLocPoint.setLongitude(mCurrentLocPoint.getLongitude() - mMoveStep);
+        if (mCurrentLocPoint == null) return;
+        mCurrentLocPoint.setLongitude(wrapLongitude(mCurrentLocPoint.getLongitude() - mMoveStep));
     }
 
     @Override
-    public void onArrowRightClick() {
+    public synchronized void onArrowRightClick() {
         Logger.d(TAG, "onArrowRightClick");
-        mCurrentLocPoint.setLongitude(mCurrentLocPoint.getLongitude() + mMoveStep);
+        if (mCurrentLocPoint == null) return;
+        mCurrentLocPoint.setLongitude(wrapLongitude(mCurrentLocPoint.getLongitude() + mMoveStep));
+    }
+
+    private static double wrapLongitude(double longitude) {
+        double wrapped = (longitude + 180.0) % 360.0;
+        if (wrapped < 0) {
+            wrapped += 360.0;
+        }
+        return wrapped - 180.0;
     }
 
 }

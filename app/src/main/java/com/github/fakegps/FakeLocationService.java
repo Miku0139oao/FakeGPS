@@ -6,8 +6,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
+
+import androidx.core.app.ServiceCompat;
 
 import com.github.fakegps.ui.MainActivity;
 import com.tencent.fakegps.R;
@@ -33,8 +36,22 @@ public class FakeLocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.d(TAG, "FakeLocationService onStartCommand");
-        startForeground(NOTIFICATION_ID, buildNotification());
-        return START_STICKY;
+        try {
+            ServiceCompat.startForeground(
+                    this,
+                    NOTIFICATION_ID,
+                    buildNotification(),
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                            ? ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+                            : 0);
+        } catch (Exception e) {
+            Logger.e(TAG, "Unable to enter foreground state", e);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        // The mock loop lives in the app process, not in this service. Restarting
+        // it without that state would only post a misleading "active" notification.
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -52,10 +69,10 @@ public class FakeLocationService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "FakeGPS Location Service",
+                    getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("Keeps mock GPS location running");
+            channel.setDescription(getString(R.string.notification_channel_desc));
             channel.setShowBadge(false);
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null) {
@@ -80,8 +97,8 @@ public class FakeLocationService extends Service {
         }
 
         return builder
-                .setContentTitle("FakeGPS Running")
-                .setContentText("Mock location is active")
+                .setContentTitle(getString(R.string.notification_title))
+                .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(R.drawable.icon_app)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)

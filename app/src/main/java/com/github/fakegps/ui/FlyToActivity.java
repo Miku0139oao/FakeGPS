@@ -69,7 +69,7 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
 
         // To location input
         mLocEditText = (EditText) findViewById(R.id.inputLoc);
-        mLocEditText.setHint("Latitude , Longitude");
+        mLocEditText.setHint(R.string.loc_input_hint);
 
         // Fly time input
         mFlyTimeEditText = (EditText) findViewById(R.id.inputFlyTime);
@@ -88,30 +88,43 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        int flyTime = FakeGpsUtils.getIntValueFromInput(this, mFlyTimeEditText);
-        LocPoint fromPoint = FakeGpsUtils.getLocPointFromInput(this, mFromLocEditText);
-        LocPoint toPoint = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
-
         int id = view.getId();
-        if (id == R.id.btn_fly) {
-            if (JoyStickManager.get().isStarted()) {
-                if (JoyStickManager.get().isFlyMode()) {
-                    JoyStickManager.get().stopFlyMode();
-                } else {
-                    if (fromPoint != null && toPoint != null && flyTime > 0) {
-                        // Jump to the "From" location first, then fly to "To"
-                        JoyStickManager.get().jumpToLocation(fromPoint);
-                        JoyStickManager.get().flyToLocation(toPoint, flyTime);
-                    } else {
-                        Toast.makeText(this, "Input is not valid!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-            updateBtn();
+        if (id != R.id.btn_fly) {
+            return;
         }
+        if (!JoyStickManager.get().isStarted()) {
+            Toast.makeText(this, R.string.start_first, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (JoyStickManager.get().isFlyMode()) {
+            JoyStickManager.get().stopFlyMode();
+        } else {
+            int flyTime = FakeGpsUtils.getIntValueFromInput(this, mFlyTimeEditText);
+            LocPoint fromPoint = FakeGpsUtils.getLocPointFromInput(this, mFromLocEditText);
+            LocPoint toPoint = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
+            if (fromPoint == null || toPoint == null) {
+                Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
+            } else if (flyTime <= 0) {
+                Toast.makeText(this, R.string.fly_time_invalid, Toast.LENGTH_SHORT).show();
+            } else {
+                // Jump to the "From" location first, then fly to "To"
+                JoyStickManager.get().jumpToLocation(fromPoint);
+                JoyStickManager.get().flyToLocation(toPoint, flyTime);
+            }
+        }
+        updateBtn();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateBtn();
     }
 
     private void updateBtn() {
+        boolean started = JoyStickManager.get().isStarted();
+        mBtnStart.setEnabled(started);
         if (JoyStickManager.get().isFlyMode()) {
             mBtnStart.setText(R.string.btn_fly_stop);
         } else {
@@ -157,17 +170,17 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
 
     private void delete(final int position) {
         if (position < 0) return;
-        final LocBookmark bookmark = mAdapter.getItem(position);
+        LocBookmark bookmark = mAdapter.getItem(position);
         new AlertDialog.Builder(this)
-                .setTitle("Delete " + bookmark.toString())
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.delete_bookmark_title) + " " + bookmark.getName())
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         DbUtils.deleteBookmark(bookmark);
                         ArrayList<LocBookmark> allBookmark = DbUtils.getAllBookmark();
                         mAdapter.setLocBookmarkList(allBookmark);
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

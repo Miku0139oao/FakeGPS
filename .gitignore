@@ -7,3 +7,8 @@
 .DS_Store
 /build
 /captures
+
+# Signing material must never be committed
+*.jks
+*.keystore
+keystore.properties

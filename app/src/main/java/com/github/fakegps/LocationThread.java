@@ -10,6 +10,7 @@ import android.os.HandlerThread;
 import android.os.SystemClock;
 
 import com.github.fakegps.model.LocPoint;
+import com.tencent.fakegps.BuildConfig;
 
 import tiger.radio.loggerlibrary.Logger;
 
@@ -23,18 +24,25 @@ public class LocationThread extends HandlerThread {
     private static final String TAG = "LocationThread";
     private static final String[] PROVIDERS = {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER};
 
+    public interface Listener {
+        /** Called on the worker thread when no test provider could be installed. */
+        void onMockLocationUnavailable();
+    }
+
     private Context mContext;
-    private JoyStickManager mJoyStickManager;
+    private volatile JoyStickManager mJoyStickManager;
     private LocationManager mLocationManager;
+    private final Listener mListener;
 
     private Handler mHandler;
     private LocPoint mLastLocPoint = new LocPoint(0, 0);
-    private boolean mProvidersAdded = false;
+    private volatile boolean mProvidersAdded = false;
 
-    public LocationThread(Context context, JoyStickManager joyStickManager) {
+    public LocationThread(Context context, JoyStickManager joyStickManager, Listener listener) {
         super("LocationThread");
         mContext = context;
         mJoyStickManager = joyStickManager;
+        mListener = listener;
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
@@ -63,8 +71,17 @@ public class LocationThread extends HandlerThread {
         mJoyStickManager = null;
     }
 
-    private void addTestProviders() {
-        if (mProvidersAdded) return;
+    /**
+     * @return the number of providers that were successfully installed.
+     */
+    private int addTestProviders() {
+        if (mProvidersAdded) return PROVIDERS.length;
+        if (!FakeGpsUtils.isMockLocationAppSelected(mContext)) {
+            Logger.e(TAG, "App is not selected as the mock location app", null);
+            return 0;
+        }
+
+        int added = 0;
         for (String provider : PROVIDERS) {
             try {
                 // Remove existing test provider if any
@@ -88,6 +105,7 @@ public class LocationThread extends HandlerThread {
                             android.location.Criteria.ACCURACY_FINE);
                 }
                 mLocationManager.setTestProviderEnabled(provider, true);
+                added++;
                 Logger.d(TAG, "Test provider added: " + provider);
             } catch (SecurityException e) {
                 Logger.e(TAG, "Cannot add test provider '" + provider + "'. " +
@@ -96,7 +114,8 @@ public class LocationThread extends HandlerThread {
                 Logger.e(TAG, "Error adding test provider: " + provider, e);
             }
         }
-        mProvidersAdded = true;
+        mProvidersAdded = added > 0;
+        return added;
     }
 
     private void removeTestProviders() {
@@ -113,10 +132,20 @@ public class LocationThread extends HandlerThread {
         mProvidersAdded = false;
     }
 
+    private void notifyMockLocationUnavailable() {
+        if (mListener != null) {
+            mListener.onMockLocationUnavailable();
+        }
+    }
+
     private final Runnable mSetupAndRun = new Runnable() {
         @Override
         public void run() {
-            addTestProviders();
+            int added = addTestProviders();
+            if (added == 0) {
+                notifyMockLocationUnavailable();
+                return;
+            }
             mHandler.post(mUpdateLocation);
         }
     };
@@ -124,11 +153,19 @@ public class LocationThread extends HandlerThread {
     private final Runnable mUpdateLocation = new Runnable() {
         @Override
         public void run() {
-            if (mJoyStickManager == null) return;
+            JoyStickManager manager = mJoyStickManager;
+            if (manager == null) return;
 
-            LocPoint locPoint = mJoyStickManager.getUpdateLocPoint();
-            Logger.d(TAG, "UpdateLocation, " + locPoint);
+            LocPoint locPoint = manager.getUpdateLocPoint();
+            if (locPoint == null) {
+                mHandler.postDelayed(this, 1000);
+                return;
+            }
+            if (BuildConfig.DEBUG) {
+                Logger.d(TAG, "UpdateLocation, " + locPoint);
+            }
 
+            int successCount = 0;
             for (String provider : PROVIDERS) {
                 try {
                     Location location = new Location(provider);
@@ -155,10 +192,18 @@ public class LocationThread extends HandlerThread {
                     }
 
                     mLocationManager.setTestProviderLocation(provider, location);
-
+                    successCount++;
                 } catch (Exception e) {
                     Logger.e(TAG, "Failed to set location for provider: " + provider, e);
                 }
+            }
+
+            if (successCount == 0) {
+                // Mock permission was probably revoked while running. Stop the loop
+                // instead of retrying forever and reporting a healthy state.
+                removeTestProviders();
+                notifyMockLocationUnavailable();
+                return;
             }
 
             mLastLocPoint.setLatitude(locPoint.getLatitude());

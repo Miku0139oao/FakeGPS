@@ -19,5 +19,35 @@
     <string name="no_data">No Bookmarks</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="go_to_settings">Open Settings</string>
+
+    <string name="input_invalid">Input is not valid!</string>
+    <string name="move_step_invalid">Move Step must be a positive number!</string>
+    <string name="fly_time_invalid">Fly Time must be a positive whole number of seconds!</string>
+    <string name="start_first">Start mock location first!</string>
+    <string name="service_not_started">Service is not started!</string>
+
+    <string name="overlay_permission_title">Overlay permission required</string>
+    <string name="overlay_permission_message">FakeGPS needs the \"Display over other apps\" permission to show the floating joystick. Grant it on the next screen.</string>
+    <string name="overlay_permission_missing">Overlay permission was not granted.</string>
+    <string name="location_permission_required">Location permission is required to simulate GPS.</string>
+
+    <string name="mock_app_required_title">Select FakeGPS as mock location app</string>
+    <string name="mock_app_required_message">Android requires you to select FakeGPS in Developer options before it can provide mock locations. Open Settings and choose \"Select mock location app\" → FakeGPS, then press Start again.</string>
+    <string name="mock_app_not_selected">Mock location permission was denied. Select FakeGPS in Developer options → Select mock location app.</string>
+
+    <string name="notification_channel_name">FakeGPS Location Service</string>
+    <string name="notification_channel_desc">Keeps mock GPS location running</string>
+    <string name="notification_title">FakeGPS Running</string>
+    <string name="notification_text">Mock location is active</string>
+
+    <string name="bookmark_name_required">Bookmark name cannot be empty!</string>
+    <string name="bookmark_location_invalid">Location is not valid!</string>
+    <string name="bookmark_saved">Bookmark saved!</string>
+    <string name="bookmark_save_failed">Bookmark could not be saved!</string>
+    <string name="delete_bookmark_title">Delete bookmark?</string>
+    <string name="delete">Delete</string>
+    <string name="stop_fly">Stop Fly</string>
+    <string name="location_copied">Current location is copied!</string>
 
 </resources>

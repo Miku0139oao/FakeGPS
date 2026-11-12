@@ -57,29 +57,35 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.btn_ok) {
-            saveBookmark();
-            finish();
+            if (saveBookmark()) {
+                finish();
+            }
         } else if (id == R.id.btn_cancel) {
             finish();
         }
     }
 
-    private void saveBookmark() {
+    private boolean saveBookmark() {
         String name = mNameEditText.getText().toString().trim();
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "name cannot be empty!", Toast.LENGTH_SHORT).show();
-            return;
+            Toast.makeText(this, R.string.bookmark_name_required, Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         LocPoint locPointFromInput = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
-        if (locPointFromInput != null) {
-            LocBookmark locBookmark = new LocBookmark(name, locPointFromInput);
-            long insertId = DbUtils.insertBookmark(locBookmark);
-            if (insertId != -1) {
-                Toast.makeText(this, "bookmark saved!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "bookmark cannot save!", Toast.LENGTH_SHORT).show();
-            }
+        if (locPointFromInput == null) {
+            Toast.makeText(this, R.string.bookmark_location_invalid, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        LocBookmark locBookmark = new LocBookmark(name, locPointFromInput);
+        long insertId = DbUtils.insertBookmark(locBookmark);
+        if (insertId != -1) {
+            Toast.makeText(this, R.string.bookmark_saved, Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            Toast.makeText(this, R.string.bookmark_save_failed, Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 

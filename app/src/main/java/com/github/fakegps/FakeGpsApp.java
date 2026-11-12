@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.litesuits.orm.LiteOrm;
+import com.tencent.fakegps.BuildConfig;
 
 import java.io.File;
 
@@ -26,7 +27,9 @@ public class FakeGpsApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        initLogger();
+        if (BuildConfig.DEBUG) {
+            initLogger();
+        }
         JoyStickManager.get().init(this);
     }
 
@@ -39,7 +42,7 @@ public class FakeGpsApp extends Application {
             synchronized (FakeGpsApp.class) {
                 if (sLiteOrm == null) {
                     sLiteOrm = LiteOrm.newSingleInstance(sAppContext, "fake_gps.db");
-                    sLiteOrm.setDebugged(true);
+                    sLiteOrm.setDebugged(BuildConfig.DEBUG);
                 }
             }
         }
@@ -47,15 +50,8 @@ public class FakeGpsApp extends Application {
     }
 
     private void initLogger() {
-        // Use app-specific external files directory (Scoped Storage compatible)
-        File externalDir = getExternalFilesDir(null);
-        File outputDir;
-        if (externalDir != null) {
-            outputDir = new File(externalDir, "logs");
-        } else {
-            // Fallback to internal storage
-            outputDir = new File(getFilesDir(), "logs");
-        }
+        // Keep diagnostic logs in internal storage; release builds do not log at all.
+        File outputDir = new File(getFilesDir(), "logs");
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }

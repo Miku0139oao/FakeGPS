@@ -36,6 +36,17 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 5. The app will request Location, Notification, and Overlay permissions on first launch. Grant them all.
 6. The floating joystick will appear. Open a Maps app (Google Maps, etc.) to verify the mock location.
 
+## Changes in v2.0.1
+- **Release signing fixed**: release builds are signed with a key supplied through a git-ignored `keystore.properties`; the old committed debug keystore and hard-coded password were removed.
+- **Mock-app check**: if FakeGPS is not selected in Developer options, the app now explains how to enable it instead of showing a running notification while injecting nothing.
+- **Flight mode is actually linear now**: interpolation is based on elapsed time from a snapshotted origin instead of compounding on the previous tick.
+- Flight state is reset on start/stop; the Fly screen refreshes its button on resume.
+- Inputs are validated: NaN and out-of-range coordinates, non-positive move steps, and invalid fly times are rejected.
+- Deleting the last bookmark clears the list; a failed bookmark save no longer closes the dialog.
+- Removed unused `INTERNET` / `RECEIVE_BOOT_COMPLETED` permissions and the logger library's storage permissions; auto backup is disabled.
+- Release builds no longer write coordinate logs; lite-orm debug logging follows `BuildConfig.DEBUG`.
+- The foreground service is `START_NOT_STICKY` and declares its foreground service type explicitly.
+
 ## Changes in v2.0
 - **No root required** — uses standard `addTestProvider` / `setTestProviderLocation` API instead of hidden `ILocationManager`.
 - **Supports Android 5.0 ~ 16** (API 21 ~ 36).
@@ -52,7 +63,21 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/FakeGPS_v2.0.apk`
+APK output: `app/build/outputs/apk/debug/FakeGPS_v2.0.1.apk`
+
+### Release signing
+
+Release builds read `keystore.properties` from the project root (git-ignored):
+
+```properties
+storeFile=/absolute/path/to/fakegps-release.jks
+storePassword=...
+keyAlias=...
+keyPassword=...
+```
+
+Keep the keystore and this file outside version control. Verify the result with
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.0.1.apk`.
 
 ## Contribute
 If you would like to contribute code to FakeGPS, you can do so through GitHub by forking the repository and sending a pull request.

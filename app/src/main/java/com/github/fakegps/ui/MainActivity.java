@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_OVERLAY = 2001;
     private static final int REQUEST_CODE_LOCATION = 2002;
     private static final int REQUEST_CODE_NOTIFICATION = 2003;
+    private static final int REQUEST_CODE_MOCK_APP = 2004;
 
     public static final int DELETE_ID = 1001;
 
@@ -85,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //each move step delta
         mMoveStepEditText = (EditText) findViewById(R.id.inputStep);
         double currentMoveStep = JoyStickManager.get().getMoveStep();
-        mMoveStepEditText.setText(String.valueOf(currentMoveStep));
+        mMoveStepEditText.setText(
+                java.math.BigDecimal.valueOf(currentMoveStep).stripTrailingZeros().toPlainString());
 
         mListView = (ListView) findViewById(R.id.list_bookmark);
 
@@ -104,36 +106,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        double step = FakeGpsUtils.getMoveStepFromInput(this, mMoveStepEditText);
-        LocPoint point = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
-
         int id = view.getId();
         if (id == R.id.btn_start) {
-            if (!JoyStickManager.get().isStarted()) {
-                if (point == null) {
-                    Toast.makeText(this, "Input is not valid!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                // Save pending params and start permission check chain
-                mPendingStartPoint = point;
-                mPendingStartStep = step;
-                checkPermissionsAndStart();
-            } else {
+            if (JoyStickManager.get().isStarted()) {
                 LocPoint currentLocPoint = JoyStickManager.get().getCurrentLocPoint();
                 if (currentLocPoint != null) {
                     DbUtils.saveLastLocPoint(this, currentLocPoint);
                 }
                 JoyStickManager.get().stop();
                 finish();
+                return;
             }
-            updateBtnStart();
-            updateBtnSetNew();
+
+            double step = FakeGpsUtils.getMoveStepFromInput(this, mMoveStepEditText);
+            LocPoint point = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
+            if (point == null) {
+                Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!FakeGpsUtils.isValidMoveStep(step)) {
+                Toast.makeText(this, R.string.move_step_invalid, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Save pending params and start permission check chain
+            mPendingStartPoint = point;
+            mPendingStartStep = step;
+            checkPermissionsAndStart();
         } else if (id == R.id.btn_set_loc) {
+            if (!JoyStickManager.get().isStarted()) {
+                Toast.makeText(this, R.string.start_first, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            double step = FakeGpsUtils.getMoveStepFromInput(this, mMoveStepEditText);
+            LocPoint point = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
             if (step > 0 && point != null) {
                 JoyStickManager.get().setMoveStep(step);
                 JoyStickManager.get().jumpToLocation(point);
             } else {
-                Toast.makeText(this, "Input is not valid!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -146,11 +157,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Then starts the service if all granted.
      */
     private void checkPermissionsAndStart() {
-        // Step 1: Check location permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        // Step 1: Check location permission. COARSE is enough for the location
+        // foreground service type; FINE is an optional upgrade.
+        boolean fineGranted = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        boolean coarseGranted = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        if (!fineGranted && !coarseGranted) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
                     REQUEST_CODE_LOCATION);
             return;
         }
@@ -170,9 +188,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 new AlertDialog.Builder(this)
-                        .setTitle("需要悬浮窗权限")
-                        .setMessage("FakeGPS 需要悬浮窗权限来显示操控手柄。请在接下来的设置页面中允许此权限。")
-                        .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        .setTitle(R.string.overlay_permission_title)
+                        .setMessage(R.string.overlay_permission_message)
+                        .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -180,10 +198,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 startActivityForResult(intent, REQUEST_CODE_OVERLAY);
                             }
                         })
-                        .setNegativeButton("取消", null)
+                        .setNegativeButton(R.string.cancel, null)
                         .show();
                 return;
             }
+        }
+
+        // Step 4: Check that the user picked FakeGPS as the mock location app.
+        // Without this every provider call fails silently.
+        if (!FakeGpsUtils.isMockLocationAppSelected(this)) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.mock_app_required_title)
+                    .setMessage(R.string.mock_app_required_message)
+                    .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityForResult(
+                                    new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
+                                    REQUEST_CODE_MOCK_APP);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+            return;
         }
 
         // All permissions granted, start!
@@ -203,11 +240,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            boolean fineGranted = grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            boolean coarseGranted = grantResults.length > 1
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED;
+            if (fineGranted || coarseGranted) {
                 // Location granted, continue checking next permission
                 checkPermissionsAndStart();
             } else {
-                Toast.makeText(this, "需要位置权限才能模拟 GPS", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.location_permission_required, Toast.LENGTH_LONG).show();
             }
         } else if (requestCode == REQUEST_CODE_NOTIFICATION) {
             // Notification permission is optional, continue regardless
@@ -223,8 +264,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Overlay granted, continue the chain
                 checkPermissionsAndStart();
             } else {
-                Toast.makeText(this, "悬浮窗权限未授予", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == REQUEST_CODE_MOCK_APP) {
+            checkPermissionsAndStart();
         }
     }
 
@@ -284,13 +327,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (position < 0) return;
         final LocBookmark bookmark = mAdapter.getItem(position);
         new AlertDialog.Builder(this)
-                .setTitle("Delete " + bookmark.toString())
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.delete_bookmark_title) + " " + bookmark.getName())
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         DbUtils.deleteBookmark(bookmark);
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

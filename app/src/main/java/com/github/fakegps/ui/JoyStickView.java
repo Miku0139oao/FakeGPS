@@ -63,7 +63,7 @@ public class JoyStickView extends FrameLayout {
         //the real width and height is needed, or the view cannot be shown
         mWindowLayoutParams.width = mViewWidth;
         mWindowLayoutParams.height = mViewHeight;
-        mWindowLayoutParams.x = ScreenUtils.getScreenWidth(context);
+        mWindowLayoutParams.x = Math.max(0, ScreenUtils.getScreenWidth(context) - mViewWidth);
         mWindowLayoutParams.y = ScreenUtils.getScreenHeight(context) / 2;
 
         findViewById(R.id.btn_set_loc).setOnClickListener(mOnClickListener);
@@ -93,13 +93,25 @@ public class JoyStickView extends FrameLayout {
     }
 
     public void addToWindow() {
-        mWindowManager.addView(this, mWindowLayoutParams);
-        isShowing = true;
+        try {
+            mWindowManager.addView(this, mWindowLayoutParams);
+            isShowing = true;
+        } catch (Exception e) {
+            // Overlay permission can be revoked between the check and this call.
+            isShowing = false;
+        }
     }
 
     public void removeFromWindow() {
-        mWindowManager.removeView(this);
-        isShowing = false;
+        try {
+            if (isAttachedToWindow()) {
+                mWindowManager.removeView(this);
+            }
+        } catch (Exception e) {
+            // The system may already have detached the window.
+        } finally {
+            isShowing = false;
+        }
     }
 
     public boolean isShowing() {
