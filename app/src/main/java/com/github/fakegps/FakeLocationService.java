@@ -62,7 +62,8 @@ public class FakeLocationService extends Service {
         }
         // Keep the 1 Hz injection loop running while the screen is off.
         // This is user-initiated and released when the service is stopped.
-        if (mWakeLock != null && !mWakeLock.isHeld()) {
+        if (SettingsStore.keepRunningWithScreenOff(this)
+                && mWakeLock != null && !mWakeLock.isHeld()) {
             mWakeLock.acquire();
         }
         // The mock loop lives in the app process, not in this service. Restarting

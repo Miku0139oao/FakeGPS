@@ -21,6 +21,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
   - [步驟 8 — 飛行模式](#步驟-8--飛行模式)
   - [步驟 9 — 書籤](#步驟-9--書籤)
   - [步驟 10 — 停止](#步驟-10--停止)
+  - [步驟 11 — 切換語言或主題](#步驟-11--切換語言或主題)
 - [疑難排解](#疑難排解)
 - [支援的座標格式](#支援的座標格式)
 - [常見問題](#常見問題)
@@ -38,7 +39,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 | 主畫面 | 地圖選點 | 飛行模式 |
 |---|---|---|
-| <img src="screenshot/guide-main.png" width="260" alt="主畫面"> | <img src="screenshot/guide-map.png" width="260" alt="地圖選點"> | <img src="screenshot/guide-fly.png" width="260" alt="飛行模式"> |
+| <img src="screenshot/guide-main-zh.png" width="260" alt="主畫面"> | <img src="screenshot/guide-map-zh.png" width="260" alt="地圖選點"> | <img src="screenshot/guide-fly-zh.png" width="260" alt="飛行模式"> |
 
 ## 保姆級逐步教學
 
@@ -93,14 +94,16 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 <img src="screenshot/guide-dev-options.png" width="320" alt="開發人員選項顯示 Mock location app: FakeGPS">
 
+<img src="screenshot/guide-mock-app.png" width="320" alt="Select application 清單顯示 FakeGPS">
+
 如果清單中**找不到 FakeGPS**：
 
+- 請安裝本 repo 的最新 APK。此版本在所有 API 等級都宣告
+  `ACCESS_MOCK_LOCATION`；Android 的 picker 會用這個權限過濾，舊版帶
+  `maxSdkVersion="22"` 時可能只顯示「Nothing」。
 - 先從應用程式抽屜開啟 FakeGPS 一次（清單通常要等 App 啟動過才會更新）。
 - 確認 App 已安裝在目前使用者，且沒有被停用。
 - 使用開發人員選項右上角的搜尋圖示，輸入「模擬定位」。
-- 部分 ROM 要完全開啟開發人員選項後才會顯示此項目。
-
-> 上圖來自測試模擬器；一般手機的選單會列出 FakeGPS。
 
 ### 步驟 4 — 授予權限
 
@@ -114,7 +117,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 如果 App 提示尚未被選為模擬定位應用程式，點 **開啟設定**，選擇 FakeGPS，再按一次 **Start**。
 
-<img src="screenshot/guide-main.png" width="320" alt="FakeGPS 主畫面">
+<img src="screenshot/guide-main-zh.png" width="320" alt="FakeGPS 主畫面">
 
 ### 步驟 5 — 啟動並驗證
 
@@ -153,12 +156,17 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 ### 步驟 7 — 在地圖上選點
 
 1. 在主畫面或飛行畫面，點擊座標欄位旁的 **MAP**。
-2. 拖曳／縮放地圖，然後 **點擊**、**長按** 或 **拖曳 marker**。
-3. 底部面板會顯示目前選取的座標。
-4. 按 **Use this location** 回填欄位，或按 **Cancel** 返回。
+2. 在頂部搜尋列**輸入地址或地點**（例如 `Shibuya, Tokyo`）。優先使用 Android Geocoder，失敗時改用 OpenStreetMap Nominatim；不需要 API key，兩者都需要網路。
+3. 點選搜尋結果，標記與地圖會移到該地點。
+4. 拖曳／縮放地圖，然後 **點擊**、**長按** 或 **拖曳 marker**。
+5. 底部面板會顯示目前選取的座標。
+6. 按 **Use this location** 回填欄位，或按 **Cancel** 返回。
 
-<img src="screenshot/guide-map.png" width="320" alt="地圖選點">
+<img src="screenshot/guide-search.png" width="320" alt="地址搜尋結果">
 
+<img src="screenshot/guide-map-zh.png" width="320" alt="地圖選點">
+
+- 搜尋結果來自 Android geocoder 或 OpenStreetMap Nominatim。
 - 地圖圖磚來自 **OpenStreetMap**，需要網路連線。
 - 沒有網路時仍可輸入座標或使用目前的地圖位置。
 - 標示：© OpenStreetMap 貢獻者。
@@ -171,7 +179,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 4. 按 **Start Fly**：位置會在指定時間內從 From **線性**移動到 To；按 **Stop Fly** 可提前停止。
 5. 使用前必須先啟動 mock location（按過 Start）。
 
-<img src="screenshot/guide-fly.png" width="320" alt="飛行模式">
+<img src="screenshot/guide-fly-zh.png" width="320" alt="飛行模式">
 
 ### 步驟 9 — 書籤
 
@@ -190,6 +198,32 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 4. 重新開機。
 
 停止後浮動搖桿會消失，模擬定位也會移除。App 可能會保留最後的座標供下次開啟使用。
+
+### 步驟 11 — 切換語言或主題
+
+點擊主畫面右上角的 **齒輪圖示**。設定頁可以調整：
+
+- **語言** — 系統預設、English、繁體中文、简体中文、日本語、한국어、
+  Español、Français、Deutsch、Português (Brasil)。切換後立即生效並會記住；
+  Android 13+ 也會同步到系統的「應用程式語言」設定。
+- **主題** — 跟隨系統、淺色、深色。
+- **螢幕關閉時繼續執行** — 模擬定位期間持有 partial wake lock（較耗電）。
+  若希望螢幕休眠時暫停注入，可關閉此選項。
+
+<img src="screenshot/guide-settings-zh.png" width="320" alt="設定：語言、主題、wake lock、連結">
+
+同一頁也提供原始碼、疑難排解連結，以及包含版本與 OpenStreetMap 標示的「關於」對話框。
+
+## v2.1.0 更新內容
+
+- **Material 3 介面**：狀態卡片、外框輸入框、卡片式書籤、底部操作列、地圖浮動控制，以及現代化的浮動搖桿。
+- **內建語言選擇器，支援 9 種語系**：English、繁體中文、简体中文、日本語、한국어、Español、Français、Deutsch、Português (Brasil)，外加系統預設。
+- **設定頁**：語言、淺色／深色／跟隨系統主題、wake lock 偏好、原始碼／說明連結、關於。
+- **地圖地址／地點搜尋**：優先使用 Android Geocoder，失敗時改用 OpenStreetMap Nominatim，不需要 API key；點選結果即可移動 marker。
+- **修正 mock app picker**：`ACCESS_MOCK_LOCATION` 現在在所有 API 等級宣告。Android 15/16 的 picker 會用這個權限過濾，舊版帶 `maxSdkVersion="22"` 時可能只顯示「Nothing」；現在 FakeGPS 會出現在清單中。
+- **Android 16**：compileSdk/targetSdk 36、AGP 8.13.2、Gradle 8.14.7。
+- Edge-to-edge 系統列與 IME insets，內容不再被狀態列、導覽列或鍵盤遮住。
+- 真實 speed/bearing、以公尺計算的 Move Step、`geo:`／地圖連結／DMS 輸入、R8 壓縮後的 release APK（約 1 MB），以及強化的 CI。
 
 ## 疑難排解
 
@@ -282,7 +316,7 @@ keyPassword=...
 - **飛行模式**：在指定時間內以真實經過時間做線性插值。
 - 浮動搖桿，以公尺為單位移動；點擊或長按方向鍵。
 - 書籤：點擊使用、長按刪除。
-- 視覺化地圖選點（OpenStreetMap，不需 API key、不需 Google Play Services）。
+- 視覺化地圖選點（OpenStreetMap，不需 API key、不需 Google Play Services），並支援地址／地點搜尋（Android Geocoder 或 Nominatim）。
 - 由連續定位計算真實 speed / bearing。
 - 座標輸入支援純文字、`geo:` URI、地圖連結與 DMS。
 - 支援 Android 5.0–16（API 21–36）、targetSdk 36、edge-to-edge。

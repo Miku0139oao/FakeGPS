@@ -1,63 +1,81 @@
 package com.github.fakegps.ui;
 
-import android.content.DialogInterface;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.fakegps.BookmarkEvents;
 import com.github.fakegps.DbUtils;
 import com.github.fakegps.model.LocBookmark;
 import com.github.fakegps.model.LocPoint;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tencent.fakegps.R;
 
+import java.util.List;
+
 /**
- * Shared bookmark list, context menu, and refresh handling for the main and
- * flight screens.
+ * Shared bookmark list and refresh handling for the main and flight screens.
  */
 public abstract class BaseBookmarkActivity extends AppCompatActivity
-        implements BookmarkEvents.Listener {
-
-    protected static final int DELETE_ID = 1001;
+        implements BookmarkEvents.Listener, BookmarkAdapter.Listener {
 
     protected BookmarkAdapter mAdapter;
 
-    protected void initBookmarkList(ListView listView) {
+    private RecyclerView mRecyclerView;
+    private View mEmptyView;
+    private View mEmptyHint;
+
+    protected void initBookmarkList(RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
         mAdapter = new BookmarkAdapter(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(mAdapter);
+        mEmptyView = findViewById(R.id.empty_view);
+        mEmptyHint = findViewById(R.id.empty_hint);
         // onStart() loads the list; avoid a duplicate query during onCreate.
-        listView.setAdapter(mAdapter);
-
-        View emptyView = findViewById(R.id.empty_view);
-        if (emptyView != null) {
-            listView.setEmptyView(emptyView);
-        }
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LocPoint locPoint = mAdapter.getItem(position).getLocPoint();
-                onBookmarkSelected(locPoint);
-            }
-        });
-
-        registerForContextMenu(listView);
     }
 
-    /**
-     * Called when the user taps a bookmark in the list.
-     */
     protected abstract void onBookmarkSelected(LocPoint locPoint);
 
     protected void reloadBookmarks() {
-        if (mAdapter != null) {
-            mAdapter.setLocBookmarkList(DbUtils.getAllBookmark());
+        if (mAdapter == null) {
+            return;
         }
+        List<LocBookmark> bookmarks = DbUtils.getAllBookmark();
+        mAdapter.setItems(bookmarks);
+        boolean empty = bookmarks.isEmpty();
+        if (mRecyclerView != null) {
+            mRecyclerView.setVisibility(empty ? View.GONE : View.VISIBLE);
+        }
+        if (mEmptyView != null) {
+            mEmptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
+        }
+        if (mEmptyHint != null) {
+            mEmptyHint.setVisibility(empty ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    public void onBookmarkClick(LocBookmark bookmark) {
+        onBookmarkSelected(bookmark.getLocPoint());
+    }
+
+    @Override
+    public void onBookmarkLongClick(LocBookmark bookmark) {
+        confirmDelete(bookmark);
+    }
+
+    private void confirmDelete(final LocBookmark bookmark) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.delete_bookmark_title) + " " + bookmark.getName())
+                .setPositiveButton(R.string.delete, (dialog, which) ->
+                        DbUtils.deleteBookmark(bookmark))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     @Override
@@ -76,41 +94,5 @@ public abstract class BaseBookmarkActivity extends AppCompatActivity
     @Override
     public void onBookmarksChanged() {
         reloadBookmarks();
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
-        menu.add(Menu.NONE, DELETE_ID, Menu.NONE, R.string.menu_delete);
-        super.onCreateContextMenu(menu, view, menuInfo);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == DELETE_ID) {
-            AdapterView.AdapterContextMenuInfo info =
-                    (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            confirmDelete(info.position);
-            return true;
-        }
-        return super.onContextItemSelected(item);
-    }
-
-    private void confirmDelete(final int position) {
-        if (position < 0 || mAdapter == null || position >= mAdapter.getCount()) {
-            return;
-        }
-        final LocBookmark bookmark = mAdapter.getItem(position);
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.delete_bookmark_title) + " " + bookmark.getName())
-                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // DbUtils notifies BookmarkEvents, which reloads the list.
-                        DbUtils.deleteBookmark(bookmark);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
     }
 }

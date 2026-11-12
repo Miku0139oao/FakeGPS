@@ -1,37 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="@dimen/joystick_width"
               android:layout_height="@dimen/joystick_height"
-              android:orientation="vertical">
+              android:background="@drawable/bg_joystick_panel"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              android:padding="12dp">
 
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_marginBottom="15dp"
-                  android:gravity="center_horizontal"
-                  android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_set_loc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_joystick_button"
+            android:contentDescription="@string/cd_set_location"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_set_loc"
-            android:contentDescription="@string/cd_set_location"/>
+            app:tint="@color/brand_on_surface"/>
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_fly_to"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_joystick_button"
+            android:contentDescription="@string/cd_fly_to"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_flight_takeoff"
-            android:contentDescription="@string/cd_fly_to"/>
+            app:tint="@color/brand_on_surface"/>
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_bookmark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_joystick_button"
+            android:contentDescription="@string/cd_bookmark"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_bookmark"
-            android:contentDescription="@string/cd_bookmark"/>
-
-
+            app:tint="@color/brand_on_surface"/>
     </LinearLayout>
 
     <include
@@ -39,5 +56,4 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
-
 </LinearLayout>

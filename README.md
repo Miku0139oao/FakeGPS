@@ -25,6 +25,7 @@ map. **No root is required** — it uses the standard Android mock-location API.
   - [Step 8 — Flight mode](#step-8--flight-mode)
   - [Step 9 — Bookmarks](#step-9--bookmarks)
   - [Step 10 — Stop](#step-10--stop)
+  - [Step 11 — Change language or theme](#step-11--change-language-or-theme)
 - [Troubleshooting](#troubleshooting)
 - [Accepted coordinate formats](#accepted-coordinate-formats)
 - [FAQ](#faq)
@@ -114,17 +115,19 @@ OEM paths:
 
 <img src="screenshot/guide-dev-options.png" width="320" alt="Developer options showing Mock location app: FakeGPS">
 
+<img src="screenshot/guide-mock-app.png" width="320" alt="Select application screen listing FakeGPS">
+
 If **FakeGPS is missing from the list**:
 
+- Install the latest APK from this repository. This build declares
+  `ACCESS_MOCK_LOCATION` on all API levels — the Android picker filters by that
+  permission, and older builds with `maxSdkVersion="22"` could show only
+  "Nothing".
 - Open FakeGPS once from the app drawer (the picker only updates after the app
   has been launched once).
 - Make sure the app is installed for the current user and not disabled.
 - Use the magnifier/search icon in Developer options and search for
   "mock location".
-- Some ROMs hide the picker until Developer options are fully enabled.
-
-> The emulator screenshot above is from a test ROM; on a normal phone the
-> picker lists FakeGPS as an option.
 
 ### Step 4 — Grant permissions
 
@@ -183,12 +186,19 @@ somewhere convenient.
 ### Step 7 — Pick a location on the map
 
 1. On the main or flight screen, tap **MAP** next to a location field.
-2. Pan/zoom the map, then **tap**, **long-press**, or **drag the marker**.
-3. The bottom panel shows the selected coordinates.
-4. Tap **Use this location** to fill the field, or **Cancel** to go back.
+2. **Search by address or place** in the search bar at the top (for example
+   `Shibuya, Tokyo`). Android's Geocoder is used first, with OpenStreetMap
+   Nominatim as a fallback. No API key is required; both need a network.
+3. Tap a result to move the marker and camera to that place.
+4. Pan/zoom the map, then **tap**, **long-press**, or **drag the marker**.
+5. The bottom panel shows the selected coordinates.
+6. Tap **Use this location** to fill the field, or **Cancel** to go back.
+
+<img src="screenshot/guide-search.png" width="320" alt="Address search results">
 
 <img src="screenshot/guide-map.png" width="320" alt="Map picker">
 
+- Search results come from Android's geocoder or OpenStreetMap Nominatim.
 - Map tiles come from **OpenStreetMap** and need a network connection.
 - The coordinates still work offline; if tiles cannot load, you can type a
   coordinate or use the map position.
@@ -225,6 +235,44 @@ Use any of these:
 
 After stopping, the floating joystick disappears and the mock location is
 removed. The app may keep the last coordinates for the next launch.
+
+### Step 11 — Change language or theme
+
+Tap the **gear icon** in the top-right corner of the main screen. Settings lets
+you change:
+
+- **Language** — System default, English, 繁體中文, 简体中文, 日本語, 한국어,
+  Español, Français, Deutsch, Português (Brasil). The choice is applied
+  immediately and remembered. On Android 13+ it also appears in the system
+  per-app language settings.
+- **Theme** — Follow system, Light, or Dark.
+- **Keep running with screen off** — holds a partial wake lock while mock
+  location is active (uses more battery). Turn it off if you prefer the
+  injection loop to pause when the device sleeps.
+
+<img src="screenshot/guide-settings.png" width="320" alt="Settings: language, theme, wake lock, links">
+
+The same screen links to the source code and the troubleshooting guide, and
+shows the About dialog with the version and OpenStreetMap attribution.
+
+## What's new in v2.1.0
+
+- **Material 3 UI**: status card, outlined inputs, card-based bookmarks, bottom
+  action bar, floating map controls, and a modern floating joystick.
+- **In-app language picker with 9 locales** (English, 繁體中文, 简体中文, 日本語,
+  한국어, Español, Français, Deutsch, Português (Brasil)) plus system default.
+- **Settings screen**: language, light/dark/system theme, wake-lock preference,
+  source/help links, and About.
+- **Address/place search** on the map: Android Geocoder first, OpenStreetMap
+  Nominatim fallback, no API key. Pick a result to move the marker.
+- **Mock-app picker fix**: `ACCESS_MOCK_LOCATION` is now declared on all API
+  levels. The Android 15/16 picker filters by that permission, so builds with
+  `maxSdkVersion="22"` could show only "Nothing"; FakeGPS now appears.
+- **Android 16 ready**: compileSdk/targetSdk 36, AGP 8.13.2, Gradle 8.14.7.
+- Edge-to-edge system-bar and IME insets; no more content under the status bar,
+  navigation bar, or keyboard.
+- Real speed/bearing, meter-based Move Step, `geo:`/map-link/DMS input,
+  R8-minified release APK (~1 MB), and a hardened CI pipeline.
 
 ## Troubleshooting
 
@@ -323,13 +371,16 @@ Keep the keystore and this file outside version control. Verify the result with
 
 ## Features
 
+- Modern **Material 3** UI with light and dark themes.
+- **9 languages** with an in-app picker and Android 13+ per-app language support.
 - Simulates a GPS device and outputs a location every second.
 - **Jump mode**: jump to a new location instantly.
 - **Flight mode**: move linearly from one coordinate to another over a chosen
   duration, with real elapsed-time interpolation.
 - Floating joystick with meter-based movement; tap or long-press the arrows.
 - Bookmarks with tap-to-use and long-press-to-delete.
-- Visual map picker (OpenStreetMap, no API key, no Google Play Services).
+- Visual map picker (OpenStreetMap, no API key, no Google Play Services), with
+  address/place search via Android Geocoder or Nominatim.
 - Real speed and bearing derived from consecutive fixes.
 - Coordinate input from plain text, `geo:` URIs, map links, and DMS.
 - Works on Android 5.0–16 (API 21–36), targetSdk 36, edge-to-edge.

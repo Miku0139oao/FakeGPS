@@ -1,10 +1,29 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <!-- Material 3 application theme. -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/brand_on_primary</item>
+        <item name="colorPrimaryContainer">@color/brand_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/brand_on_primary_container</item>
+        <item name="colorSecondary">@color/brand_secondary</item>
+        <item name="colorOnSecondary">@color/brand_on_secondary</item>
+        <item name="colorSurface">@color/brand_surface</item>
+        <item name="colorOnSurface">@color/brand_on_surface</item>
+        <item name="colorSurfaceVariant">@color/brand_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/brand_on_surface_variant</item>
+        <item name="colorControlNormal">?attr/colorOnSurface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.Dialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/brand_on_primary</item>
+        <item name="colorPrimaryContainer">@color/brand_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/brand_on_primary_container</item>
+        <item name="colorSurface">@color/brand_surface</item>
+        <item name="colorOnSurface">@color/brand_on_surface</item>
     </style>
 
 </resources>

@@ -1,29 +1,34 @@
 package com.github.fakegps.ui;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.fakegps.DbUtils;
 import com.github.fakegps.FakeGpsUtils;
 import com.github.fakegps.JoyStickManager;
 import com.github.fakegps.model.LocPoint;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tencent.fakegps.R;
 
 public class MainActivity extends BaseBookmarkActivity implements View.OnClickListener {
@@ -45,6 +50,9 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
     private EditText mMoveStepEditText;
     private Button mBtnStart;
     private Button mBtnSetNew;
+    private TextView mStatusView;
+    private TextView mStatusHint;
+    private TextView mCoordsView;
 
     // Pending start params - saved while requesting permissions
     private LocPoint mPendingStartPoint;
@@ -55,7 +63,20 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         UiUtils.enableEdgeToEdge(this, R.id.root);
-        setSupportActionBar(findViewById(R.id.toolbar));
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_settings) {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+            return false;
+        });
+        tintMenuIcon(toolbar.getMenu().findItem(R.id.action_settings));
+
+        mStatusView = findViewById(R.id.tv_status);
+        mStatusHint = findViewById(R.id.tv_status_hint);
+        mCoordsView = findViewById(R.id.tv_current_coords);
 
         //location input
         mLocEditText = (EditText) findViewById(R.id.inputLoc);
@@ -81,16 +102,13 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
 
         mBtnStart = (Button) findViewById(R.id.btn_start);
         mBtnStart.setOnClickListener(this);
-        updateBtnStart();
-
         mBtnSetNew = (Button) findViewById(R.id.btn_set_loc);
         mBtnSetNew.setOnClickListener(this);
-        updateBtnSetNew();
-
         findViewById(R.id.btn_pick_map).setOnClickListener(this);
+        findViewById(R.id.btn_copy).setOnClickListener(this);
+        findViewById(R.id.btn_save_current).setOnClickListener(this);
 
-        ListView listView = (ListView) findViewById(R.id.list_bookmark);
-        initBookmarkList(listView);
+        initBookmarkList((RecyclerView) findViewById(R.id.list_bookmark));
 
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(KEY_PENDING_LAT)
@@ -106,6 +124,20 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
                 checkPermissionsAndStart();
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateStatus();
+        updateButtons();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus();
+        updateButtons();
     }
 
     @Override
@@ -143,7 +175,6 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
                 return;
             }
 
-            // Save pending params and start permission check chain
             mPendingStartPoint = point;
             mPendingStartStep = step;
             checkPermissionsAndStart();
@@ -157,6 +188,7 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
             if (step > 0 && point != null) {
                 JoyStickManager.get().setMoveStep(step);
                 JoyStickManager.get().jumpToLocation(point);
+                updateStatus();
             } else {
                 Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
             }
@@ -166,7 +198,58 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
                 point = JoyStickManager.get().getCurrentLocPoint();
             }
             MapPickerActivity.startForResult(this, REQUEST_CODE_MAP, point);
+        } else if (id == R.id.btn_copy) {
+            LocPoint point = currentOrEnteredPoint();
+            if (point != null) {
+                FakeGpsUtils.copyToClipboard(this, point.toString());
+                Toast.makeText(this, getString(R.string.location_copied) + "\n" + point,
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
+            }
+        } else if (id == R.id.btn_save_current) {
+            LocPoint point = currentOrEnteredPoint();
+            if (point != null) {
+                BookmarkActivity.startPage(this, getString(R.string.bookmark), point);
+            } else {
+                Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
+            }
         }
+    }
+
+    private void tintMenuIcon(MenuItem item) {
+        if (item == null) {
+            return;
+        }
+        Drawable icon = item.getIcon();
+        if (icon != null) {
+            icon = DrawableCompat.wrap(icon.mutate());
+            DrawableCompat.setTint(icon,
+                    ContextCompat.getColor(this, R.color.brand_on_surface));
+            item.setIcon(icon);
+        }
+    }
+
+    private LocPoint currentOrEnteredPoint() {
+        LocPoint point = JoyStickManager.get().getCurrentLocPoint();
+        if (point == null) {
+            point = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
+        }
+        return point;
+    }
+
+    private void updateStatus() {
+        boolean started = JoyStickManager.get().isStarted();
+        mStatusView.setText(started ? R.string.status_active : R.string.status_inactive);
+        mStatusHint.setVisibility(started ? View.GONE : View.VISIBLE);
+        LocPoint point = currentOrEnteredPoint();
+        mCoordsView.setText(point != null ? point.toString() : "—");
+    }
+
+    private void updateButtons() {
+        mBtnStart.setText(JoyStickManager.get().isStarted()
+                ? R.string.btn_stop : R.string.btn_start);
+        mBtnSetNew.setEnabled(JoyStickManager.get().isStarted());
     }
 
     /**
@@ -204,16 +287,13 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
         // Step 3: Check overlay permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                new AlertDialog.Builder(this)
+                new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.overlay_permission_title)
                         .setMessage(R.string.overlay_permission_message)
-                        .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                        Uri.parse("package:" + getPackageName()));
-                                startActivityForResult(intent, REQUEST_CODE_OVERLAY);
-                            }
+                        .setPositiveButton(R.string.go_to_settings, (dialog, which) -> {
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:" + getPackageName()));
+                            startActivityForResult(intent, REQUEST_CODE_OVERLAY);
                         })
                         .setNegativeButton(R.string.cancel, null)
                         .show();
@@ -224,21 +304,18 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
         // Step 4: Check that the user picked FakeGPS as the mock location app.
         // Without this every provider call fails silently.
         if (!FakeGpsUtils.isMockLocationAppSelected(this)) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.mock_app_required_title)
                     .setMessage(R.string.mock_app_required_message)
-                    .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                startActivityForResult(
-                                        new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
-                                        REQUEST_CODE_MOCK_APP);
-                            } catch (Exception e) {
-                                startActivityForResult(
-                                        new Intent(Settings.ACTION_SETTINGS),
-                                        REQUEST_CODE_MOCK_APP);
-                            }
+                    .setPositiveButton(R.string.go_to_settings, (dialog, which) -> {
+                        try {
+                            startActivityForResult(
+                                    new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
+                                    REQUEST_CODE_MOCK_APP);
+                        } catch (Exception e) {
+                            startActivityForResult(
+                                    new Intent(Settings.ACTION_SETTINGS),
+                                    REQUEST_CODE_MOCK_APP);
                         }
                     })
                     .setNegativeButton(R.string.cancel, null)
@@ -246,7 +323,6 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
             return;
         }
 
-        // All permissions granted, start!
         doStart();
     }
 
@@ -267,7 +343,6 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
             boolean coarseGranted = grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED;
             if (coarseGranted) {
-                // Location granted, continue checking next permission
                 checkPermissionsAndStart();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -276,7 +351,6 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
                 Toast.makeText(this, R.string.location_permission_required, Toast.LENGTH_LONG).show();
             }
         } else if (requestCode == REQUEST_CODE_NOTIFICATION) {
-            // Notification permission is optional, continue regardless
             checkPermissionsAndStart();
         }
     }
@@ -286,14 +360,12 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_OVERLAY) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this)) {
-                // Overlay granted, continue the chain
                 checkPermissionsAndStart();
             } else {
                 Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == REQUEST_CODE_MOCK_APP) {
-            checkPermissionsAndStart();
-        } else if (requestCode == REQUEST_CODE_APP_SETTINGS) {
+        } else if (requestCode == REQUEST_CODE_MOCK_APP
+                || requestCode == REQUEST_CODE_APP_SETTINGS) {
             checkPermissionsAndStart();
         } else if (requestCode == REQUEST_CODE_MAP && resultCode == RESULT_OK && data != null) {
             double latitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LAT, Double.NaN);
@@ -301,6 +373,7 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
             if (FakeGpsUtils.isValidLatitude(latitude) && FakeGpsUtils.isValidLongitude(longitude)) {
                 mLocEditText.setText(new LocPoint(latitude, longitude).toString());
                 mLocEditText.setSelection(mLocEditText.getText().length());
+                updateStatus();
             }
         }
     }
@@ -308,34 +381,20 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
     @Override
     protected void onBookmarkSelected(LocPoint locPoint) {
         mLocEditText.setText(locPoint != null ? locPoint.toString() : "");
+        updateStatus();
     }
 
     private void showLocationSettingsDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.location_permission_required)
                 .setMessage(R.string.location_permission_settings_message)
-                .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, REQUEST_CODE_APP_SETTINGS);
-                    }
+                .setPositiveButton(R.string.go_to_settings, (dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, REQUEST_CODE_APP_SETTINGS);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();
-    }
-
-    private void updateBtnStart() {
-        if (JoyStickManager.get().isStarted()) {
-            mBtnStart.setText(R.string.btn_stop);
-        } else {
-            mBtnStart.setText(R.string.btn_start);
-        }
-    }
-
-    private void updateBtnSetNew() {
-        mBtnSetNew.setEnabled(JoyStickManager.get().isStarted());
     }
 
     public static void startPage(android.content.Context context) {

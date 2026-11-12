@@ -3,6 +3,8 @@ package com.github.fakegps;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.litesuits.orm.LiteOrm;
 import com.tencent.fakegps.BuildConfig;
 
@@ -30,6 +32,8 @@ public class FakeGpsApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        AppCompatDelegate.setDefaultNightMode(
+                SettingsStore.nightModeFor(SettingsStore.getTheme(this)));
         if (BuildConfig.DEBUG) {
             initLogger();
         }

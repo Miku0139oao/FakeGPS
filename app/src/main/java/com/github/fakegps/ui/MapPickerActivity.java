@@ -10,12 +10,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.fakegps.AddressSearch;
 import com.github.fakegps.model.LocPoint;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.tencent.fakegps.R;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -25,7 +34,10 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.views.overlay.Marker;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Visual location picker backed by OpenStreetMap tiles (osmdroid).
@@ -49,6 +61,11 @@ public class MapPickerActivity extends AppCompatActivity {
     private double mLongitude = DEFAULT_LON;
     private long mLastDragTextUpdateMs = 0;
 
+    private TextInputLayout mSearchLayout;
+    private TextInputEditText mSearchInput;
+    private final ExecutorService mSearchExecutor = Executors.newSingleThreadExecutor();
+    private int mSearchRequestId = 0;
+
     public static void startForResult(Activity activity, int requestCode, LocPoint point) {
         double lat = point != null ? point.getLatitude() : DEFAULT_LAT;
         double lon = point != null ? point.getLongitude() : DEFAULT_LON;
@@ -64,10 +81,9 @@ public class MapPickerActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_map_picker);
         UiUtils.enableEdgeToEdge(this, R.id.root);
-        setSupportActionBar(findViewById(R.id.toolbar));
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(R.string.map_picker_title);
-        }
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(view -> finish());
 
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra(EXTRA_LAT, DEFAULT_LAT);
@@ -87,6 +103,17 @@ public class MapPickerActivity extends AppCompatActivity {
 
         mSelectedView = (TextView) findViewById(R.id.tv_selected);
         mHintView = (TextView) findViewById(R.id.tv_map_hint);
+
+        mSearchLayout = findViewById(R.id.searchLayout);
+        mSearchInput = findViewById(R.id.inputSearch);
+        mSearchLayout.setEndIconOnClickListener(view -> performSearch());
+        mSearchInput.setOnEditorActionListener((view, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                performSearch();
+                return true;
+            }
+            return false;
+        });
 
         TextView attribution = (TextView) findViewById(R.id.tv_osm_attribution);
         attribution.setOnClickListener(new View.OnClickListener() {
@@ -167,6 +194,14 @@ public class MapPickerActivity extends AppCompatActivity {
                 finish();
             }
         });
+        findViewById(R.id.btn_recenter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mMarker != null) {
+                    mMapView.getController().animateTo(mMarker.getPosition());
+                }
+            }
+        });
 
         updateSelectedText();
         updateNetworkHint();
@@ -216,6 +251,66 @@ public class MapPickerActivity extends AppCompatActivity {
         if (mSelectedView != null) {
             mSelectedView.announceForAccessibility(mSelectedView.getText());
         }
+    }
+
+    private void performSearch() {
+        String query = mSearchInput.getText() == null
+                ? "" : mSearchInput.getText().toString().trim();
+        if (TextUtils.isEmpty(query)) {
+            mSearchLayout.setError(getString(R.string.search_empty));
+            return;
+        }
+        mSearchLayout.setError(null);
+        mSearchLayout.setHelperText(getString(R.string.searching));
+        final int requestId = ++mSearchRequestId;
+        mSearchExecutor.execute(() -> {
+            List<AddressSearch.Result> results = AddressSearch.search(this, query);
+            runOnUiThread(() -> {
+                if (requestId != mSearchRequestId || isFinishing()) {
+                    return;
+                }
+                mSearchLayout.setHelperText(null);
+                showSearchResults(results);
+            });
+        });
+    }
+
+    private void showSearchResults(List<AddressSearch.Result> results) {
+        if (results == null || results.isEmpty()) {
+            Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show();
+            return;
+        }
+        final String[] labels = new String[results.size()];
+        for (int i = 0; i < results.size(); i++) {
+            labels[i] = results.get(i).label;
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.search_results_title)
+                .setItems(labels, (dialog, which) -> {
+                    AddressSearch.Result result = results.get(which);
+                    GeoPoint point = new GeoPoint(result.latitude, result.longitude);
+                    mMapView.getController().animateTo(point);
+                    mMapView.getController().setZoom(16.0);
+                    selectPoint(point);
+                    hideKeyboard();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm =
+                (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(mSearchInput.getWindowToken(), 0);
+        }
+        mSearchInput.clearFocus();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mSearchExecutor.shutdownNow();
+        super.onDestroy();
     }
 
     private void updateSelectedCoordinates(GeoPoint point) {

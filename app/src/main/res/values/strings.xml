@@ -14,6 +14,7 @@
     <string name="move_step_hint">Move Step (meters)</string>
     <string name="loc_input_hint">Lat/Lon, geo: or map URL</string>
     <string name="location">Location:</string>
+    <string name="location_hint">Latitude, longitude</string>
     <string name="fly_time">Fly Time(s)</string>
     <string name="bookmark_name">Bookmark Name</string>
     <string name="no_data">No Bookmarks</string>
@@ -55,15 +56,15 @@
 
     <string name="map_picker_title">Pick Location</string>
     <string name="pick_on_map">Map</string>
-    <string name="use_this_location">Use this location</string>
+    <string name="use_this_location">Use location</string>
     <string name="map_hint">Tap, long-press, or drag the marker to choose a location. Map tiles need a network connection; coordinates still work offline.</string>
     <string name="map_offline">No network connection: tiles may not load, but you can still pick a coordinate.</string>
     <string name="map_selected">Selected: %1$s</string>
     <string name="map_attribution">© OpenStreetMap contributors</string>
     <string name="map_content_description">Map. Tap or long-press to choose a location, or drag the marker to adjust it.</string>
 
-    <string name="from_label">From:</string>
-    <string name="to_label">To:</string>
+    <string name="from_label">From</string>
+    <string name="to_label">To</string>
     <string name="cd_arrow_up">Move north</string>
     <string name="cd_arrow_down">Move south</string>
     <string name="cd_arrow_left">Move west</string>
@@ -71,5 +72,49 @@
     <string name="cd_set_location">Set location</string>
     <string name="cd_fly_to">Fly to location</string>
     <string name="cd_bookmark">Save bookmark</string>
+
+    <string name="app_tagline">Mock GPS for testing</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_help">Help</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_keep_running">Keep running with screen off</string>
+    <string name="settings_keep_running_desc">Holds a wake lock while mock location is active. Uses more battery.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_source">Source code</string>
+    <string name="settings_help">Help &amp; troubleshooting</string>
+    <string name="settings_osm_attribution">Map data © OpenStreetMap contributors</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="status_active">Mock location active</string>
+    <string name="status_inactive">Mock location stopped</string>
+    <string name="status_hint">Start to inject the selected location.</string>
+    <string name="current_location">Current location</string>
+    <string name="coordinates_label">Coordinates</string>
+    <string name="copy_coordinates">Copy</string>
+    <string name="open_map">Map</string>
+    <string name="bookmarks_title">Bookmarks</string>
+    <string name="bookmarks_empty">No bookmarks yet</string>
+    <string name="bookmarks_empty_hint">Save the current location to reuse it later.</string>
+    <string name="save_current_location">Save current location</string>
+    <string name="route_title">Route</string>
+    <string name="fly_route_hint">The location moves linearly from From to To.</string>
+    <string name="recenter">Center on marker</string>
+    <string name="search_hint">Search address or place</string>
+    <string name="search_title">Search</string>
+    <string name="search_results_title">Search results</string>
+    <string name="search_no_results">No matching place found</string>
+    <string name="search_failed">Search failed. Check your network and try again.</string>
+    <string name="searching">Searching…</string>
+    <string name="search_empty">Enter an address or place name</string>
+    <string name="language_changed">Language changed</string>
+    <string name="dialog_close">Close</string>
+    <string name="ok">OK</string>
+    <string name="about_message">FakeGPS %1$s\n\nA no-root mock location app for Android 5.0–16.\n\nMap data © OpenStreetMap contributors.\n\nSource code: github.com/Miku0139oao/FakeGPS</string>
 
 </resources>

@@ -1,77 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/root"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/root"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="?attr/colorSurface"
+              android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:background="?attr/colorSurface"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:title="@string/map_picker_title"
+        app:titleTextColor="?attr/colorOnSurface"/>
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/map"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:contentDescription="@string/map_content_description"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/map_panel_background"
-        android:orientation="vertical"
-        android:padding="16dp">
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/map_content_description"/>
 
-        <TextView
-            android:id="@+id/tv_osm_attribution"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:text="@string/map_attribution"
-            android:textSize="11sp"/>
+            android:layout_gravity="top"
+            android:layout_margin="12dp"
+            app:cardCornerRadius="24dp">
 
-        <TextView
-            android:id="@+id/tv_selected"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/tv_map_hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/map_hint"
-            android:textSize="13sp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_cancel"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/cancel"/>
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-            <Button
-                android:id="@+id/btn_use"
-                android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/searchLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/search_hint"
+                    app:endIconContentDescription="@string/search_title"
+                    app:endIconDrawable="@drawable/ic_search"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:singleLine="true"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_recenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="104dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/recenter"
+            app:srcCompat="@drawable/ic_my_location"
+            app:tint="?attr/colorOnPrimaryContainer"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="12dp"
+            app:cardCornerRadius="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/use_this_location"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-</RelativeLayout>
+                <TextView
+                    android:id="@+id/tv_osm_attribution"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="end"
+                    android:text="@string/map_attribution"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"/>
+
+                <TextView
+                    android:id="@+id/tv_selected"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                    android:textSize="20sp"/>
+
+                <TextView
+                    android:id="@+id/tv_map_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/map_hint"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_cancel"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cancel"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_use"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/use_this_location"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
+</LinearLayout>

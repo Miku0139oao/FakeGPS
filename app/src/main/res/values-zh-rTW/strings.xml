@@ -14,6 +14,7 @@
     <string name="move_step_hint">移動步長（公尺）</string>
     <string name="loc_input_hint">緯度/經度、geo: 或地圖連結</string>
     <string name="location">地點：</string>
+    <string name="location_hint">緯度、經度</string>
     <string name="fly_time">飛行時間（秒）</string>
     <string name="bookmark_name">書籤名稱</string>
     <string name="no_data">沒有書籤</string>
@@ -62,8 +63,8 @@
     <string name="map_attribution">© OpenStreetMap 貢獻者</string>
     <string name="map_content_description">地圖。點擊或長按可選擇地點，或拖曳標記調整位置。</string>
 
-    <string name="from_label">起點：</string>
-    <string name="to_label">終點：</string>
+    <string name="from_label">起點</string>
+    <string name="to_label">終點</string>
     <string name="cd_arrow_up">向北移動</string>
     <string name="cd_arrow_down">向南移動</string>
     <string name="cd_arrow_left">向西移動</string>
@@ -71,5 +72,49 @@
     <string name="cd_set_location">設定地點</string>
     <string name="cd_fly_to">飛往地點</string>
     <string name="cd_bookmark">儲存書籤</string>
+
+    <string name="app_tagline">測試用模擬 GPS</string>
+    <string name="menu_settings">設定</string>
+    <string name="menu_help">說明</string>
+    <string name="settings_title">設定</string>
+    <string name="settings_language">語言</string>
+    <string name="settings_language_system">系統預設</string>
+    <string name="settings_theme">主題</string>
+    <string name="settings_theme_system">跟隨系統</string>
+    <string name="settings_theme_light">淺色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_keep_running">螢幕關閉時繼續執行</string>
+    <string name="settings_keep_running_desc">模擬定位期間持有 wake lock，會增加耗電。</string>
+    <string name="settings_about">關於</string>
+    <string name="settings_version">版本 %1$s</string>
+    <string name="settings_source">原始碼</string>
+    <string name="settings_help">說明與疑難排解</string>
+    <string name="settings_osm_attribution">地圖資料 © OpenStreetMap 貢獻者</string>
+    <string name="settings_saved">設定已儲存</string>
+    <string name="status_active">模擬定位已啟用</string>
+    <string name="status_inactive">模擬定位已停止</string>
+    <string name="status_hint">按「開始」注入目前選擇的位置。</string>
+    <string name="current_location">目前位置</string>
+    <string name="coordinates_label">座標</string>
+    <string name="copy_coordinates">複製</string>
+    <string name="open_map">地圖</string>
+    <string name="bookmarks_title">書籤</string>
+    <string name="bookmarks_empty">尚無書籤</string>
+    <string name="bookmarks_empty_hint">儲存目前位置，之後即可重複使用。</string>
+    <string name="save_current_location">儲存目前位置</string>
+    <string name="route_title">路線</string>
+    <string name="fly_route_hint">位置會從起點線性移動到終點。</string>
+    <string name="recenter">移到標記</string>
+    <string name="search_hint">搜尋地址或地點</string>
+    <string name="search_title">搜尋</string>
+    <string name="search_results_title">搜尋結果</string>
+    <string name="search_no_results">找不到符合的地點</string>
+    <string name="search_failed">搜尋失敗，請檢查網路後再試。</string>
+    <string name="searching">搜尋中…</string>
+    <string name="search_empty">請輸入地址或地點名稱</string>
+    <string name="language_changed">語言已切換</string>
+    <string name="dialog_close">關閉</string>
+    <string name="ok">確定</string>
+    <string name="about_message">FakeGPS %1$s\n\nAndroid 5.0–16 的免 root 模擬定位 App。\n\n地圖資料 © OpenStreetMap 貢獻者。\n\n原始碼：github.com/Miku0139oao/FakeGPS</string>
 
 </resources>

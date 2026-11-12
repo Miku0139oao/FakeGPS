@@ -1,76 +1,85 @@
 package com.github.fakegps.ui;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.fakegps.model.BookmarkList;
 import com.github.fakegps.model.LocBookmark;
 import com.tencent.fakegps.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Bookmark Adapter
- * Created by tiger on 7/23/16.
+ * Bookmark list adapter for the Material bookmark cards.
  */
-public class BookmarkAdapter extends BaseAdapter {
+public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Holder> {
 
-    private Context mContext;
-    private List<LocBookmark> mLocBookmarkList = new ArrayList<>();
+    public interface Listener {
+        void onBookmarkClick(LocBookmark bookmark);
 
-    public BookmarkAdapter(Context context) {
-        mContext = context;
+        void onBookmarkLongClick(LocBookmark bookmark);
     }
 
-    @Override
-    public int getCount() {
-        return mLocBookmarkList.size();
+    private final BookmarkList mItems = new BookmarkList();
+    private final Listener mListener;
+
+    public BookmarkAdapter(Listener listener) {
+        mListener = listener;
     }
 
-    @Override
-    public LocBookmark getItem(int position) {
-        return mLocBookmarkList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_bookmark_layout, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.name = (TextView) convertView.findViewById(R.id.tv_name);
-            viewHolder.loc = (TextView) convertView.findViewById(R.id.tv_loc);
-
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        LocBookmark item = getItem(position);
-        viewHolder.name.setText(item.getName());
-        viewHolder.loc.setText(item.getLocPoint() != null ? item.getLocPoint().toString() : "");
-
-        return convertView;
-    }
-
-    public void setLocBookmarkList(List<LocBookmark> locBookmarkList) {
-        mLocBookmarkList.clear();
-        if (locBookmarkList != null) {
-            mLocBookmarkList.addAll(locBookmarkList);
-        }
+    public void setItems(List<LocBookmark> items) {
+        mItems.setItems(items);
         notifyDataSetChanged();
     }
 
-    class ViewHolder {
-        TextView name;
-        TextView loc;
+    public LocBookmark getItem(int position) {
+        return mItems.get(position);
+    }
+
+    @NonNull
+    @Override
+    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_bookmark_layout, parent, false);
+        return new Holder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull Holder holder, int position) {
+        final LocBookmark item = getItem(position);
+        holder.name.setText(item.getName());
+        holder.loc.setText(item.getLocPoint() != null ? item.getLocPoint().toString() : "");
+        holder.itemView.setOnClickListener(view -> {
+            if (mListener != null) {
+                mListener.onBookmarkClick(item);
+            }
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            if (mListener != null) {
+                mListener.onBookmarkLongClick(item);
+            }
+            return true;
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return mItems.size();
+    }
+
+    static class Holder extends RecyclerView.ViewHolder {
+        final TextView name;
+        final TextView loc;
+
+        Holder(@NonNull View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.tv_name);
+            loc = itemView.findViewById(R.id.tv_loc);
+        }
     }
 }

@@ -7,13 +7,15 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.fakegps.DbUtils;
 import com.github.fakegps.FakeGpsUtils;
 import com.github.fakegps.JoyStickManager;
 import com.github.fakegps.model.LocPoint;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.tencent.fakegps.R;
 
 public class FlyToActivity extends BaseBookmarkActivity
@@ -38,10 +40,9 @@ public class FlyToActivity extends BaseBookmarkActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fly);
         UiUtils.enableEdgeToEdge(this, R.id.root);
-        setSupportActionBar(findViewById(R.id.toolbar));
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(R.string.label_fly);
-        }
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(view -> finish());
 
         // From location input
         mFromLocEditText = (EditText) findViewById(R.id.inputFromLoc);
@@ -59,7 +60,6 @@ public class FlyToActivity extends BaseBookmarkActivity
 
         // To location input
         mLocEditText = (EditText) findViewById(R.id.inputLoc);
-        mLocEditText.setHint(R.string.loc_input_hint);
 
         // Fly time input
         mFlyTimeEditText = (EditText) findViewById(R.id.inputFlyTime);
@@ -71,7 +71,7 @@ public class FlyToActivity extends BaseBookmarkActivity
         findViewById(R.id.btn_to_map).setOnClickListener(this);
         updateBtn();
 
-        ListView listView = (ListView) findViewById(R.id.list_bookmark);
+        RecyclerView listView = (RecyclerView) findViewById(R.id.list_bookmark);
         initBookmarkList(listView);
     }
 

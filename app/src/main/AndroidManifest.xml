@@ -7,11 +7,12 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!-- Required on Android 5.0/5.1 (API 21-22); API 23+ uses the developer-options mock app picker. -->
+    <!-- The Developer options "mock location app" picker filters installed
+         apps by requestedPermissions, so this must be declared on all API
+         levels. Android 6+ still gates actual use through the app-op. -->
     <uses-permission
         android:name="android.permission.ACCESS_MOCK_LOCATION"
-        android:maxSdkVersion="22"
-        tools:ignore="MockLocation"/>
+        tools:ignore="MockLocation,ProtectedPermissions"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
@@ -31,6 +32,7 @@
         android:enableOnBackInvokedCallback="true"
         android:icon="@drawable/icon_app"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -47,7 +49,7 @@
         <activity android:name="com.github.fakegps.ui.BookmarkActivity"
                   android:configChanges="orientation|screenSize"
                   android:label="@string/title_activity_bookmark"
-                  android:theme="@style/Theme.AppCompat.DayNight.Dialog"
+                  android:theme="@style/AppTheme.Dialog"
                   android:windowSoftInputMode="stateHidden"/>
 
         <activity android:name="com.github.fakegps.ui.FlyToActivity"
@@ -59,6 +61,11 @@
                   android:configChanges="orientation|screenSize"
                   android:exported="false"
                   android:label="@string/map_picker_title"/>
+
+        <activity android:name="com.github.fakegps.ui.SettingsActivity"
+                  android:exported="false"
+                  android:label="@string/settings_title"
+                  android:windowSoftInputMode="stateHidden"/>
         <service
             android:name="com.github.fakegps.FakeLocationService"
             android:exported="false"
