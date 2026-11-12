@@ -9,6 +9,7 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 - Have two modes to set the new location: **Jump Mode** and **Flight Mode**. **Jump Mode**: jump to the new location in second. **Flight Mode**: fly to the new location according to the given time by linear interpolation.
 - With a global floating joystick, the direction button will do a certain offset at the current position (via Move Step, degrees unit). Click to move a step, long press will move continuously.
 - Bookmarks support. In the Bookmarks List, tap to use it, long press to Delete. Long Press Bookmark button on the joystick to copy the current coordinates to the clipboard, make it easy to share it with other people.
+- **Visual map picker** powered by OpenStreetMap (osmdroid): tap, long-press, or drag a marker to choose a location. No API key or Google Play Services required. Map tiles need a network connection; coordinate entry and mock location still work offline.
 
 ## Screenshots
 
@@ -35,6 +36,11 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 4. Launch FakeGPS, enter coordinates, and click **Start**.
 5. The app will request Location, Notification, and Overlay permissions on first launch. Grant them all.
 6. The floating joystick will appear. Open a Maps app (Google Maps, etc.) to verify the mock location.
+
+## Changes in v2.1.0
+- Added a visual location picker backed by OpenStreetMap tiles (osmdroid 6.1.20). Tap, long-press, or drag the marker; the result fills the location field in the main and flight screens.
+- Map tiles are cached in app-private storage, so no storage permission is needed. `INTERNET` and `ACCESS_NETWORK_STATE` are used only for tile downloads and geolocation-free map rendering.
+- Map attribution: © OpenStreetMap contributors.
 
 ## Changes in v2.0.1
 - **Release signing fixed**: release builds are signed with a key supplied through a git-ignored `keystore.properties`; the old committed debug keystore and hard-coded password were removed.
@@ -63,7 +69,7 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/FakeGPS_v2.0.1.apk`
+APK output: `app/build/outputs/apk/debug/FakeGPS_v2.1.0.apk`
 
 ### Release signing
 
@@ -77,7 +83,7 @@ keyPassword=...
 ```
 
 Keep the keystore and this file outside version control. Verify the result with
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.0.1.apk`.
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.1.0.apk`.
 
 ## Contribute
 If you would like to contribute code to FakeGPS, you can do so through GitHub by forking the repository and sending a pull request.

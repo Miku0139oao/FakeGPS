@@ -1,6 +1,7 @@
 package com.github.fakegps.model;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Created by tiger on 7/23/16.
@@ -39,6 +40,6 @@ public class LocPoint implements Serializable {
 
     @Override
     public String toString() {
-        return "(" + mLatitude + " , " + mLongitude + ")";
+        return String.format(Locale.US, "(%.6f , %.6f)", mLatitude, mLongitude);
     }
 }

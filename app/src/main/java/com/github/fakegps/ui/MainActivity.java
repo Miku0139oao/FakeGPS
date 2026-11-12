@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_LOCATION = 2002;
     private static final int REQUEST_CODE_NOTIFICATION = 2003;
     private static final int REQUEST_CODE_MOCK_APP = 2004;
+    private static final int REQUEST_CODE_MAP = 2005;
 
     public static final int DELETE_ID = 1001;
 
@@ -99,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnSetNew.setOnClickListener(this);
         updateBtnSetNew();
 
+        findViewById(R.id.btn_pick_map).setOnClickListener(this);
+
         initListView();
 
         registerBroadcastReceiver();
@@ -146,6 +149,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show();
             }
+        } else if (id == R.id.btn_pick_map) {
+            LocPoint point = FakeGpsUtils.getLocPointFromInput(this, mLocEditText);
+            if (point == null) {
+                point = JoyStickManager.get().getCurrentLocPoint();
+            }
+            MapPickerActivity.startForResult(this, REQUEST_CODE_MAP, point);
         }
     }
 
@@ -268,6 +277,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else if (requestCode == REQUEST_CODE_MOCK_APP) {
             checkPermissionsAndStart();
+        } else if (requestCode == REQUEST_CODE_MAP && resultCode == RESULT_OK && data != null) {
+            double latitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LAT, Double.NaN);
+            double longitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LON, Double.NaN);
+            if (FakeGpsUtils.isValidLatitude(latitude) && FakeGpsUtils.isValidLongitude(longitude)) {
+                mLocEditText.setText(new LocPoint(latitude, longitude).toString());
+                mLocEditText.setSelection(mLocEditText.getText().length());
+            }
         }
     }
 

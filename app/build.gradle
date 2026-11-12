@@ -20,8 +20,8 @@ android {
         applicationId "com.github.fakegps"
         minSdk 21
         targetSdk 34
-        versionCode 3
-        versionName "2.0.1"
+        versionCode 4
+        versionName "2.1.0"
     }
     signingConfigs {
         release {
@@ -76,4 +76,5 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.core:core:1.13.1'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+    implementation 'org.osmdroid:osmdroid-android:6.1.20'
 }

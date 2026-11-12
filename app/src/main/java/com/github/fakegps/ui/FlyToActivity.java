@@ -38,6 +38,9 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
 
     private final int FLY_TIME_DEFAULT = 60;
 
+    private static final int REQUEST_CODE_MAP_FROM = 3001;
+    private static final int REQUEST_CODE_MAP_TO = 3002;
+
     public static final int DELETE_ID = 1001;
 
     private EditText mFromLocEditText;
@@ -79,6 +82,8 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
 
         mBtnStart = (Button) findViewById(R.id.btn_fly);
         mBtnStart.setOnClickListener(this);
+        findViewById(R.id.btn_from_map).setOnClickListener(this);
+        findViewById(R.id.btn_to_map).setOnClickListener(this);
         updateBtn();
 
         initListView();
@@ -89,6 +94,14 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         int id = view.getId();
+        if (id == R.id.btn_from_map) {
+            openMapFor(mFromLocEditText, REQUEST_CODE_MAP_FROM);
+            return;
+        }
+        if (id == R.id.btn_to_map) {
+            openMapFor(mLocEditText, REQUEST_CODE_MAP_TO);
+            return;
+        }
         if (id != R.id.btn_fly) {
             return;
         }
@@ -120,6 +133,36 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
     protected void onResume() {
         super.onResume();
         updateBtn();
+    }
+
+    private void openMapFor(EditText field, int requestCode) {
+        LocPoint point = FakeGpsUtils.getLocPointFromInput(this, field);
+        if (point == null) {
+            point = JoyStickManager.get().getCurrentLocPoint();
+        }
+        MapPickerActivity.startForResult(this, requestCode, point);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK || data == null) {
+            return;
+        }
+        EditText target;
+        if (requestCode == REQUEST_CODE_MAP_FROM) {
+            target = mFromLocEditText;
+        } else if (requestCode == REQUEST_CODE_MAP_TO) {
+            target = mLocEditText;
+        } else {
+            return;
+        }
+        double latitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LAT, Double.NaN);
+        double longitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LON, Double.NaN);
+        if (FakeGpsUtils.isValidLatitude(latitude) && FakeGpsUtils.isValidLongitude(longitude)) {
+            target.setText(new LocPoint(latitude, longitude).toString());
+            target.setSelection(target.getText().length());
+        }
     }
 
     private void updateBtn() {
