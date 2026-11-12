@@ -1,17 +1,15 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /Users/tiger/Androidsdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Project-specific R8/ProGuard rules.
 
-# Add any project specific keep options here:
+# lite-orm uses reflection over annotations and model classes.
+-keep class com.litesuits.orm.** { *; }
+-keep @com.litesuits.orm.db.annotation.Table class * { *; }
+-keep class com.github.fakegps.model.** { *; }
+-keepattributes *Annotation*,Signature
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Strip verbose/debug log calls from release builds. Errors are kept.
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+    public static *** i(...);
+    public static *** w(...);
+}

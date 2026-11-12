@@ -38,8 +38,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
             }
@@ -73,10 +74,32 @@ android {
 dependencies {
     // Align Kotlin stdlib transitives pulled in by AndroidX/coroutines.
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/lite-orm-1.9.2.jar')
     testImplementation 'junit:junit:4.13.2'
     implementation project(':loggerlibrary')
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.core:core:1.13.1'
     implementation 'org.osmdroid:osmdroid-android:6.1.20'
 }
+
+// The checked-in lite-orm jar is not covered by Gradle dependency verification.
+def liteOrmJar = file('libs/lite-orm-1.9.2.jar')
+tasks.register('verifyLiteOrmChecksum') {
+    inputs.file(liteOrmJar)
+    doLast {
+        def digest = java.security.MessageDigest.getInstance('SHA-256')
+        liteOrmJar.withInputStream { input ->
+            byte[] buffer = new byte[8192]
+            int read
+            while ((read = input.read(buffer)) != -1) {
+                digest.update(buffer, 0, read)
+            }
+        }
+        def actual = digest.digest().collect { String.format('%02x', it) }.join()
+        def expected = '8b1ae01600c27ff75073825e6ecd1fcb354cb05d991932ab7da440eee26b9e6d'
+        if (actual != expected) {
+            throw new GradleException("lite-orm checksum mismatch: expected $expected, got $actual")
+        }
+    }
+}
+tasks.named('preBuild').configure { dependsOn 'verifyLiteOrmChecksum' }
