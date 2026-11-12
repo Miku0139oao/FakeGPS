@@ -40,7 +40,6 @@ public class LocationThread extends HandlerThread {
     private volatile boolean mProvidersAdded = false;
     private boolean mHasLastLocPoint = false;
     private long mLastUpdateElapsedMs = 0;
-    private final float[] mDistanceResult = new float[1];
 
     public LocationThread(Context context, JoyStickManager joyStickManager, Listener listener) {
         super("LocationThread");
@@ -172,17 +171,12 @@ public class LocationThread extends HandlerThread {
 
             int successCount = 0;
             long now = SystemClock.elapsedRealtime();
-            float distanceMeters = 0;
-            long elapsedMs = 0;
+            LocationDelta delta = null;
             if (mHasLastLocPoint && mLastUpdateElapsedMs > 0) {
-                Location.distanceBetween(
-                        mLastLocPoint.getLatitude(), mLastLocPoint.getLongitude(),
-                        locPoint.getLatitude(), locPoint.getLongitude(),
-                        mDistanceResult);
-                distanceMeters = mDistanceResult[0];
-                elapsedMs = now - mLastUpdateElapsedMs;
+                delta = LocationDelta.between(
+                        mLastLocPoint, locPoint, now - mLastUpdateElapsedMs);
             }
-            boolean moving = distanceMeters >= 0.5f && elapsedMs > 0;
+            boolean moving = delta != null && delta.isMoving();
 
             for (String provider : PROVIDERS) {
                 try {
@@ -195,8 +189,8 @@ public class LocationThread extends HandlerThread {
                     location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
 
                     if (moving) {
-                        location.setSpeed(distanceMeters / (elapsedMs / 1000.0f));
-                        location.setBearing(mDistanceResult[1]);
+                        location.setSpeed((float) delta.getSpeedMetersPerSecond());
+                        location.setBearing((float) delta.getBearingDegrees());
                     }
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
