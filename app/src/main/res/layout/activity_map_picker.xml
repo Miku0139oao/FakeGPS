@@ -48,9 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/search_hint"
-                    app:endIconContentDescription="@string/search_title"
-                    app:endIconDrawable="@drawable/ic_search"
-                    app:endIconMode="custom">
+                    app:endIconMode="clear_text">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/inputSearch"
@@ -60,19 +58,55 @@
                         android:inputType="text"
                         android:singleLine="true"/>
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_search"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="48dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@string/search_title"
+                    app:icon="@drawable/ic_search"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_recenter"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:layout_marginTop="104dp"
             android:layout_marginEnd="16dp"
-            android:contentDescription="@string/recenter"
-            app:srcCompat="@drawable/ic_my_location"
-            app:tint="?attr/colorOnPrimaryContainer"/>
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btn_recenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/recenter"
+                app:srcCompat="@drawable/ic_my_location"
+                app:tint="?attr/colorOnPrimaryContainer"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btn_zoom_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:contentDescription="@string/cd_zoom_in"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_zoom_in"
+                app:tint="?attr/colorOnPrimaryContainer"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btn_zoom_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:contentDescription="@string/cd_zoom_out"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_zoom_out"
+                app:tint="?attr/colorOnPrimaryContainer"/>
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -114,6 +148,30 @@
                     android:text="@string/map_hint"
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_copy_coords"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/copy_coordinates"
+                        app:icon="@drawable/ic_content_copy"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_open_external"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/open_in_maps"
+                        app:icon="@drawable/ic_map"/>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

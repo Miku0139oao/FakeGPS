@@ -41,6 +41,10 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 |---|---|---|
 | <img src="screenshot/guide-main-zh.png" width="260" alt="主畫面"> | <img src="screenshot/guide-map-zh.png" width="260" alt="地圖選點"> | <img src="screenshot/guide-fly-zh.png" width="260" alt="飛行模式"> |
 
+| 設定 | 地址搜尋 |
+|---|---|
+| <img src="screenshot/guide-settings-zh.png" width="260" alt="設定"> | <img src="screenshot/guide-search-zh.png" width="260" alt="地址搜尋"> |
+
 ## 保姆級逐步教學
 
 ### 步驟 0 — 開始前準備
@@ -160,13 +164,15 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 3. 點選搜尋結果，標記與地圖會移到該地點。
 4. 拖曳／縮放地圖，然後 **點擊**、**長按** 或 **拖曳 marker**。
 5. 底部面板會顯示目前選取的座標。
-6. 按 **Use this location** 回填欄位，或按 **Cancel** 返回。
+6. 按 **Use location** 回填欄位，或按 **Cancel** 返回。
 
-<img src="screenshot/guide-search.png" width="320" alt="地址搜尋結果">
+<img src="screenshot/guide-search-zh.png" width="320" alt="地址搜尋結果">
 
 <img src="screenshot/guide-map-zh.png" width="320" alt="地圖選點">
 
 - 搜尋結果來自 Android geocoder 或 OpenStreetMap Nominatim。
+- 使用 **+ / −** 按鈕縮放，十字按鈕將地圖移回標記。**複製** 會複製目前座標；**在地圖中開啟** 會用其他地圖 App 開啟（`geo:` URI）。搜尋欄的 **X** 可清除內容。
+- 深色模式下地圖會套用降低飽和度與亮度的圖磚濾鏡。
 - 地圖圖磚來自 **OpenStreetMap**，需要網路連線。
 - 沒有網路時仍可輸入座標或使用目前的地圖位置。
 - 標示：© OpenStreetMap 貢獻者。
@@ -183,7 +189,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 ### 步驟 9 — 書籤
 
-- **儲存：** 長按搖桿上的星星按鈕，輸入名稱，按 **Save**。
+- **儲存：** 長按搖桿上的星星按鈕，輸入名稱，按 **Save**。也可以在主畫面書籤卡片按 **Save current location**。
 - **使用：** 開啟主畫面，點擊清單中的書籤。
 - **刪除：** 長按清單中的書籤並確認。
 - 書籤儲存在 App 本機資料庫；自動備份已關閉。
@@ -273,7 +279,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 通常可以，只要 FakeGPS 已被選為模擬定位應用程式。如果地圖不更新，啟動 FakeGPS 後重啟地圖，並查看疑難排解。
 
 **我的資料會被上傳嗎？**
-沒有帳號、沒有分析、沒有遙測。地圖圖磚會向 OpenStreetMap 圖磚伺服器請求，因此需要網路。書籤與最後座標只留在裝置上，自動備份已關閉。
+沒有帳號、沒有分析、沒有遙測。地圖圖磚會向 OpenStreetMap 圖磚伺服器請求，因此需要網路。使用地圖搜尋列時，查詢會送到 Android geocoder 或 OpenStreetMap Nominatim；不涉及帳號。書籤與最後座標只留在裝置上，自動備份已關閉。
 
 **可以在公司／學校手機上用嗎？**
 不要繞過 MDM 或雇主限制。開發人員選項可能被政策鎖住。

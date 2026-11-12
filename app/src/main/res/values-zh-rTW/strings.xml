@@ -117,4 +117,7 @@
     <string name="ok">確定</string>
     <string name="about_message">FakeGPS %1$s\n\nAndroid 5.0–16 的免 root 模擬定位 App。\n\n地圖資料 © OpenStreetMap 貢獻者。\n\n原始碼：github.com/Miku0139oao/FakeGPS</string>
 
+    <string name="cd_zoom_in">放大</string>
+    <string name="cd_zoom_out">縮小</string>
+    <string name="open_in_maps">在地圖中開啟</string>
 </resources>

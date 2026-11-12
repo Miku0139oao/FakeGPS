@@ -108,4 +108,7 @@
     <string name="search_failed">La recherche a échoué. Vérifiez le réseau.</string>
     <string name="searching">Recherche…</string>
     <string name="search_empty">Saisissez une adresse ou un lieu</string>
+    <string name="cd_zoom_in">Zoom avant</string>
+    <string name="cd_zoom_out">Zoom arrière</string>
+    <string name="open_in_maps">Ouvrir dans Maps</string>
 </resources>

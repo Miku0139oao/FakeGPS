@@ -117,4 +117,7 @@
     <string name="ok">OK</string>
     <string name="about_message">FakeGPS %1$s\n\nA no-root mock location app for Android 5.0–16.\n\nMap data © OpenStreetMap contributors.\n\nSource code: github.com/Miku0139oao/FakeGPS</string>
 
+    <string name="cd_zoom_in">Zoom in</string>
+    <string name="cd_zoom_out">Zoom out</string>
+    <string name="open_in_maps">Open in Maps</string>
 </resources>

@@ -50,6 +50,10 @@ map. **No root is required** — it uses the standard Android mock-location API.
 |---|---|---|
 | <img src="screenshot/guide-main.png" width="260" alt="Main screen"> | <img src="screenshot/guide-map.png" width="260" alt="Map picker"> | <img src="screenshot/guide-fly.png" width="260" alt="Flight mode"> |
 
+| Settings | Address search |
+|---|---|
+| <img src="screenshot/guide-settings.png" width="260" alt="Settings"> | <img src="screenshot/guide-search.png" width="260" alt="Address search"> |
+
 ## Step-by-step guide
 
 ### Step 0 — Before you start
@@ -192,13 +196,18 @@ somewhere convenient.
 3. Tap a result to move the marker and camera to that place.
 4. Pan/zoom the map, then **tap**, **long-press**, or **drag the marker**.
 5. The bottom panel shows the selected coordinates.
-6. Tap **Use this location** to fill the field, or **Cancel** to go back.
+6. Tap **Use location** to fill the field, or **Cancel** to go back.
 
 <img src="screenshot/guide-search.png" width="320" alt="Address search results">
 
 <img src="screenshot/guide-map.png" width="320" alt="Map picker">
 
 - Search results come from Android's geocoder or OpenStreetMap Nominatim.
+- Use the **+ / −** buttons to zoom and the crosshair button to recenter on the
+  marker. **Copy** copies the selected coordinates; **Open in Maps** opens the
+  point with another map app (`geo:` URI). The **X** in the search field clears
+  it.
+- The map uses a dimmed, desaturated tile filter in dark mode.
 - Map tiles come from **OpenStreetMap** and need a network connection.
 - The coordinates still work offline; if tiles cannot load, you can type a
   coordinate or use the map position.
@@ -219,7 +228,8 @@ somewhere convenient.
 ### Step 9 — Bookmarks
 
 - **Save:** long-press the star button on the joystick, enter a name, and tap
-  **Save**.
+  **Save**. You can also tap **Save current location** in the Bookmarks card on
+  the main screen.
 - **Use:** open the main screen and tap a bookmark in the list.
 - **Delete:** long-press a bookmark in the list and confirm.
 - Bookmarks are stored locally in the app's database. Auto backup is disabled.
@@ -331,8 +341,10 @@ table.
 
 **Is my data uploaded?**
 No account, no analytics, no telemetry. Map tiles are requested from the
-OpenStreetMap tile server, which needs a network connection. Bookmarks and last
-coordinates stay on the device; automatic backup is disabled.
+OpenStreetMap tile server, which needs a network connection. Address searches
+are sent to Android's geocoder or OpenStreetMap Nominatim when you use the map
+search bar; no account is involved. Bookmarks and last coordinates stay on the
+device; automatic backup is disabled.
 
 **Can I use it on a work/school phone?**
 Do not bypass MDM or employer restrictions. Developer options may be disabled

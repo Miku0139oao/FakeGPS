@@ -108,4 +108,7 @@
     <string name="search_failed">A pesquisa falhou. Verifique a rede.</string>
     <string name="searching">Pesquisando…</string>
     <string name="search_empty">Digite um endereço ou local</string>
+    <string name="cd_zoom_in">Aproximar</string>
+    <string name="cd_zoom_out">Afastar</string>
+    <string name="open_in_maps">Abrir no Maps</string>
 </resources>

@@ -108,4 +108,7 @@
     <string name="search_failed">搜索失败，请检查网络后重试。</string>
     <string name="searching">正在搜索…</string>
     <string name="search_empty">请输入地址或地点名称</string>
+    <string name="cd_zoom_in">放大</string>
+    <string name="cd_zoom_out">缩小</string>
+    <string name="open_in_maps">在地图中打开</string>
 </resources>

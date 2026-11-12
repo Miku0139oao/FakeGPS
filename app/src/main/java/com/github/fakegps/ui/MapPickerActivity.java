@@ -2,6 +2,9 @@ package com.github.fakegps.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -11,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -20,8 +24,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.fakegps.AddressSearch;
+import com.github.fakegps.FakeGpsUtils;
 import com.github.fakegps.model.LocPoint;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,6 +39,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +70,7 @@ public class MapPickerActivity extends AppCompatActivity {
 
     private TextInputLayout mSearchLayout;
     private TextInputEditText mSearchInput;
+    private MaterialButton mSearchButton;
     private final ExecutorService mSearchExecutor = Executors.newSingleThreadExecutor();
     private int mSearchRequestId = 0;
 
@@ -106,7 +114,8 @@ public class MapPickerActivity extends AppCompatActivity {
 
         mSearchLayout = findViewById(R.id.searchLayout);
         mSearchInput = findViewById(R.id.inputSearch);
-        mSearchLayout.setEndIconOnClickListener(view -> performSearch());
+        mSearchButton = findViewById(R.id.btn_search);
+        mSearchButton.setOnClickListener(view -> performSearch());
         mSearchInput.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch();
@@ -114,6 +123,14 @@ public class MapPickerActivity extends AppCompatActivity {
             }
             return false;
         });
+        findViewById(R.id.btn_zoom_in).setOnClickListener(
+                view -> mMapView.getController().zoomIn());
+        findViewById(R.id.btn_zoom_out).setOnClickListener(
+                view -> mMapView.getController().zoomOut());
+        findViewById(R.id.btn_copy_coords).setOnClickListener(
+                view -> copySelectedCoordinates());
+        findViewById(R.id.btn_open_external).setOnClickListener(
+                view -> openInExternalMap());
 
         TextView attribution = (TextView) findViewById(R.id.tv_osm_attribution);
         attribution.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +148,10 @@ public class MapPickerActivity extends AppCompatActivity {
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.setTileSource(TileSourceFactory.MAPNIK);
         mMapView.setMultiTouchControls(true);
+        mMapView.setBuiltInZoomControls(false);
+        mMapView.setTilesScaledToDpi(true);
         mMapView.getController().setZoom(DEFAULT_ZOOM);
+        applyNightMapFilter();
 
         GeoPoint start = new GeoPoint(mLatitude, mLongitude);
         mMapView.getController().setCenter(start);
@@ -145,6 +165,7 @@ public class MapPickerActivity extends AppCompatActivity {
 
             @Override
             public boolean longPressHelper(GeoPoint point) {
+                mMapView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 selectPoint(point);
                 return true;
             }
@@ -260,8 +281,12 @@ public class MapPickerActivity extends AppCompatActivity {
             mSearchLayout.setError(getString(R.string.search_empty));
             return;
         }
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, R.string.search_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
         mSearchLayout.setError(null);
-        mSearchLayout.setHelperText(getString(R.string.searching));
+        setSearchBusy(true);
         final int requestId = ++mSearchRequestId;
         mSearchExecutor.execute(() -> {
             List<AddressSearch.Result> results = AddressSearch.search(this, query);
@@ -269,10 +294,59 @@ public class MapPickerActivity extends AppCompatActivity {
                 if (requestId != mSearchRequestId || isFinishing()) {
                     return;
                 }
-                mSearchLayout.setHelperText(null);
+                setSearchBusy(false);
                 showSearchResults(results);
             });
         });
+    }
+
+    private void setSearchBusy(boolean busy) {
+        if (mSearchButton != null) {
+            mSearchButton.setEnabled(!busy);
+        }
+        if (mSearchInput != null) {
+            mSearchInput.setEnabled(!busy);
+        }
+        if (mSearchLayout != null) {
+            mSearchLayout.setHelperText(busy
+                    ? getString(R.string.searching) : null);
+        }
+    }
+
+    private void applyNightMapFilter() {
+        TilesOverlay tiles = mMapView.getOverlayManager().getTilesOverlay();
+        if (tiles == null) {
+            return;
+        }
+        int nightMode = getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        if (nightMode == Configuration.UI_MODE_NIGHT_YES) {
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0.35f);
+            ColorMatrix scale = new ColorMatrix();
+            scale.setScale(0.62f, 0.62f, 0.62f, 1.0f);
+            matrix.postConcat(scale);
+            tiles.setColorFilter(new ColorMatrixColorFilter(matrix));
+        } else {
+            tiles.setColorFilter(null);
+        }
+    }
+
+    private void copySelectedCoordinates() {
+        LocPoint point = new LocPoint(mLatitude, mLongitude);
+        FakeGpsUtils.copyToClipboard(this, point.toString());
+        Toast.makeText(this, getString(R.string.location_copied) + "\n" + point,
+                Toast.LENGTH_LONG).show();
+    }
+
+    private void openInExternalMap() {
+        String uri = String.format(Locale.US, "geo:%.6f,%.6f?q=%.6f,%.6f",
+                mLatitude, mLongitude, mLatitude, mLongitude);
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.search_failed, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showSearchResults(List<AddressSearch.Result> results) {
@@ -328,6 +402,7 @@ public class MapPickerActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        applyNightMapFilter();
         updateNetworkHint();
     }
 

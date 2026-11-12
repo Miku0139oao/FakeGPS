@@ -108,4 +108,7 @@
     <string name="search_failed">検索に失敗しました。ネットワークを確認してください。</string>
     <string name="searching">検索中…</string>
     <string name="search_empty">住所または場所名を入力してください</string>
+    <string name="cd_zoom_in">拡大</string>
+    <string name="cd_zoom_out">縮小</string>
+    <string name="open_in_maps">地図で開く</string>
 </resources>

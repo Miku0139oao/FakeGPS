@@ -108,4 +108,7 @@
     <string name="search_failed">Suche fehlgeschlagen. Netzwerk prüfen.</string>
     <string name="searching">Suche…</string>
     <string name="search_empty">Adresse oder Ortsnamen eingeben</string>
+    <string name="cd_zoom_in">Vergrößern</string>
+    <string name="cd_zoom_out">Verkleinern</string>
+    <string name="open_in_maps">In Karten öffnen</string>
 </resources>
