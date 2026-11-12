@@ -38,9 +38,16 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 6. The floating joystick will appear. Open a Maps app (Google Maps, etc.) to verify the mock location.
 
 ## Changes in v2.1.0
+- **Targets Android 16**: compileSdk/targetSdk 36, AGP 8.13.2, Gradle 8.14.7, Java 17 source/target.
+- **Edge-to-edge support**: system bar insets are applied to the app bar and content; no more content hidden behind the status/navigation bars on Android 15/16.
+- Removed the portrait lock so the layout also works on large screens and in landscape.
 - Added a visual location picker backed by OpenStreetMap tiles (osmdroid 6.1.20). Tap, long-press, or drag the marker; the result fills the location field in the main and flight screens.
 - Map tiles are cached in app-private storage, so no storage permission is needed. `INTERNET` and `ACCESS_NETWORK_STATE` are used only for tile downloads and geolocation-free map rendering.
 - Map attribution: © OpenStreetMap contributors.
+- Modernized the build: `pluginManagement`/`dependencyResolutionManagement`, removed the Kotlin stdlib force hack and Jetifier, and removed the duplicate lite-orm declaration.
+- Enabled `lint` with `abortOnError`; added GitHub Actions (lint + unit tests + debug build) and Dependabot.
+- Moved UI strings into resources, added Traditional Chinese (`values-zh-rTW`) translations, and added content descriptions to the floating joystick.
+- Removed dead code: the root-era AIDL, internal `R$dimen` reflection, unused styles/attributes, and destructive bookmark helpers.
 
 **Dependency note:** the map uses `org.osmdroid:osmdroid-android:6.1.20` (Apache-2.0). The upstream osmdroid project was archived in November 2024, so 6.1.20 is the final release and is intentionally pinned. The integration is isolated in `MapPickerActivity` and `FakeGpsApp.initOsmdroid()` to make a future replacement straightforward.
 
@@ -67,11 +74,16 @@ FakeGPS is a GPS device simulator. GPS location signal keep output according to 
 
 ## Build
 
+Requires JDK 17+ (JDK 21 recommended) and the Android SDK with API 36.
+
 ```bash
 ./gradlew assembleDebug
 ```
 
 APK output: `app/build/outputs/apk/debug/FakeGPS_v2.1.0.apk`
+
+CI runs lint, JVM unit tests, and a debug build on every push and pull request
+(`.github/workflows/android.yml`).
 
 ### Release signing
 

@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">FakeGPS</string>
+    <string name="btn_start">開始</string>
+    <string name="btn_stop">停止</string>
+    <string name="menu_delete">刪除</string>
+
+    <string name="title_activity_bookmark">書籤</string>
+    <string name="btn_fly_start">開始飛行</string>
+    <string name="btn_fly_stop">停止飛行</string>
+    <string name="label_fly">飛往地點</string>
+    <string name="btn_set_new_loc">設定新地點</string>
+    <string name="bookmark">書籤</string>
+    <string name="move_step">移動步長</string>
+    <string name="move_step_hint">移動步長</string>
+    <string name="loc_input_hint">緯度 , 經度</string>
+    <string name="location">地點：</string>
+    <string name="fly_time">飛行時間（秒）</string>
+    <string name="bookmark_name">書籤名稱</string>
+    <string name="no_data">沒有書籤</string>
+    <string name="save">儲存</string>
+    <string name="cancel">取消</string>
+    <string name="go_to_settings">開啟設定</string>
+
+    <string name="input_invalid">輸入無效！</string>
+    <string name="move_step_invalid">移動步長必須是正數！</string>
+    <string name="fly_time_invalid">飛行時間必須是正整數秒！</string>
+    <string name="start_first">請先啟動模擬定位！</string>
+    <string name="service_not_started">服務尚未啟動！</string>
+
+    <string name="overlay_permission_title">需要懸浮視窗權限</string>
+    <string name="overlay_permission_message">FakeGPS 需要「顯示在其他應用程式上層」權限才能顯示浮動搖桿。請在下一個畫面授予權限。</string>
+    <string name="overlay_permission_missing">未授予懸浮視窗權限。</string>
+    <string name="location_permission_required">模擬 GPS 需要定位權限。</string>
+
+    <string name="mock_app_required_title">選擇 FakeGPS 為模擬定位應用程式</string>
+    <string name="mock_app_required_message">Android 要求您先在開發人員選項中選擇 FakeGPS，才能提供模擬定位。請開啟設定，選擇「選取模擬定位應用程式」→ FakeGPS，然後再按一次開始。</string>
+    <string name="mock_app_not_selected">模擬定位權限被拒絕。請在開發人員選項 → 選取模擬定位應用程式中選擇 FakeGPS。</string>
+
+    <string name="notification_channel_name">FakeGPS 定位服務</string>
+    <string name="notification_channel_desc">保持模擬 GPS 定位運作</string>
+    <string name="notification_title">FakeGPS 執行中</string>
+    <string name="notification_text">模擬定位已啟用</string>
+
+    <string name="bookmark_name_required">書籤名稱不能為空！</string>
+    <string name="bookmark_location_invalid">地點無效！</string>
+    <string name="bookmark_saved">書籤已儲存！</string>
+    <string name="bookmark_save_failed">書籤儲存失敗！</string>
+    <string name="delete_bookmark_title">刪除書籤？</string>
+    <string name="delete">刪除</string>
+    <string name="stop_fly">停止飛行</string>
+    <string name="location_copied">已複製目前位置！</string>
+
+    <string name="map_picker_title">選擇地點</string>
+    <string name="pick_on_map">地圖</string>
+    <string name="use_this_location">使用此地點</string>
+    <string name="map_hint">點擊、長按或拖曳標記來選擇地點。地圖圖磚需要網路連線；座標仍可離線使用。</string>
+    <string name="map_offline">沒有網路連線：圖磚可能無法載入，但仍可選擇座標。</string>
+    <string name="map_selected">已選擇：%1$s</string>
+    <string name="map_attribution">© OpenStreetMap 貢獻者</string>
+
+    <string name="from_label">起點：</string>
+    <string name="to_label">終點：</string>
+    <string name="cd_arrow_up">向北移動</string>
+    <string name="cd_arrow_down">向南移動</string>
+    <string name="cd_arrow_left">向西移動</string>
+    <string name="cd_arrow_right">向東移動</string>
+    <string name="cd_set_location">設定地點</string>
+    <string name="cd_fly_to">飛往地點</string>
+    <string name="cd_bookmark">儲存書籤</string>
+
+</resources>

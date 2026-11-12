@@ -57,6 +57,11 @@ public class MapPickerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_map_picker);
+        UiUtils.enableEdgeToEdge(this, R.id.root);
+        setSupportActionBar(findViewById(R.id.toolbar));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.map_picker_title);
+        }
 
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra(EXTRA_LAT, DEFAULT_LAT);

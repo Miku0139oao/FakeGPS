@@ -69,16 +69,6 @@ public class BookmarkAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void addBookmark(LocBookmark bookmark) {
-        mLocBookmarkList.add(bookmark);
-        notifyDataSetChanged();
-    }
-
-    public void clearAll() {
-        mLocBookmarkList.clear();
-    }
-
-
     class ViewHolder {
         TextView name;
         TextView loc;

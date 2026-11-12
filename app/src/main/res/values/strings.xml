@@ -58,4 +58,14 @@
     <string name="map_selected">Selected: %1$s</string>
     <string name="map_attribution">© OpenStreetMap contributors</string>
 
+    <string name="from_label">From:</string>
+    <string name="to_label">To:</string>
+    <string name="cd_arrow_up">Move north</string>
+    <string name="cd_arrow_down">Move south</string>
+    <string name="cd_arrow_left">Move west</string>
+    <string name="cd_arrow_right">Move east</string>
+    <string name="cd_set_location">Set location</string>
+    <string name="cd_fly_to">Fly to location</string>
+    <string name="cd_bookmark">Save bookmark</string>
+
 </resources>

@@ -1,38 +1,22 @@
 package com.github.fakegps.ui;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.github.fakegps.BroadcastEvent;
 import com.github.fakegps.DbUtils;
-import com.github.fakegps.FakeGpsApp;
 import com.github.fakegps.FakeGpsUtils;
 import com.github.fakegps.JoyStickManager;
-import com.github.fakegps.model.LocBookmark;
 import com.github.fakegps.model.LocPoint;
 import com.tencent.fakegps.R;
 
-import java.util.ArrayList;
-
-public class FlyToActivity extends AppCompatActivity implements View.OnClickListener {
+public class FlyToActivity extends BaseBookmarkActivity implements View.OnClickListener {
     private final double LAT_DEFAULT = 23.151637;
     private final double LON_DEFAULT = 113.344721;
 
@@ -41,20 +25,21 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
     private static final int REQUEST_CODE_MAP_FROM = 3001;
     private static final int REQUEST_CODE_MAP_TO = 3002;
 
-    public static final int DELETE_ID = 1001;
-
     private EditText mFromLocEditText;
     private EditText mLocEditText;
     private EditText mFlyTimeEditText;
-    private ListView mListView;
     private Button mBtnStart;
-    private BookmarkAdapter mAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fly);
+        UiUtils.enableEdgeToEdge(this, R.id.root);
+        setSupportActionBar(findViewById(R.id.toolbar));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.label_fly);
+        }
 
         // From location input
         mFromLocEditText = (EditText) findViewById(R.id.inputFromLoc);
@@ -78,17 +63,14 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
         mFlyTimeEditText = (EditText) findViewById(R.id.inputFlyTime);
         mFlyTimeEditText.setText(String.valueOf(FLY_TIME_DEFAULT));
 
-        mListView = (ListView) findViewById(R.id.list_bookmark);
-
         mBtnStart = (Button) findViewById(R.id.btn_fly);
         mBtnStart.setOnClickListener(this);
         findViewById(R.id.btn_from_map).setOnClickListener(this);
         findViewById(R.id.btn_to_map).setOnClickListener(this);
         updateBtn();
 
-        initListView();
-
-        registerBroadcastReceiver();
+        ListView listView = (ListView) findViewById(R.id.list_bookmark);
+        initBookmarkList(listView);
     }
 
     @Override
@@ -165,6 +147,11 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    @Override
+    protected void onBookmarkSelected(LocPoint locPoint) {
+        mLocEditText.setText(locPoint != null ? locPoint.toString() : "");
+    }
+
     private void updateBtn() {
         boolean started = JoyStickManager.get().isStarted();
         mBtnStart.setEnabled(started);
@@ -175,89 +162,9 @@ public class FlyToActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void initListView() {
-        mAdapter = new BookmarkAdapter(this);
-        ArrayList<LocBookmark> allBookmark = DbUtils.getAllBookmark();
-        mAdapter.setLocBookmarkList(allBookmark);
-        mListView.setAdapter(mAdapter);
-
-        View emptyView = findViewById(R.id.empty_view);
-        mListView.setEmptyView(emptyView);
-
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LocPoint locPoint = mAdapter.getItem(position).getLocPoint();
-                mLocEditText.setText(locPoint != null ? locPoint.toString() : "");
-            }
-        });
-
-        registerForContextMenu(mListView);
-
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        menu.add(Menu.NONE, DELETE_ID, Menu.NONE, R.string.menu_delete);
-        super.onCreateContextMenu(menu, v, menuInfo);
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == DELETE_ID) {
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            delete(info.position);
-            return true;
-        }
-        return super.onContextItemSelected(item);
-    }
-
-    private void delete(final int position) {
-        if (position < 0) return;
-        LocBookmark bookmark = mAdapter.getItem(position);
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.delete_bookmark_title) + " " + bookmark.getName())
-                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        DbUtils.deleteBookmark(bookmark);
-                        ArrayList<LocBookmark> allBookmark = DbUtils.getAllBookmark();
-                        mAdapter.setLocBookmarkList(allBookmark);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
-    private void registerBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter(BroadcastEvent.BookMark.ACTION_BOOK_MARK_UPDATE);
-        LocalBroadcastManager.getInstance(FakeGpsApp.get()).registerReceiver(mBroadcastReceiver, intentFilter);
-    }
-
-    private void unregisterBroadcastReceiver() {
-        LocalBroadcastManager.getInstance(FakeGpsApp.get()).unregisterReceiver(mBroadcastReceiver);
-    }
-
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BroadcastEvent.BookMark.ACTION_BOOK_MARK_UPDATE.equals(action)) {
-                ArrayList<LocBookmark> allBookmark = DbUtils.getAllBookmark();
-                mAdapter.setLocBookmarkList(allBookmark);
-            }
-        }
-    };
-
-    @Override
-    protected void onDestroy() {
-        unregisterBroadcastReceiver();
-        super.onDestroy();
-    }
-
     public static void startPage(Context context) {
         Intent intent = new Intent(context, FlyToActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
-
-
 }

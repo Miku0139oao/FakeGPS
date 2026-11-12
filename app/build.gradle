@@ -1,4 +1,6 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 // Release signing is configured outside the repository.
 // Create keystore.properties in the project root (it is git-ignored):
@@ -14,12 +16,12 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.tencent.fakegps"
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.github.fakegps"
         minSdk 21
-        targetSdk 34
+        targetSdk 36
         versionCode 4
         versionName "2.1.0"
     }
@@ -64,14 +66,15 @@ android {
     }
 
     lint {
-        abortOnError false
+        abortOnError true
     }
 }
 
 dependencies {
+    // Align Kotlin stdlib transitives pulled in by AndroidX/coroutines.
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.13.2'
-    implementation files('libs/lite-orm-1.9.2.jar')
     implementation project(':loggerlibrary')
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.core:core:1.13.1'

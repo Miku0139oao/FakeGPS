@@ -3,7 +3,8 @@ package com.github.fakegps.ui;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageButton;
+
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import tiger.radio.loggerlibrary.Logger;
 
@@ -11,7 +12,7 @@ import tiger.radio.loggerlibrary.Logger;
  * Button can keep invoke click event when keep pressed
  * Created by tiger on 7/23/16.
  */
-public class JoyStickButton extends ImageButton {
+public class JoyStickButton extends AppCompatImageButton {
 
     private static final String TAG = "JoyStickButton";
 
@@ -46,11 +47,18 @@ public class JoyStickButton extends ImageButton {
 
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        removeCallbacks(mLongPressDetectorRunnable);
+        mIsPressDown = false;
+        super.onDetachedFromWindow();
+    }
+
 
     private Runnable mLongPressDetectorRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mIsPressDown) {
+            if (mIsPressDown && isAttachedToWindow() && isEnabled()) {
                 Logger.d(TAG, "invoke click");
                 performClick();
                 postDelayed(this, 500);

@@ -11,7 +11,6 @@ import com.github.fakegps.model.LocPoint;
 import com.litesuits.orm.db.model.ConflictAlgorithm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by tiger on 7/23/16.
@@ -40,11 +39,6 @@ public final class DbUtils {
         if (bookmark == null) return;
         FakeGpsApp.getLiteOrm().delete(bookmark);
         notifyBookmarkUpdate();
-    }
-
-    public static void saveBookmark(Collection<LocBookmark> bookmarks) {
-        FakeGpsApp.getLiteOrm().deleteAll(LocBookmark.class);
-        FakeGpsApp.getLiteOrm().save(bookmarks);
     }
 
     public static ArrayList<LocBookmark> getAllBookmark() {

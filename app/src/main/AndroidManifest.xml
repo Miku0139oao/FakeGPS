@@ -35,7 +35,6 @@
             android:name="com.github.fakegps.ui.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -46,22 +45,18 @@
         <activity android:name="com.github.fakegps.ui.BookmarkActivity"
                   android:configChanges="orientation|screenSize"
                   android:label="@string/title_activity_bookmark"
-                  android:screenOrientation="portrait"
                   android:theme="@style/Theme.AppCompat.Dialog"
                   android:windowSoftInputMode="stateHidden"/>
 
         <activity android:name="com.github.fakegps.ui.FlyToActivity"
                   android:configChanges="orientation|screenSize"
                   android:label="@string/label_fly"
-                  android:screenOrientation="portrait"
                   android:windowSoftInputMode="stateHidden"/>
 
         <activity android:name="com.github.fakegps.ui.MapPickerActivity"
                   android:configChanges="orientation|screenSize"
                   android:exported="false"
-                  android:label="@string/map_picker_title"
-                  android:screenOrientation="portrait"/>
-
+                  android:label="@string/map_picker_title"/>
         <service
             android:name="com.github.fakegps.FakeLocationService"
             android:exported="false"

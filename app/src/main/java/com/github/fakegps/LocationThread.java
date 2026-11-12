@@ -1,5 +1,6 @@
 package com.github.fakegps;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -74,6 +75,7 @@ public class LocationThread extends HandlerThread {
     /**
      * @return the number of providers that were successfully installed.
      */
+    @SuppressLint("WrongConstant")
     private int addTestProviders() {
         if (mProvidersAdded) return PROVIDERS.length;
         if (!FakeGpsUtils.isMockLocationAppSelected(mContext)) {
