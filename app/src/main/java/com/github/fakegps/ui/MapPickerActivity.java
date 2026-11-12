@@ -146,6 +146,9 @@ public class MapPickerActivity extends AppCompatActivity {
         // Keep tiles in app-private storage; no storage permission is needed.
         configuration.setOsmdroidBasePath(new File(getFilesDir(), "osmdroid"));
         configuration.setOsmdroidTileCache(new File(getCacheDir(), "osmdroid/tiles"));
+        // Keep the tile cache small on low-end devices.
+        configuration.setTileFileSystemCacheMaxBytes(50L * 1024 * 1024);
+        configuration.setTileFileSystemCacheTrimBytes(40L * 1024 * 1024);
     }
 
     private void selectPoint(GeoPoint point) {
