@@ -80,7 +80,7 @@ public class Logger {
     public static void e(String tag, String msg, Throwable t) {
         android.util.Log.e(tag, msg, t);
         if (sLogFile != null) {
-            sLogFile.i(tag, msg, t);
+            sLogFile.e(tag, msg, t);
         }
     }
 

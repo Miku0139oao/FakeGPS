@@ -35,6 +35,11 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
     private static final int REQUEST_CODE_NOTIFICATION = 2003;
     private static final int REQUEST_CODE_MOCK_APP = 2004;
     private static final int REQUEST_CODE_MAP = 2005;
+    private static final int REQUEST_CODE_APP_SETTINGS = 2006;
+
+    private static final String KEY_PENDING_LAT = "pending_lat";
+    private static final String KEY_PENDING_LON = "pending_lon";
+    private static final String KEY_PENDING_STEP = "pending_step";
 
     private EditText mLocEditText;
     private EditText mMoveStepEditText;
@@ -86,6 +91,31 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
 
         ListView listView = (ListView) findViewById(R.id.list_bookmark);
         initBookmarkList(listView);
+
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(KEY_PENDING_LAT)
+                && savedInstanceState.containsKey(KEY_PENDING_LON)) {
+            double latitude = savedInstanceState.getDouble(KEY_PENDING_LAT);
+            double longitude = savedInstanceState.getDouble(KEY_PENDING_LON);
+            double step = savedInstanceState.getDouble(KEY_PENDING_STEP);
+            if (FakeGpsUtils.isValidLatitude(latitude)
+                    && FakeGpsUtils.isValidLongitude(longitude)
+                    && FakeGpsUtils.isValidMoveStep(step)) {
+                mPendingStartPoint = new LocPoint(latitude, longitude);
+                mPendingStartStep = step;
+                checkPermissionsAndStart();
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mPendingStartPoint != null) {
+            outState.putDouble(KEY_PENDING_LAT, mPendingStartPoint.getLatitude());
+            outState.putDouble(KEY_PENDING_LON, mPendingStartPoint.getLongitude());
+            outState.putDouble(KEY_PENDING_STEP, mPendingStartStep);
+        }
     }
 
     @Override
@@ -200,9 +230,15 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
                     .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            startActivityForResult(
-                                    new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
-                                    REQUEST_CODE_MOCK_APP);
+                            try {
+                                startActivityForResult(
+                                        new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
+                                        REQUEST_CODE_MOCK_APP);
+                            } catch (Exception e) {
+                                startActivityForResult(
+                                        new Intent(Settings.ACTION_SETTINGS),
+                                        REQUEST_CODE_MOCK_APP);
+                            }
                         }
                     })
                     .setNegativeButton(R.string.cancel, null)
@@ -233,6 +269,9 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
             if (coarseGranted) {
                 // Location granted, continue checking next permission
                 checkPermissionsAndStart();
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                showLocationSettingsDialog();
             } else {
                 Toast.makeText(this, R.string.location_permission_required, Toast.LENGTH_LONG).show();
             }
@@ -254,6 +293,8 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
             }
         } else if (requestCode == REQUEST_CODE_MOCK_APP) {
             checkPermissionsAndStart();
+        } else if (requestCode == REQUEST_CODE_APP_SETTINGS) {
+            checkPermissionsAndStart();
         } else if (requestCode == REQUEST_CODE_MAP && resultCode == RESULT_OK && data != null) {
             double latitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LAT, Double.NaN);
             double longitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LON, Double.NaN);
@@ -267,6 +308,22 @@ public class MainActivity extends BaseBookmarkActivity implements View.OnClickLi
     @Override
     protected void onBookmarkSelected(LocPoint locPoint) {
         mLocEditText.setText(locPoint != null ? locPoint.toString() : "");
+    }
+
+    private void showLocationSettingsDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.location_permission_required)
+                .setMessage(R.string.location_permission_settings_message)
+                .setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, REQUEST_CODE_APP_SETTINGS);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void updateBtnStart() {

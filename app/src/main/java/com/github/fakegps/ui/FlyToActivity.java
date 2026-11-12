@@ -16,7 +16,8 @@ import com.github.fakegps.JoyStickManager;
 import com.github.fakegps.model.LocPoint;
 import com.tencent.fakegps.R;
 
-public class FlyToActivity extends BaseBookmarkActivity implements View.OnClickListener {
+public class FlyToActivity extends BaseBookmarkActivity
+        implements View.OnClickListener, JoyStickManager.FlyStateListener {
     private final double LAT_DEFAULT = 23.151637;
     private final double LON_DEFAULT = 113.344721;
 
@@ -29,6 +30,7 @@ public class FlyToActivity extends BaseBookmarkActivity implements View.OnClickL
     private EditText mLocEditText;
     private EditText mFlyTimeEditText;
     private Button mBtnStart;
+    private boolean mWasFlying;
 
 
     @Override
@@ -93,6 +95,7 @@ public class FlyToActivity extends BaseBookmarkActivity implements View.OnClickL
         }
 
         if (JoyStickManager.get().isFlyMode()) {
+            mWasFlying = false;
             JoyStickManager.get().stopFlyMode();
         } else {
             int flyTime = FakeGpsUtils.getIntValueFromInput(this, mFlyTimeEditText);
@@ -106,9 +109,40 @@ public class FlyToActivity extends BaseBookmarkActivity implements View.OnClickL
                 // Jump to the "From" location first, then fly to "To"
                 JoyStickManager.get().jumpToLocation(fromPoint);
                 JoyStickManager.get().flyToLocation(toPoint, flyTime);
+                mWasFlying = true;
             }
         }
         updateBtn();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        JoyStickManager.get().setFlyStateListener(this);
+        mWasFlying = JoyStickManager.get().isFlyMode();
+        updateBtn();
+    }
+
+    @Override
+    protected void onStop() {
+        JoyStickManager.get().setFlyStateListener(null);
+        super.onStop();
+    }
+
+    @Override
+    public void onFlyStateChanged() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                boolean flying = JoyStickManager.get().isFlyMode();
+                updateBtn();
+                if (mWasFlying && !flying) {
+                    Toast.makeText(FlyToActivity.this, R.string.fly_complete,
+                            Toast.LENGTH_SHORT).show();
+                }
+                mWasFlying = flying;
+            }
+        });
     }
 
     @Override

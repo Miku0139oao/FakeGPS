@@ -43,4 +43,31 @@ public class FakeGpsUtilsTest {
         assertFalse(FakeGpsUtils.isValidMoveStep(Double.NaN));
         assertFalse(FakeGpsUtils.isValidMoveStep(Double.POSITIVE_INFINITY));
     }
+
+    @Test
+    public void parseMoveStep_handlesText() {
+        assertTrue(FakeGpsUtils.parseMoveStep("2") == 2.0);
+        assertTrue(FakeGpsUtils.parseMoveStep(" 2.5 ") == 2.5);
+        assertTrue(FakeGpsUtils.parseMoveStep("0") == 0.0);
+        assertTrue(FakeGpsUtils.parseMoveStep("-1") == 0.0);
+        assertTrue(FakeGpsUtils.parseMoveStep("NaN") == 0.0);
+        assertTrue(FakeGpsUtils.parseMoveStep("abc") == 0.0);
+        assertTrue(FakeGpsUtils.parseMoveStep("") == 0.0);
+    }
+
+    @Test
+    public void parseIntValue_handlesText() {
+        assertTrue(FakeGpsUtils.parseIntValue("60") == 60);
+        assertTrue(FakeGpsUtils.parseIntValue(" 60 ") == 60);
+        assertTrue(FakeGpsUtils.parseIntValue("60.5") == 0);
+        assertTrue(FakeGpsUtils.parseIntValue("") == 0);
+        assertTrue(FakeGpsUtils.parseIntValue("999999999999") == 0);
+    }
+
+    @Test
+    public void parseLocation_roundTripsAndRejectsInvalid() {
+        assertTrue(FakeGpsUtils.parseLocation("37.802406, -122.401779") != null);
+        assertTrue(FakeGpsUtils.parseLocation("(37.802406 , -122.401779)") != null);
+        assertTrue(FakeGpsUtils.parseLocation("NaN, 0") == null);
+    }
 }

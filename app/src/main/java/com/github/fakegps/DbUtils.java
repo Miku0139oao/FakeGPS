@@ -10,11 +10,14 @@ import com.litesuits.orm.db.model.ConflictAlgorithm;
 
 import java.util.ArrayList;
 
+import tiger.radio.loggerlibrary.Logger;
+
 /**
  * Created by tiger on 7/23/16.
  */
 public final class DbUtils {
 
+    private static final String TAG = "DbUtils";
     private static final String SHARED_PREF_NAME = "FakeGPS";
     private static final String KEY_LAST_LOC = "last_loc";
 
@@ -26,21 +29,36 @@ public final class DbUtils {
         if (bookmark == null) {
             return -1;
         }
-        long id = FakeGpsApp.getLiteOrm().insert(bookmark, ConflictAlgorithm.Replace);
-        if (id != -1) {
-            notifyBookmarkUpdate();
+        try {
+            long id = FakeGpsApp.getLiteOrm().insert(bookmark, ConflictAlgorithm.Replace);
+            if (id != -1) {
+                notifyBookmarkUpdate();
+            }
+            return id;
+        } catch (RuntimeException e) {
+            Logger.e(TAG, "Unable to insert bookmark", e);
+            return -1;
         }
-        return id;
     }
 
     public static void deleteBookmark(LocBookmark bookmark) {
         if (bookmark == null) return;
-        FakeGpsApp.getLiteOrm().delete(bookmark);
-        notifyBookmarkUpdate();
+        try {
+            FakeGpsApp.getLiteOrm().delete(bookmark);
+            notifyBookmarkUpdate();
+        } catch (RuntimeException e) {
+            Logger.e(TAG, "Unable to delete bookmark", e);
+        }
     }
 
     public static ArrayList<LocBookmark> getAllBookmark() {
-        return FakeGpsApp.getLiteOrm().query(LocBookmark.class);
+        try {
+            ArrayList<LocBookmark> bookmarks = FakeGpsApp.getLiteOrm().query(LocBookmark.class);
+            return bookmarks == null ? new ArrayList<LocBookmark>() : bookmarks;
+        } catch (RuntimeException e) {
+            Logger.e(TAG, "Unable to load bookmarks", e);
+            return new ArrayList<>();
+        }
     }
 
     public static void saveLastLocPoint(@NonNull Context context, @NonNull LocPoint locPoint) {

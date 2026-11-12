@@ -32,11 +32,13 @@ public final class UiUtils {
             Insets bars = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars()
                             | WindowInsetsCompat.Type.displayCutout());
+            Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+            int bottom = Math.max(bars.bottom, ime.bottom);
             view.setPadding(
                     paddingLeft + bars.left,
                     paddingTop + bars.top,
                     paddingRight + bars.right,
-                    paddingBottom + bars.bottom);
+                    paddingBottom + bottom);
             return windowInsets;
         });
         ViewCompat.requestApplyInsets(root);

@@ -35,6 +35,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:labelFor="@+id/inputLoc"
                 android:text="@string/location"
                 android:textSize="20sp"/>
 
@@ -71,6 +72,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:labelFor="@+id/inputStep"
                 android:text="@string/move_step"
                 android:textSize="16sp"/>
 

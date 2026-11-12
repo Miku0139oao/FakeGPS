@@ -119,7 +119,7 @@ public class FakeLocationService extends Service {
         return builder
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
-                .setSmallIcon(R.drawable.icon_app)
+                .setSmallIcon(R.drawable.ic_stat_fakegps)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setVisibility(Notification.VISIBILITY_SECRET)

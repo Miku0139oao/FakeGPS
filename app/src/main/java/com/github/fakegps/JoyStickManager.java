@@ -45,9 +45,31 @@ public class JoyStickManager implements IJoyStickPresenter {
 
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
+    public interface FlyStateListener {
+        void onFlyStateChanged();
+    }
+
+    private volatile FlyStateListener mFlyStateListener;
+
     private JoyStickView mJoyStickView;
 
     private JoyStickManager() {
+    }
+
+    public void setFlyStateListener(FlyStateListener listener) {
+        mFlyStateListener = listener;
+    }
+
+    private void notifyFlyStateChanged() {
+        final FlyStateListener listener = mFlyStateListener;
+        if (listener != null) {
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onFlyStateChanged();
+                }
+            });
+        }
     }
 
 
@@ -75,6 +97,7 @@ public class JoyStickManager implements IJoyStickPresenter {
 
         showJoyStick();
         mIsStarted = true;
+        notifyFlyStateChanged();
     }
 
     public void stop() {
@@ -91,6 +114,7 @@ public class JoyStickManager implements IJoyStickPresenter {
             resetFlyState();
         }
         mIsStarted = false;
+        notifyFlyStateChanged();
     }
 
     private final LocationThread.Listener mLocationListener = new LocationThread.Listener() {
@@ -169,6 +193,7 @@ public class JoyStickManager implements IJoyStickPresenter {
         mCurrentLocPoint = point;
         if (mFlyPath.isComplete(elapsedMs)) {
             mIsFlyMode = false;
+            notifyFlyStateChanged();
         }
         return new LocPoint(mCurrentLocPoint);
     }
@@ -176,6 +201,7 @@ public class JoyStickManager implements IJoyStickPresenter {
     public synchronized void jumpToLocation(@NonNull LocPoint location) {
         resetFlyState();
         mCurrentLocPoint = new LocPoint(location);
+        notifyFlyStateChanged();
     }
 
     public synchronized void flyToLocation(@NonNull LocPoint location, int flyTimeSeconds) {
@@ -189,6 +215,7 @@ public class JoyStickManager implements IJoyStickPresenter {
         mFlyStartElapsedMs = SystemClock.elapsedRealtime();
         mCurrentLocPoint = new LocPoint(origin);
         mIsFlyMode = true;
+        notifyFlyStateChanged();
     }
 
     public boolean isFlyMode() {
@@ -197,6 +224,7 @@ public class JoyStickManager implements IJoyStickPresenter {
 
     public synchronized void stopFlyMode() {
         resetFlyState();
+        notifyFlyStateChanged();
     }
 
     private void resetFlyState() {
@@ -239,8 +267,10 @@ public class JoyStickManager implements IJoyStickPresenter {
         Logger.d(TAG, "onBookmarkLocationClick");
         LocPoint locPoint = getCurrentLocPoint();
         if (locPoint != null) {
-            BookmarkActivity.startPage(mContext, "Bookmark", locPoint);
-            Toast.makeText(mContext, mContext.getString(R.string.location_copied) + "\n" + locPoint, Toast.LENGTH_LONG).show();
+            BookmarkActivity.startPage(mContext, mContext.getString(R.string.bookmark), locPoint);
+            Toast.makeText(mContext,
+                    mContext.getString(R.string.bookmark_save_hint) + "\n" + locPoint,
+                    Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(mContext, R.string.service_not_started, Toast.LENGTH_SHORT).show();
         }

@@ -3,6 +3,7 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:gravity="center_horizontal"
+              android:layoutDirection="ltr"
               android:orientation="vertical">
 
     <com.github.fakegps.ui.JoyStickButton
@@ -29,7 +30,7 @@
             android:id="@+id/btn_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
             android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
             android:contentDescription="@string/cd_arrow_right"/>
 

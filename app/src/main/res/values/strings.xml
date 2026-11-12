@@ -31,9 +31,10 @@
     <string name="overlay_permission_message">FakeGPS needs the \"Display over other apps\" permission to show the floating joystick. Grant it on the next screen.</string>
     <string name="overlay_permission_missing">Overlay permission was not granted.</string>
     <string name="location_permission_required">Location permission is required to simulate GPS.</string>
+    <string name="location_permission_settings_message">Location permission is required to run the location foreground service. Open FakeGPS\'s app settings, choose Permissions → Location, and allow it, then press Start again.</string>
 
     <string name="mock_app_required_title">Select FakeGPS as mock location app</string>
-    <string name="mock_app_required_message">Android requires you to select FakeGPS in Developer options before it can provide mock locations. Open Settings and choose \"Select mock location app\" → FakeGPS, then press Start again.</string>
+    <string name="mock_app_required_message">Android requires two steps: (1) enable Developer options under Settings → About phone → tap Build number seven times, and (2) choose FakeGPS under Developer options → Select mock location app. Then press Start again.</string>
     <string name="mock_app_not_selected">Mock location permission was denied. Select FakeGPS in Developer options → Select mock location app.</string>
 
     <string name="notification_channel_name">FakeGPS Location Service</string>
@@ -48,6 +49,8 @@
     <string name="delete_bookmark_title">Delete bookmark?</string>
     <string name="delete">Delete</string>
     <string name="stop_fly">Stop Fly</string>
+    <string name="fly_complete">Flight complete</string>
+    <string name="bookmark_save_hint">Save this location as a bookmark</string>
     <string name="location_copied">Current location is copied!</string>
 
     <string name="map_picker_title">Pick Location</string>
@@ -57,6 +60,7 @@
     <string name="map_offline">No network connection: tiles may not load, but you can still pick a coordinate.</string>
     <string name="map_selected">Selected: %1$s</string>
     <string name="map_attribution">© OpenStreetMap contributors</string>
+    <string name="map_content_description">Map. Tap or long-press to choose a location, or drag the marker to adjust it.</string>
 
     <string name="from_label">From:</string>
     <string name="to_label">To:</string>

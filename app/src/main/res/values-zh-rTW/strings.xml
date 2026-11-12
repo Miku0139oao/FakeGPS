@@ -31,9 +31,10 @@
     <string name="overlay_permission_message">FakeGPS 需要「顯示在其他應用程式上層」權限才能顯示浮動搖桿。請在下一個畫面授予權限。</string>
     <string name="overlay_permission_missing">未授予懸浮視窗權限。</string>
     <string name="location_permission_required">模擬 GPS 需要定位權限。</string>
+    <string name="location_permission_settings_message">執行 location 前景服務需要定位權限。請開啟 FakeGPS 的應用程式設定 → 權限 → 位置，允許定位後再按一次 Start。</string>
 
     <string name="mock_app_required_title">選擇 FakeGPS 為模擬定位應用程式</string>
-    <string name="mock_app_required_message">Android 要求您先在開發人員選項中選擇 FakeGPS，才能提供模擬定位。請開啟設定，選擇「選取模擬定位應用程式」→ FakeGPS，然後再按一次開始。</string>
+    <string name="mock_app_required_message">Android 需要兩個步驟：(1) 開啟開發人員選項（設定 → 關於手機 → 連續點擊版本號碼 7 次）；(2) 在開發人員選項 → 選取模擬定位應用程式中選擇 FakeGPS。完成後再按一次 Start。</string>
     <string name="mock_app_not_selected">模擬定位權限被拒絕。請在開發人員選項 → 選取模擬定位應用程式中選擇 FakeGPS。</string>
 
     <string name="notification_channel_name">FakeGPS 定位服務</string>
@@ -48,6 +49,8 @@
     <string name="delete_bookmark_title">刪除書籤？</string>
     <string name="delete">刪除</string>
     <string name="stop_fly">停止飛行</string>
+    <string name="fly_complete">飛行完成</string>
+    <string name="bookmark_save_hint">將此位置存為書籤</string>
     <string name="location_copied">已複製目前位置！</string>
 
     <string name="map_picker_title">選擇地點</string>
@@ -57,6 +60,7 @@
     <string name="map_offline">沒有網路連線：圖磚可能無法載入，但仍可選擇座標。</string>
     <string name="map_selected">已選擇：%1$s</string>
     <string name="map_attribution">© OpenStreetMap 貢獻者</string>
+    <string name="map_content_description">地圖。點擊或長按可選擇地點，或拖曳標記調整位置。</string>
 
     <string name="from_label">起點：</string>
     <string name="to_label">終點：</string>

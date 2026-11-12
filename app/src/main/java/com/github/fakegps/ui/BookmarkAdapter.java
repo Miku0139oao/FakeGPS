@@ -56,7 +56,7 @@ public class BookmarkAdapter extends BaseAdapter {
         }
         LocBookmark item = getItem(position);
         viewHolder.name.setText(item.getName());
-        viewHolder.loc.setText(item.getLocPoint().toString());
+        viewHolder.loc.setText(item.getLocPoint() != null ? item.getLocPoint().toString() : "");
 
         return convertView;
     }

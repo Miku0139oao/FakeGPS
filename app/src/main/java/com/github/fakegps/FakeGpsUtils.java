@@ -74,7 +74,10 @@ public final class FakeGpsUtils {
     }
 
     public static LocPoint getLocPointFromInput(Context context, EditText editText) {
-        String text = editText.getText().toString();
+        return parseLocation(editText.getText().toString());
+    }
+
+    public static LocPoint parseLocation(String text) {
         LocPoint point = CoordinateParser.parse(text);
         if (point == null) {
             if (BuildConfig.DEBUG) {
@@ -91,30 +94,30 @@ public final class FakeGpsUtils {
     }
 
     public static double getMoveStepFromInput(Context context, EditText editText) {
-        double step = 0;
-        String stepStr = editText.getText().toString().trim();
+        return parseMoveStep(editText.getText().toString());
+    }
+
+    public static double parseMoveStep(String text) {
         try {
-            double value = Double.parseDouble(stepStr);
-            if (isValidMoveStep(value)) {
-                step = value;
-            }
+            double value = Double.parseDouble(text.trim());
+            return isValidMoveStep(value) ? value : 0;
         } catch (NumberFormatException e) {
             Logger.e(TAG, "Parse move step error!", e);
+            return 0;
         }
-
-        return step;
     }
 
     public static int getIntValueFromInput(Context context, EditText editText) {
-        int value = 0;
-        String stepStr = editText.getText().toString().trim();
+        return parseIntValue(editText.getText().toString());
+    }
+
+    public static int parseIntValue(String text) {
         try {
-            value = Integer.parseInt(stepStr);
+            return Integer.parseInt(text.trim());
         } catch (NumberFormatException e) {
             Logger.e(TAG, "Parse integer input error!", e);
+            return 0;
         }
-
-        return value;
     }
 
 }

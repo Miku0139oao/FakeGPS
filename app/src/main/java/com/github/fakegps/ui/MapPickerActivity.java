@@ -3,7 +3,11 @@ package com.github.fakegps.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
@@ -84,6 +88,19 @@ public class MapPickerActivity extends AppCompatActivity {
         mSelectedView = (TextView) findViewById(R.id.tv_selected);
         mHintView = (TextView) findViewById(R.id.tv_map_hint);
 
+        TextView attribution = (TextView) findViewById(R.id.tv_osm_attribution);
+        attribution.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://www.openstreetmap.org/copyright")));
+                } catch (Exception ignored) {
+                    // No browser installed.
+                }
+            }
+        });
+
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.setTileSource(TileSourceFactory.MAPNIK);
         mMapView.setMultiTouchControls(true);
@@ -128,6 +145,7 @@ public class MapPickerActivity extends AppCompatActivity {
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 updateSelectedCoordinates(marker.getPosition());
+                announceSelection();
             }
         });
         mMapView.getOverlays().add(mMarker);
@@ -155,15 +173,29 @@ public class MapPickerActivity extends AppCompatActivity {
     }
 
     private void updateNetworkHint() {
+        mHintView.setText(isNetworkAvailable() ? R.string.map_hint : R.string.map_offline);
+    }
+
+    @SuppressWarnings("deprecation")
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager == null
-                ? null
-                : connectivityManager.getActiveNetworkInfo();
-        boolean online = networkInfo != null && networkInfo.isConnected();
-        if (!online) {
-            mHintView.setText(R.string.map_offline);
+        if (connectivityManager == null) {
+            return false;
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network network = connectivityManager.getActiveNetwork();
+            if (network == null) {
+                return false;
+            }
+            NetworkCapabilities capabilities =
+                    connectivityManager.getNetworkCapabilities(network);
+            return capabilities != null
+                    && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+        }
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     @Override
@@ -177,6 +209,13 @@ public class MapPickerActivity extends AppCompatActivity {
         mMarker.setPosition(point);
         updateSelectedCoordinates(point);
         mMapView.invalidate();
+        announceSelection();
+    }
+
+    private void announceSelection() {
+        if (mSelectedView != null) {
+            mSelectedView.announceForAccessibility(mSelectedView.getText());
+        }
     }
 
     private void updateSelectedCoordinates(GeoPoint point) {
@@ -194,6 +233,7 @@ public class MapPickerActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        updateNetworkHint();
     }
 
     @Override
