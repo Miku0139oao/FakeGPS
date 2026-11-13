@@ -53,9 +53,9 @@ ANDROID_HOME="D:/vless/.tools/android-sdk" \
 | Kotlin stdlib | 2.3.21（1.8.22 BOM 已移除；runtime 無 1.8.22 jdk7/jdk8 artifact） |
 | Lint | 0 errors / 35 warnings |
 | Tests | 61 passed / 0 failed |
-| Debug APK | 7,141,807 bytes（baseline 6,947,419，+2.80%） |
-| Release APK | 2,280,466 bytes（baseline 2,216,743，+2.88%） |
-| Release SHA-256 | `29d9024764a501949d07825fbd92c36f88d138bb098b86cabcab4e5d4b5fe4d3` |
+| Debug APK | 7,142,104 bytes（baseline 6,947,419，+2.80%） |
+| Release APK | 2,280,518 bytes（baseline 2,216,743，+2.88%） |
+| Release SHA-256 | `d514eb1359497a8be178dea35aac8c3ce2839ff998f5782aa0e35fc8527bdeac` |
 
 ## 4. 資料相容性
 
@@ -98,7 +98,7 @@ ANDROID_HOME="D:/vless/.tools/android-sdk" \
 
 ### 5.1 懸浮窗選點與選點 UI（後續 UX 更新）
 
-- 懸浮窗底部新增「地圖」按鈕，直接開啟 App 內建 OSM 選點地圖，不需要先進主畫面。
+- 懸浮窗底部新增「地圖」按鈕（顯示本地化文字，例如「選擇地點」／「Pick Location」），直接開啟 App 內建 OSM 選點地圖，不需要先進主畫面。
 - 選點完成後**立即套用**到目前 mock 位置，並以獨立 task 關閉選點畫面，返回使用者原本的 App（已用 Google Maps 實測）。
 - 只要任何 FakeGPS Activity 在前景，懸浮搖桿會自動隱藏；回到其他 App 才重新顯示。
 - 懸浮搖桿仍可拖曳，但現在會限制在畫面內（x 0–736、y 0–1568 @ 1440×2560）。

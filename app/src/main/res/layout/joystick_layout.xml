@@ -57,15 +57,36 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <androidx.appcompat.widget.AppCompatImageButton
+    <LinearLayout
         android:id="@+id/btn_map_pick"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/bg_joystick_button"
+        android:clickable="true"
         android:contentDescription="@string/map_picker_title"
-        android:padding="8dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_map"
-        app:tint="@color/brand_on_surface"/>
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/ic_map"
+            app:tint="@color/brand_on_surface"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:importantForAccessibility="no"
+            android:maxLines="1"
+            android:text="@string/map_picker_title"
+            android:textColor="@color/brand_on_surface"
+            android:textSize="11sp"/>
+    </LinearLayout>
 </LinearLayout>
