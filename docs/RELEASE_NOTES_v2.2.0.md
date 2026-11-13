@@ -18,6 +18,22 @@ Kotlin-first 重構與懸浮窗選點。
 - 選點時自動隱藏懸浮窗，選點 UI 更精簡。
 - 懸浮窗仍可拖曳，但會限制在畫面內。
 
+## 懸浮窗選點教學
+
+1. 啟動模擬定位，切到 Google Maps（或其他 App）。
+2. 點擊懸浮面板底部的 **Pick Location**（地圖圖示）。
+3. 拖曳／縮放地圖，或使用搜尋，點選目標位置。
+4. 按 **使用此地點**；位置立即套用，並返回 Google Maps。
+5. FakeGPS 自己的畫面開啟時浮動面板會隱藏，回到其他 App 後會再出現。
+
+<img src="https://raw.githubusercontent.com/Miku0139oao/FakeGPS/master/screenshot/guide-overlay-pick-zh.png" width="320" alt="懸浮窗選點">
+
+<img src="https://raw.githubusercontent.com/Miku0139oao/FakeGPS/master/screenshot/guide-overlay-picker-zh.png" width="320" alt="選點地圖">
+
+> 2.2.0 的懸浮窗按鈕文字顯示英文「Pick Location」，圖示與位置相同；後續版本已改為在地化文字。
+>
+> 完整圖文教學：[README_CN.md](https://github.com/Miku0139oao/FakeGPS/blob/master/README_CN.md)。
+
 ## 安裝
 
 1. 下載 `FakeGPS_v2.2.0.apk`。

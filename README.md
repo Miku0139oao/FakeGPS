@@ -21,6 +21,7 @@ map. **No root is required** — it uses the standard Android mock-location API.
   - [Step 4 — Grant permissions](#step-4--grant-permissions)
   - [Step 5 — Start and verify](#step-5--start-and-verify)
   - [Step 6 — Use the floating joystick](#step-6--use-the-floating-joystick)
+  - [Step 6b — Pick a location from the floating window](#step-6b--pick-a-location-from-the-floating-window)
   - [Step 7 — Pick a location on the map](#step-7--pick-a-location-on-the-map)
   - [Step 8 — Flight mode](#step-8--flight-mode)
   - [Step 9 — Bookmarks](#step-9--bookmarks)
@@ -33,8 +34,8 @@ map. **No root is required** — it uses the standard Android mock-location API.
 
 ## Quick start (60 seconds)
 
-1. Download `FakeGPS_v2.1.0.apk` from the
-   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.1.0)
+1. Download `FakeGPS_v2.2.0.apk` from the
+   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.0)
    and install it.
 2. Enable **Developer options** (Settings → About phone → tap **Build number**
    seven times).
@@ -53,6 +54,10 @@ map. **No root is required** — it uses the standard Android mock-location API.
 | Settings | Address search |
 |---|---|
 | <img src="screenshot/guide-settings.png" width="260" alt="Settings"> | <img src="screenshot/guide-search.png" width="260" alt="Address search"> |
+
+| Floating-window picker | Selected point |
+|---|---|
+| <img src="screenshot/guide-overlay-pick.png" width="260" alt="Floating panel with Pick Location"> | <img src="screenshot/guide-overlay-picker.png" width="260" alt="Map picker opened from the floating panel"> |
 
 ## Step-by-step guide
 
@@ -78,7 +83,7 @@ Notes:
 ### Step 1 — Download and install
 
 1. Open the [Releases page](https://github.com/Miku0139oao/FakeGPS/releases).
-2. Download the signed `FakeGPS_v2.1.0.apk` asset.
+2. Download the signed `FakeGPS_v2.2.0.apk` asset.
 3. Tap the downloaded file. If Android blocks it, allow your browser or file
    manager to **install unknown apps**:
    - Android 8+: **Settings → Apps → Special app access → Install unknown apps
@@ -175,6 +180,7 @@ somewhere convenient.
 | ✈️ plane | Open flight mode / stop an active flight |
 | ⭐ star | Save the current location as a bookmark |
 | ⭐ star (long press) | Copy the current coordinates to the clipboard |
+| 🗺️ map icon at the bottom | Pick a location directly from the floating window (Step 6b) |
 | ▲ ▼ ◀ ▶ | Move the current location by **Move Step** meters |
 
 - **Tap** an arrow to move one step.
@@ -186,6 +192,26 @@ somewhere convenient.
 > While mock location is running, FakeGPS holds a partial wake lock so the
 > once-per-second injection keeps working with the screen off. Press **Stop**
 > when you are done to release it and save battery.
+
+### Step 6b — Pick a location from the floating window
+
+You can move the mock location without leaving Google Maps.
+
+1. Start mock location, then switch to Google Maps or any other app.
+2. Tap **Pick Location** at the bottom of the floating panel (the map icon).
+3. Pan/zoom the map, tap the target place (or search for it), then tap
+   **Use location**.
+4. The new point is applied immediately and you return to the previous app.
+5. While FakeGPS's own screens are open, the floating panel is hidden; it comes
+   back when you return to another app.
+
+<img src="screenshot/guide-overlay-pick.png" width="320" alt="Floating panel with Pick Location">
+
+<img src="screenshot/guide-overlay-picker.png" width="320" alt="Map picker opened from the floating panel">
+
+> The panel can still be dragged, but it is kept inside the screen edges. On
+> the v2.2.0 build the overlay button label is shown in English; the map icon
+> and position are the same in every language.
 
 ### Step 7 — Pick a location on the map
 
@@ -265,7 +291,20 @@ you change:
 The same screen links to the source code and the troubleshooting guide, and
 shows the About dialog with the version and OpenStreetMap attribution.
 
-## What's new in v2.1.0
+## What's new in v2.2.0
+
+- **100% Kotlin**: the app and tests were migrated from Java to Kotlin (0 Java
+  files, 61 JVM tests) without changing the database, preferences, or Android
+  5.0–16 support.
+- **Floating-window map picker**: the **Pick Location** button opens the map,
+  applies the selected point instantly, and returns to the previous app.
+- **Overlay UX**: the joystick hides on FakeGPS's own screens, the picker card
+  is compact, and the panel is clamped inside the screen.
+- **Data compatibility**: existing `fake_gps.db` bookmarks and settings upgrade
+  in place (verified on Android 15).
+- **R8 release**: 2,280,521 bytes, signed release APK.
+
+### From v2.1.0
 
 - **Material 3 UI**: status card, outlined inputs, card-based bookmarks, bottom
   action bar, floating map controls, and a modern floating joystick.
@@ -362,7 +401,7 @@ Requires JDK 17+ (JDK 21 recommended) and Android SDK Platform 36.
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/FakeGPS_v2.1.0.apk`
+APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.0.apk`
 
 CI runs lint, JVM unit tests, and a debug build on every push and pull request
 (`.github/workflows/android.yml`).
@@ -379,7 +418,7 @@ keyPassword=...
 ```
 
 Keep the keystore and this file outside version control. Verify the result with
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.1.0.apk`.
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.0.apk`.
 
 ## Features
 
@@ -390,6 +429,8 @@ Keep the keystore and this file outside version control. Verify the result with
 - **Flight mode**: move linearly from one coordinate to another over a chosen
   duration, with real elapsed-time interpolation.
 - Floating joystick with meter-based movement; tap or long-press the arrows.
+- **Pick a location directly from the floating window** and apply it instantly,
+  returning to the previous app.
 - Bookmarks with tap-to-use and long-press-to-delete.
 - Visual map picker (OpenStreetMap, no API key, no Google Play Services), with
   address/place search via Android Geocoder or Nominatim.

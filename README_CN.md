@@ -17,6 +17,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
   - [步驟 4 — 授予權限](#步驟-4--授予權限)
   - [步驟 5 — 啟動並驗證](#步驟-5--啟動並驗證)
   - [步驟 6 — 使用浮動搖桿](#步驟-6--使用浮動搖桿)
+  - [步驟 6b — 從懸浮窗直接選位置](#步驟-6b--從懸浮窗直接選位置)
   - [步驟 7 — 在地圖上選點](#步驟-7--在地圖上選點)
   - [步驟 8 — 飛行模式](#步驟-8--飛行模式)
   - [步驟 9 — 書籤](#步驟-9--書籤)
@@ -29,7 +30,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 ## 60 秒快速開始
 
-1. 從 [最新 Release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.1.0) 下載 `FakeGPS_v2.1.0.apk` 並安裝。
+1. 從 [最新 Release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.0) 下載 `FakeGPS_v2.2.0.apk` 並安裝。
 2. 開啟 **開發人員選項**（設定 → 關於手機 → 連續點擊 **版本號碼** 7 次）。
 3. 到 **設定 → 系統 → 開發人員選項 → 選取模擬定位應用程式**，選擇 **FakeGPS**。
 4. 開啟 FakeGPS，允許 **位置**、**通知**、**顯示在其他應用程式上層**，然後按 **Start**。
@@ -44,6 +45,10 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 | 設定 | 地址搜尋 |
 |---|---|
 | <img src="screenshot/guide-settings-zh.png" width="260" alt="設定"> | <img src="screenshot/guide-search-zh.png" width="260" alt="地址搜尋"> |
+
+| 懸浮窗選點 | 選點地圖 |
+|---|---|
+| <img src="screenshot/guide-overlay-pick-zh.png" width="260" alt="懸浮窗與 Pick Location 按鈕"> | <img src="screenshot/guide-overlay-picker-zh.png" width="260" alt="從懸浮窗開啟的選點地圖"> |
 
 ## 保姆級逐步教學
 
@@ -65,7 +70,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 ### 步驟 1 — 下載與安裝
 
 1. 開啟 [Releases 頁面](https://github.com/Miku0139oao/FakeGPS/releases)。
-2. 下載已簽章的 `FakeGPS_v2.1.0.apk`。
+2. 下載已簽章的 `FakeGPS_v2.2.0.apk`。
 3. 點擊下載的檔案。若 Android 阻止安裝，請允許瀏覽器或檔案管理器「安裝未知的應用程式」：
    - Android 8+：**設定 → 應用程式 → 特殊應用程式存取權 → 安裝未知的應用程式 → 你的瀏覽器／檔案管理器 → 允許來自此來源**。
    - 較舊的 Android：**設定 → 安全性 → 未知的來源**。
@@ -148,6 +153,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 | ✈️ 飛機 | 開啟飛行模式／停止飛行 |
 | ⭐ 星星 | 將目前位置存成書籤 |
 | ⭐ 星星（長按） | 複製目前座標到剪貼簿 |
+| 🗺️ 底部地圖圖示 | 直接從懸浮窗選位置（步驟 6b） |
 | ▲ ▼ ◀ ▶ | 依 **Move Step** 公尺數移動目前位置 |
 
 - **點一下**方向鍵：移動一步。
@@ -156,6 +162,23 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 - 移動會依緯度換算經度比例，靠近極區也能正確運作。
 
 > 模擬定位執行期間，FakeGPS 會持有 partial wake lock，讓螢幕關閉時仍能每秒注入位置。不使用時請按 **Stop** 釋放，節省電量。
+
+### 步驟 6b — 從懸浮窗直接選位置
+
+不用離開 Google Maps，也能快速換到下一個位置。
+
+1. 啟動模擬定位後，切到 Google Maps 或其他 App。
+2. 點擊懸浮面板底部的 **Pick Location**（地圖圖示）。
+3. 拖曳／縮放地圖，點擊目標位置（或使用搜尋），再按 **使用此地點**。
+4. 新位置會立即套用，並自動返回上一個 App。
+5. FakeGPS 自己的畫面開啟時，浮動面板會自動隱藏；回到其他 App 後會再出現。
+
+<img src="screenshot/guide-overlay-pick-zh.png" width="320" alt="懸浮窗與 Pick Location 按鈕">
+
+<img src="screenshot/guide-overlay-picker-zh.png" width="320" alt="從懸浮窗開啟的選點地圖">
+
+> 2.2.0 的懸浮窗按鈕文字會顯示英文「Pick Location」，圖示與位置相同；後續版本已改為在地化文字。
+> 浮動面板仍可拖曳，但會限制在畫面內。
 
 ### 步驟 7 — 在地圖上選點
 
@@ -220,7 +243,15 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 同一頁也提供原始碼、疑難排解連結，以及包含版本與 OpenStreetMap 標示的「關於」對話框。
 
-## v2.1.0 更新內容
+## v2.2.0 更新內容
+
+- **100% Kotlin**：App 與測試全部改為 Kotlin（0 個 Java 檔、61 個 JVM 測試），資料庫、設定與 Android 5.0–16 支援不變。
+- **懸浮窗選點**：新增 **Pick Location** 按鈕，開啟地圖、立即套用選點，並返回原本的 App。
+- **懸浮窗體驗**：FakeGPS 自己的畫面中自動隱藏、選點卡片精簡、拖曳限制在畫面內。
+- **資料相容**：既有 `fake_gps.db` 書籤與設定可原地升級（Android 15 實測）。
+- **R8 release**：2,280,521 bytes，已簽章 release APK。
+
+### v2.2.0 之前的內容
 
 - **Material 3 介面**：狀態卡片、外框輸入框、卡片式書籤、底部操作列、地圖浮動控制，以及現代化的浮動搖桿。
 - **內建語言選擇器，支援 9 種語系**：English、繁體中文、简体中文、日本語、한국어、Español、Français、Deutsch、Português (Brasil)，外加系統預設。
@@ -295,7 +326,7 @@ Release 版本不寫座標日誌。Debug 版本會寫到 App 的內部檔案目�
 ./gradlew assembleDebug
 ```
 
-APK 輸出：`app/build/outputs/apk/debug/FakeGPS_v2.1.0.apk`
+APK 輸出：`app/build/outputs/apk/debug/FakeGPS_v2.2.0.apk`
 
 CI 會在每次 push 與 pull request 執行 lint、JVM 單元測試與 debug build
 （`.github/workflows/android.yml`）。
@@ -312,7 +343,7 @@ keyPassword=...
 ```
 
 請把 keystore 與這個檔案放在版本控制之外。用
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.1.0.apk`
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.0.apk`
 驗證結果。
 
 ## 功能列表
@@ -321,6 +352,7 @@ keyPassword=...
 - **跳變模式**：立即跳到新座標。
 - **飛行模式**：在指定時間內以真實經過時間做線性插值。
 - 浮動搖桿，以公尺為單位移動；點擊或長按方向鍵。
+- **直接從懸浮窗選位置**，立即套用並返回原本的 App。
 - 書籤：點擊使用、長按刪除。
 - 視覺化地圖選點（OpenStreetMap，不需 API key、不需 Google Play Services），並支援地址／地點搜尋（Android Geocoder 或 Nominatim）。
 - 由連續定位計算真實 speed / bearing。
