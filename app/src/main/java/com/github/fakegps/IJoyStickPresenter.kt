@@ -5,6 +5,7 @@ package com.github.fakegps
  */
 interface IJoyStickPresenter {
     fun onSetLocationClick()
+    fun onMapClick()
     fun onFlyClick()
     fun onBookmarkLocationClick()
     fun onCopyLocationClick()

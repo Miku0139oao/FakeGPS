@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.core.net.toUri
 import com.github.fakegps.AddressSearch
 import com.github.fakegps.FakeGpsUtils
+import com.github.fakegps.JoyStickManager
 import com.github.fakegps.model.LocPoint
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tencent.fakegps.R
@@ -48,6 +49,7 @@ class MapPickerActivity : AppCompatActivity() {
     private var longitude = DEFAULT_LON
     private var lastDragTextUpdateMs = 0L
     private var searchJob: Job? = null
+    private var applyDirectly = false
 
     @Suppress("DEPRECATION") // osmdroid still exposes this toggling API.
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +61,7 @@ class MapPickerActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { finish() }
 
         val incoming = intent
+        applyDirectly = incoming.getBooleanExtra(EXTRA_APPLY_DIRECTLY, false)
         var lat = incoming.getDoubleExtra(EXTRA_LAT, DEFAULT_LAT)
         var lon = incoming.getDoubleExtra(EXTRA_LON, DEFAULT_LON)
         if (savedInstanceState != null) {
@@ -150,13 +153,7 @@ class MapPickerActivity : AppCompatActivity() {
         mapView.overlays.add(marker)
         mapView.invalidate()
 
-        binding.btnUse.setOnClickListener {
-            val result = Intent()
-            result.putExtra(EXTRA_LAT, latitude)
-            result.putExtra(EXTRA_LON, longitude)
-            setResult(RESULT_OK, result)
-            finish()
-        }
+        binding.btnUse.setOnClickListener { applySelection() }
         binding.btnCancel.setOnClickListener { finish() }
         binding.btnRecenter.setOnClickListener {
             mapView.controller.animateTo(marker.position)
@@ -164,6 +161,29 @@ class MapPickerActivity : AppCompatActivity() {
 
         updateSelectedText()
         updateNetworkHint()
+    }
+
+    private fun applySelection() {
+        if (applyDirectly) {
+            if (!JoyStickManager.get().isStarted) {
+                Toast.makeText(this, R.string.start_first, Toast.LENGTH_SHORT).show()
+                return
+            }
+            JoyStickManager.get().jumpToLocation(LocPoint(latitude, longitude))
+            Toast.makeText(this, R.string.location_applied, Toast.LENGTH_SHORT).show()
+        } else {
+            val result = Intent()
+            result.putExtra(EXTRA_LAT, latitude)
+            result.putExtra(EXTRA_LON, longitude)
+            setResult(RESULT_OK, result)
+        }
+        if (applyDirectly) {
+            // The overlay picker runs in its own task; remove it so the user
+            // returns to the app they were using (e.g. Google Maps).
+            finishAndRemoveTask()
+        } else {
+            finish()
+        }
     }
 
     private fun updateNetworkHint() {
@@ -334,6 +354,7 @@ class MapPickerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_LAT = "extra_lat"
         const val EXTRA_LON = "extra_lon"
+        const val EXTRA_APPLY_DIRECTLY = "extra_apply_directly"
 
         private const val DEFAULT_LAT = 37.802406
         private const val DEFAULT_LON = -122.401779
@@ -347,6 +368,23 @@ class MapPickerActivity : AppCompatActivity() {
                 putExtra(EXTRA_LAT, lat)
                 putExtra(EXTRA_LON, lon)
             }
+        }
+
+        /**
+         * Opens the picker from the floating overlay. The picked point is
+         * applied to the running engine directly, so no Activity result is
+         * needed and the overlay can return to the previous app afterwards.
+         */
+        @JvmStatic
+        fun startForOverlay(context: Context, point: LocPoint?) {
+            val intent = createIntent(context, point)
+            intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            )
+            intent.putExtra(EXTRA_APPLY_DIRECTLY, true)
+            context.startActivity(intent)
         }
     }
 }

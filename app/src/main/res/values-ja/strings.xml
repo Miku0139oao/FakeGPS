@@ -51,8 +51,9 @@
     <string name="map_picker_title">場所を選択</string>
     <string name="pick_on_map">地図</string>
     <string name="use_this_location">この場所を使用</string>
-    <string name="map_hint">タップ、長押し、またはマーカーのドラッグで場所を選択できます。地図タイルの表示にはネットワーク接続が必要ですが、座標はオフラインでも使用できます。</string>
+    <string name="map_hint">地図をタップするかマーカーをドラッグして場所を選択します。</string>
     <string name="map_offline">ネットワークに接続されていません。タイルが読み込まれない場合がありますが、座標は選択できます。</string>
+    <string name="location_applied">位置を適用しました</string>
     <string name="map_selected">選択中: %1$s</string>
     <string name="map_attribution">© OpenStreetMap 貢献者</string>
     <string name="map_content_description">地図。タップまたは長押しで場所を選択するか、マーカーをドラッグして調整します。</string>

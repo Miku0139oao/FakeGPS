@@ -51,8 +51,9 @@
     <string name="map_picker_title">Standort auswählen</string>
     <string name="pick_on_map">Karte</string>
     <string name="use_this_location">Diesen Standort verwenden</string>
-    <string name="map_hint">Tippe, halte gedrückt oder ziehe die Markierung, um einen Standort auszuwählen. Kartenkacheln benötigen eine Netzwerkverbindung; Koordinaten funktionieren auch offline.</string>
+    <string name="map_hint">Tippe auf die Karte oder ziehe die Markierung, um einen Standort zu wählen.</string>
     <string name="map_offline">Keine Netzwerkverbindung: Kartenkacheln werden möglicherweise nicht geladen, aber du kannst trotzdem eine Koordinate auswählen.</string>
+    <string name="location_applied">Standort übernommen</string>
     <string name="map_selected">Ausgewählt: %1$s</string>
     <string name="map_attribution">© OpenStreetMap-Mitwirkende</string>
     <string name="map_content_description">Karte. Tippe oder halte gedrückt, um einen Standort auszuwählen, oder ziehe die Markierung, um sie anzupassen.</string>

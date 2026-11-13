@@ -11,6 +11,7 @@ import com.github.fakegps.ui.BookmarkActivity
 import com.github.fakegps.ui.FlyToActivity
 import com.github.fakegps.ui.JoyStickView
 import com.github.fakegps.ui.MainActivity
+import com.github.fakegps.ui.MapPickerActivity
 import com.tencent.fakegps.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,10 @@ object JoyStickManager : IJoyStickPresenter {
 
     private var locationThread: LocationThread? = null
     private var joyStickView: JoyStickView? = null
+
+    // Incremented while any of our Activities is started. The overlay is only
+    // shown over other apps, never on top of our own screens.
+    private var appActivitiesStarted = 0
 
     @Volatile
     private var started = false
@@ -84,8 +89,8 @@ object JoyStickManager : IJoyStickPresenter {
         // Start foreground service for Android 8.0+.
         startForegroundService()
 
-        showJoyStick()
         started = true
+        updateOverlayVisibility()
         publishStatus()
     }
 
@@ -100,6 +105,26 @@ object JoyStickManager : IJoyStickPresenter {
         movementState.resetFly()
         started = false
         publishStatus()
+    }
+
+    /** Called from Application.ActivityLifecycleCallbacks on the main thread. */
+    fun onAppActivityStarted() {
+        appActivitiesStarted++
+        updateOverlayVisibility()
+    }
+
+    /** Called from Application.ActivityLifecycleCallbacks on the main thread. */
+    fun onAppActivityStopped() {
+        appActivitiesStarted = (appActivitiesStarted - 1).coerceAtLeast(0)
+        updateOverlayVisibility()
+    }
+
+    private fun updateOverlayVisibility() {
+        if (started && appActivitiesStarted == 0) {
+            showJoyStick()
+        } else {
+            hideJoyStick()
+        }
     }
 
     private fun ensureEngine() {
@@ -191,6 +216,11 @@ object JoyStickManager : IJoyStickPresenter {
     override fun onSetLocationClick() {
         Logger.d(TAG, "onSetLocationClick")
         MainActivity.startPage(appContext)
+    }
+
+    override fun onMapClick() {
+        Logger.d(TAG, "onMapClick")
+        MapPickerActivity.startForOverlay(appContext, currentLocPoint)
     }
 
     override fun onFlyClick() {

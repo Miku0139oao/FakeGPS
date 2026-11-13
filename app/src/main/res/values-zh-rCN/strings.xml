@@ -51,8 +51,9 @@
     <string name="map_picker_title">选择位置</string>
     <string name="pick_on_map">地图</string>
     <string name="use_this_location">使用此位置</string>
-    <string name="map_hint">点击、长按或拖动标记来选择位置。地图瓦片需要网络连接；坐标仍可离线使用。</string>
+    <string name="map_hint">点击地图或拖动标记来选择位置。</string>
     <string name="map_offline">无网络连接：瓦片可能无法加载，但仍可选择坐标。</string>
+    <string name="location_applied">位置已应用</string>
     <string name="map_selected">已选择：%1$s</string>
     <string name="map_attribution">© OpenStreetMap 贡献者</string>
     <string name="map_content_description">地图。点击或长按选择位置，或拖动标记进行调整。</string>

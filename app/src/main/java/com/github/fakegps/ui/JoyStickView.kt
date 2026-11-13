@@ -23,6 +23,8 @@ class JoyStickView(context: Context) : FrameLayout(context) {
 
     private var viewWidth = 0
     private var viewHeight = 0
+    private var screenWidth = 0
+    private var screenHeight = 0
     // Touch point x position according to the screen.
     private var xInScreen = 0f
     // Touch point y position according to the screen.
@@ -49,6 +51,7 @@ class JoyStickView(context: Context) : FrameLayout(context) {
             R.id.btn_left -> presenter.onArrowLeftClick()
             R.id.btn_right -> presenter.onArrowRightClick()
             R.id.btn_set_loc -> presenter.onSetLocationClick()
+            R.id.btn_map_pick -> presenter.onMapClick()
             R.id.btn_fly_to -> presenter.onFlyClick()
             R.id.btn_bookmark -> presenter.onBookmarkLocationClick()
         }
@@ -60,6 +63,8 @@ class JoyStickView(context: Context) : FrameLayout(context) {
         statusBarHeight = ScreenUtils.getStatusBarHeight(context)
         viewWidth = context.resources.getDimensionPixelSize(R.dimen.joystick_width)
         viewHeight = context.resources.getDimensionPixelSize(R.dimen.joystick_height)
+        screenWidth = ScreenUtils.getScreenWidth(context)
+        screenHeight = ScreenUtils.getScreenHeight(context)
 
         // Use TYPE_APPLICATION_OVERLAY for Android O (26) and above.
         windowLayoutParams.type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -76,10 +81,13 @@ class JoyStickView(context: Context) : FrameLayout(context) {
         // The real width and height is needed, or the view cannot be shown.
         windowLayoutParams.width = viewWidth
         windowLayoutParams.height = viewHeight
-        windowLayoutParams.x = maxOf(0, ScreenUtils.getScreenWidth(context) - viewWidth)
-        windowLayoutParams.y = ScreenUtils.getScreenHeight(context) / 2
+        windowLayoutParams.x = maxOf(0, screenWidth - viewWidth)
+        windowLayoutParams.y = (screenHeight / 2).coerceIn(
+            0, maxOf(0, screenHeight - viewHeight)
+        )
 
         findViewById<View>(R.id.btn_set_loc).setOnClickListener(onClickListener)
+        findViewById<View>(R.id.btn_map_pick).setOnClickListener(onClickListener)
         findViewById<View>(R.id.btn_fly_to).setOnClickListener(onClickListener)
         findViewById<View>(R.id.btn_bookmark).setOnClickListener(onClickListener)
         findViewById<View>(R.id.btn_bookmark).setOnLongClickListener {
@@ -135,8 +143,10 @@ class JoyStickView(context: Context) : FrameLayout(context) {
     }
 
     private fun updateViewPosition() {
-        windowLayoutParams.x = (xInScreen - xInView).toInt()
-        windowLayoutParams.y = (yInScreen - yInView).toInt()
+        val maxX = maxOf(0, screenWidth - viewWidth)
+        val maxY = maxOf(0, screenHeight - viewHeight)
+        windowLayoutParams.x = (xInScreen - xInView).toInt().coerceIn(0, maxX)
+        windowLayoutParams.y = (yInScreen - yInView).toInt().coerceIn(0, maxY)
         windowManager.updateViewLayout(this, windowLayoutParams)
     }
 

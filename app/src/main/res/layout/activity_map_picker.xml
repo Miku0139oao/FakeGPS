@@ -112,14 +112,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_margin="12dp"
-            app:cardCornerRadius="24dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <TextView
                     android:id="@+id/tv_osm_attribution"
@@ -128,31 +128,38 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="end"
+                    android:maxLines="1"
                     android:text="@string/map_attribution"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurfaceVariant"/>
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"/>
 
                 <TextView
                     android:id="@+id/tv_selected"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                    android:textSize="20sp"/>
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:id="@+id/tv_map_hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="@string/map_hint"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurfaceVariant"/>
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="2dp"
                     android:gravity="end"
                     android:orientation="horizontal">
 
@@ -160,23 +167,31 @@
                         android:id="@+id/btn_copy_coords"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="0dp"
                         android:text="@string/copy_coordinates"
+                        android:textSize="12sp"
                         app:icon="@drawable/ic_content_copy"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_open_external"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="0dp"
                         android:text="@string/open_in_maps"
+                        android:textSize="12sp"
                         app:icon="@drawable/ic_map"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton

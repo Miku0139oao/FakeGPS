@@ -51,8 +51,9 @@
     <string name="map_picker_title">Choisir une position</string>
     <string name="pick_on_map">Carte</string>
     <string name="use_this_location">Utiliser cette position</string>
-    <string name="map_hint">Appuyez, appuyez longuement ou faites glisser le repère pour choisir une position. Les tuiles de carte nécessitent une connexion réseau ; les coordonnées fonctionnent toujours hors ligne.</string>
+    <string name="map_hint">Touchez la carte ou faites glisser le repère pour choisir un lieu.</string>
     <string name="map_offline">Aucune connexion réseau : les tuiles peuvent ne pas se charger, mais vous pouvez quand même choisir des coordonnées.</string>
+    <string name="location_applied">Position appliquée</string>
     <string name="map_selected">Sélectionné : %1$s</string>
     <string name="map_attribution">© contributeurs OpenStreetMap</string>
     <string name="map_content_description">Carte. Appuyez ou appuyez longuement pour choisir une position, ou faites glisser le repère pour l\'ajuster.</string>

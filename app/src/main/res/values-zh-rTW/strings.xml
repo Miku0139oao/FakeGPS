@@ -57,8 +57,9 @@
     <string name="map_picker_title">選擇地點</string>
     <string name="pick_on_map">地圖</string>
     <string name="use_this_location">使用此地點</string>
-    <string name="map_hint">點擊、長按或拖曳標記來選擇地點。地圖圖磚需要網路連線；座標仍可離線使用。</string>
+    <string name="map_hint">點擊地圖或拖曳標記來選擇位置。</string>
     <string name="map_offline">沒有網路連線：圖磚可能無法載入，但仍可選擇座標。</string>
+    <string name="location_applied">位置已套用</string>
     <string name="map_selected">已選擇：%1$s</string>
     <string name="map_attribution">© OpenStreetMap 貢獻者</string>
     <string name="map_content_description">地圖。點擊或長按可選擇地點，或拖曳標記調整位置。</string>

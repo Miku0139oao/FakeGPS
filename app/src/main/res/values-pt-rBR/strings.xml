@@ -51,8 +51,9 @@
     <string name="map_picker_title">Escolher local</string>
     <string name="pick_on_map">Mapa</string>
     <string name="use_this_location">Usar este local</string>
-    <string name="map_hint">Toque, pressione e segure ou arraste o marcador para escolher um local. Os blocos do mapa precisam de conexão de rede; as coordenadas ainda funcionam offline.</string>
+    <string name="map_hint">Toque no mapa ou arraste o marcador para escolher um local.</string>
     <string name="map_offline">Sem conexão de rede: os blocos do mapa podem não carregar, mas você ainda pode escolher uma coordenada.</string>
+    <string name="location_applied">Localização aplicada</string>
     <string name="map_selected">Selecionado: %1$s</string>
     <string name="map_attribution">© colaboradores do OpenStreetMap</string>
     <string name="map_content_description">Mapa. Toque ou pressione e segure para escolher um local, ou arraste o marcador para ajustá-lo.</string>

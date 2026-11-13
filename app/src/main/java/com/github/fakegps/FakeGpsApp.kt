@@ -1,7 +1,9 @@
 package com.github.fakegps
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import com.litesuits.orm.LiteOrm
 import com.tencent.fakegps.BuildConfig
@@ -29,6 +31,21 @@ class FakeGpsApp : Application() {
         }
         initOsmdroid()
         JoyStickManager.get().init(this)
+        registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+            override fun onActivityStarted(activity: Activity) {
+                JoyStickManager.get().onAppActivityStarted()
+            }
+
+            override fun onActivityResumed(activity: Activity) = Unit
+            override fun onActivityPaused(activity: Activity) = Unit
+            override fun onActivityStopped(activity: Activity) {
+                JoyStickManager.get().onAppActivityStopped()
+            }
+
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
+            override fun onActivityDestroyed(activity: Activity) = Unit
+        })
     }
 
     private fun initLogger() {

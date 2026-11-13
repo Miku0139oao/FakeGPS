@@ -51,8 +51,9 @@
     <string name="map_picker_title">Elegir ubicación</string>
     <string name="pick_on_map">Mapa</string>
     <string name="use_this_location">Usar esta ubicación</string>
-    <string name="map_hint">Toca, mantén pulsado o arrastra el marcador para elegir una ubicación. Los mosaicos del mapa necesitan conexión de red; las coordenadas funcionan sin conexión.</string>
+    <string name="map_hint">Toca el mapa o arrastra el marcador para elegir una ubicación.</string>
     <string name="map_offline">Sin conexión de red: puede que los mosaicos no carguen, pero aún puedes elegir una coordenada.</string>
+    <string name="location_applied">Ubicación aplicada</string>
     <string name="map_selected">Seleccionado: %1$s</string>
     <string name="map_attribution">© colaboradores de OpenStreetMap</string>
     <string name="map_content_description">Mapa. Toca o mantén pulsado para elegir una ubicación, o arrastra el marcador para ajustarla.</string>
