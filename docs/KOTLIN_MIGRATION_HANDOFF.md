@@ -1,6 +1,6 @@
 # FakeGPS — Kotlin 重構 Handoff
 
-> **狀態（2026-11-13）**：Kotlin-first 遷移已完成。專案目前 0 個 Java 檔、49 個 Kotlin 檔，資料格式與 `fake_gps.db` 未變。以下內容保留為遷移前基準與驗收清單；實際結果見 git log 與最終回報。
+> **狀態（2026-11-13）**：Kotlin-first 遷移已完成。專案目前 0 個 Java 檔、49 個 Kotlin 檔，資料格式與 `fake_gps.db` 未變。以下內容保留為遷移前基準與驗收清單；實際結果見 `docs/KOTLIN_MIGRATION_REPORT.md` 與 git log。
 
 > 給接手規劃／實作 Kotlin 重構的 agent。這份文件描述 **2026-11-13 的實際狀態**，不是原始 2016 年版本。
 > 建議先讀完「不可破壞的行為」與「風險」再開始規劃。
