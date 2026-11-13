@@ -55,8 +55,8 @@ object CoordinateParser {
             return null
         }
         return try {
-            val latitude = matcher.group(1).toDouble()
-            val longitude = matcher.group(2).toDouble()
+            val latitude = requireNotNull(matcher.group(1)).toDouble()
+            val longitude = requireNotNull(matcher.group(2)).toDouble()
             if (FakeGpsUtils.isValidLatitude(latitude) &&
                 FakeGpsUtils.isValidLongitude(longitude)
             ) {
@@ -76,12 +76,12 @@ object CoordinateParser {
             return null
         }
         val first = dmsToDecimal(matcher)
-        val firstHemisphere = matcher.group(4).uppercase(Locale.getDefault()).first()
+        val firstHemisphere = requireNotNull(matcher.group(4)).uppercase(Locale.getDefault()).first()
         if (!matcher.find()) {
             return null
         }
         val second = dmsToDecimal(matcher)
-        val secondHemisphere = matcher.group(4).uppercase(Locale.getDefault()).first()
+        val secondHemisphere = requireNotNull(matcher.group(4)).uppercase(Locale.getDefault()).first()
 
         val latitude: Double
         val longitude: Double
@@ -101,11 +101,11 @@ object CoordinateParser {
     }
 
     private fun dmsToDecimal(matcher: Matcher): Double {
-        val degrees = matcher.group(1).toDouble()
+        val degrees = requireNotNull(matcher.group(1)).toDouble()
         val minutes = matcher.group(2)?.toDouble() ?: 0.0
         val seconds = matcher.group(3)?.toDouble() ?: 0.0
         var value = degrees + minutes / 60.0 + seconds / 3600.0
-        val hemisphere = matcher.group(4).uppercase(Locale.getDefault()).first()
+        val hemisphere = requireNotNull(matcher.group(4)).uppercase(Locale.getDefault()).first()
         if (hemisphere == 'S' || hemisphere == 'W') {
             value = -value
         }
