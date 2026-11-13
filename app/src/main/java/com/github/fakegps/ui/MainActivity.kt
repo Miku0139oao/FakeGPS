@@ -3,7 +3,6 @@ package com.github.fakegps.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -16,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.net.toUri
 import com.github.fakegps.DbUtils
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
@@ -320,7 +320,7 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
                     overlayLauncher.launch(
                         Intent(
                             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:$packageName")
+                            "package:$packageName".toUri()
                         )
                     )
                 }
@@ -367,7 +367,7 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
                 settingsLauncher.launch(
                     Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:$packageName")
+                        "package:$packageName".toUri()
                     )
                 )
             }

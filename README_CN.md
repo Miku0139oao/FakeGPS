@@ -333,10 +333,10 @@ keyPassword=...
 ## 專案結構
 
 ```
-app/                      Android App（Java）
-  src/main/java/...       Activity、Service、LocationThread、地圖選點
-  src/main/res/           版面、字串（en + zh-rTW）、圖示
-  src/test/java/...       JVM 單元測試
+app/                      Android App（Kotlin）
+  src/main/java/...       Kotlin 原始碼：Activity、Service、定位引擎、地圖選點
+  src/main/res/           版面、字串（9 語系）、圖示
+  src/test/java/...       JVM 單元測試（Kotlin）
 loggerlibrary/            小型檔案日誌模組
 screenshot/               截圖與教程圖片
 .github/workflows/        CI：lint + 單元測試 + debug build
@@ -346,7 +346,7 @@ screenshot/               截圖與教程圖片
 
 歡迎 fork、開分支、執行 `./gradlew lintDebug testDebugUnitTest
 assembleDebug`，然後發 Pull Request。新增 UI 字串請同時更新
-`values/strings.xml` 與 `values-zh-rTW/strings.xml`，新的純 Java 邏輯請補單元測試。
+`values/strings.xml` 與 `values-zh-rTW/strings.xml`，新的純 Kotlin 邏輯請補單元測試。
 
 ## License
 

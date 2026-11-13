@@ -2,6 +2,7 @@ package com.github.fakegps
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 
 /**
  * Simple persisted app settings.
@@ -23,8 +24,9 @@ object SettingsStore {
 
     @JvmStatic
     fun setTheme(context: Context, theme: String) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putString(KEY_THEME, theme).apply()
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit {
+            putString(KEY_THEME, theme)
+        }
     }
 
     @JvmStatic
@@ -41,7 +43,8 @@ object SettingsStore {
 
     @JvmStatic
     fun setKeepRunningWithScreenOff(context: Context, keepRunning: Boolean) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putBoolean(KEY_KEEP_RUNNING, keepRunning).apply()
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit {
+            putBoolean(KEY_KEEP_RUNNING, keepRunning)
+        }
     }
 }

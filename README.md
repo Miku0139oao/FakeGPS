@@ -403,10 +403,10 @@ Keep the keystore and this file outside version control. Verify the result with
 ## Project layout
 
 ```
-app/                      Android app (Java)
-  src/main/java/...       Activities, service, location thread, map picker
-  src/main/res/           Layouts, strings (en + zh-rTW), drawables
-  src/test/java/...       JVM unit tests
+app/                      Android app (Kotlin)
+  src/main/java/...       Kotlin sources: Activities, service, location engine, map picker
+  src/main/res/           Layouts, strings (9 locales), drawables
+  src/test/java/...       JVM unit tests (Kotlin)
 loggerlibrary/            Small file-logger module
 screenshot/               Screenshots and tutorial images
 .github/workflows/        CI: lint + unit tests + debug build
@@ -417,7 +417,7 @@ screenshot/               Screenshots and tutorial images
 Fork the repository, create a branch, run `./gradlew lintDebug
 testDebugUnitTest assembleDebug`, and send a pull request. Please keep new UI
 strings in `values/strings.xml` and `values-zh-rTW/strings.xml`, and add a unit
-test for new pure-Java logic.
+test for new pure-Kotlin logic.
 
 ## License
 

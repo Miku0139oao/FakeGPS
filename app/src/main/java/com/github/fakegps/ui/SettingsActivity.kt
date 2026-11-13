@@ -1,11 +1,11 @@
 package com.github.fakegps.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.core.net.toUri
 import com.github.fakegps.SettingsStore
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tencent.fakegps.BuildConfig
@@ -144,7 +144,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun openUrl(url: String) {
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
         } catch (ignored: Exception) {
             // No browser installed.
         }

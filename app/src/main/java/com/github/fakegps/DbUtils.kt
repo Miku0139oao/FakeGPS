@@ -1,6 +1,7 @@
 package com.github.fakegps
 
 import android.content.Context
+import androidx.core.content.edit
 import com.github.fakegps.model.LocBookmark
 import com.github.fakegps.model.LocPoint
 import com.litesuits.orm.db.model.ConflictAlgorithm
@@ -56,9 +57,9 @@ object DbUtils {
 
     @JvmStatic
     fun saveLastLocPoint(context: Context, locPoint: LocPoint) {
-        context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE).edit()
-            .putString(KEY_LAST_LOC, locPoint.toString())
-            .apply()
+        context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE).edit {
+            putString(KEY_LAST_LOC, locPoint.toString())
+        }
     }
 
     @JvmStatic

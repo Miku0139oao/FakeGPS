@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.core.net.toUri
 import com.github.fakegps.AddressSearch
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.model.LocPoint
@@ -92,7 +93,7 @@ class MapPickerActivity : AppCompatActivity() {
                 startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        android.net.Uri.parse("https://www.openstreetmap.org/copyright")
+                        "https://www.openstreetmap.org/copyright".toUri()
                     )
                 )
             } catch (ignored: Exception) {
@@ -269,7 +270,7 @@ class MapPickerActivity : AppCompatActivity() {
             latitude, longitude, latitude, longitude
         )
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(uri)))
+            startActivity(Intent(Intent.ACTION_VIEW, uri.toUri()))
         } catch (e: Exception) {
             Toast.makeText(this, R.string.search_failed, Toast.LENGTH_SHORT).show()
         }
