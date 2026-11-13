@@ -53,9 +53,9 @@ ANDROID_HOME="D:/vless/.tools/android-sdk" \
 | Kotlin stdlib | 2.3.21（1.8.22 BOM 已移除；runtime 無 1.8.22 jdk7/jdk8 artifact） |
 | Lint | 0 errors / 35 warnings |
 | Tests | 61 passed / 0 failed |
-| Debug APK | 7,142,104 bytes（baseline 6,947,419，+2.80%） |
-| Release APK | 2,280,518 bytes（baseline 2,216,743，+2.88%） |
-| Release SHA-256 | `d514eb1359497a8be178dea35aac8c3ce2839ff998f5782aa0e35fc8527bdeac` |
+| Debug APK | 7,142,091 bytes（baseline 6,947,419，+2.80%） |
+| Release APK | 2,280,521 bytes（baseline 2,216,743，+2.88%；v2.2.0） |
+| Release SHA-256 | `e00ee89b8d45372b68f2952e582d0e6806840a1f0f0c94a5286ac5db0f5f052c` |
 
 ## 4. 資料相容性
 
