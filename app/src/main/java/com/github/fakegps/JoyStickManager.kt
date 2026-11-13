@@ -2,10 +2,13 @@ package com.github.fakegps
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import com.github.fakegps.model.LocPoint
 import com.github.fakegps.ui.BookmarkActivity
 import com.github.fakegps.ui.FlyToActivity
@@ -43,6 +46,7 @@ object JoyStickManager : IJoyStickPresenter {
 
     private var locationThread: LocationThread? = null
     private var joyStickView: JoyStickView? = null
+    private var joyStickLocaleTag: String? = null
 
     // Incremented while any of our Activities is started. The overlay is only
     // shown over other apps, never on top of our own screens.
@@ -156,13 +160,39 @@ object JoyStickManager : IJoyStickPresenter {
     }
 
     fun showJoyStick() {
-        val view = joyStickView ?: JoyStickView(appContext).also {
+        val localeTag = AppCompatDelegate.getApplicationLocales().toLanguageTags()
+        if (joyStickView != null && joyStickLocaleTag != localeTag) {
+            // The overlay is inflated from the application context, which does
+            // not inherit the per-app locale. Recreate it when the language
+            // changes so its labels follow the app language.
+            hideJoyStick()
+            joyStickView = null
+        }
+        val view = joyStickView ?: JoyStickView(localizedContext()).also {
             it.setJoyStickPresenter(this)
             joyStickView = it
+            joyStickLocaleTag = localeTag
         }
         if (!view.isShowing) {
             view.addToWindow()
         }
+    }
+
+    private fun localizedContext(): Context {
+        val locales = AppCompatDelegate.getApplicationLocales()
+        if (locales.isEmpty) {
+            return appContext
+        }
+        val configuration = Configuration(appContext.resources.configuration)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            (locales.unwrap() as? android.os.LocaleList)?.let {
+                configuration.setLocales(it)
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            configuration.locale = locales.get(0) ?: configuration.locale
+        }
+        return appContext.createConfigurationContext(configuration)
     }
 
     fun hideJoyStick() {
