@@ -10,15 +10,18 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.fakegps.DbUtils
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
 import com.github.fakegps.model.LocPoint
 import com.tencent.fakegps.R
 import com.tencent.fakegps.databinding.ActivityFlyBinding
+import kotlinx.coroutines.launch
 
-class FlyToActivity : BaseBookmarkActivity(),
-    View.OnClickListener, JoyStickManager.FlyStateListener {
+class FlyToActivity : BaseBookmarkActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityFlyBinding
     private var wasFlying = false
@@ -64,6 +67,20 @@ class FlyToActivity : BaseBookmarkActivity(),
         updateBtn()
 
         initBookmarkList(binding.listBookmark)
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                JoyStickManager.get().status.collect { state ->
+                    val flying = state.isFlying
+                    updateBtn()
+                    if (wasFlying && !flying) {
+                        Toast.makeText(this@FlyToActivity, R.string.fly_complete, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    wasFlying = flying
+                }
+            }
+        }
     }
 
     override fun onClick(view: View) {
@@ -103,25 +120,8 @@ class FlyToActivity : BaseBookmarkActivity(),
 
     override fun onStart() {
         super.onStart()
-        JoyStickManager.get().setFlyStateListener(this)
         wasFlying = JoyStickManager.get().isFlyMode
         updateBtn()
-    }
-
-    override fun onStop() {
-        JoyStickManager.get().setFlyStateListener(null)
-        super.onStop()
-    }
-
-    override fun onFlyStateChanged() {
-        runOnUiThread {
-            val flying = JoyStickManager.get().isFlyMode
-            updateBtn()
-            if (wasFlying && !flying) {
-                Toast.makeText(this, R.string.fly_complete, Toast.LENGTH_SHORT).show()
-            }
-            wasFlying = flying
-        }
     }
 
     override fun onResume() {
