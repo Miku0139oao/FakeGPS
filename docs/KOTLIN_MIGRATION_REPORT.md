@@ -53,9 +53,9 @@ ANDROID_HOME="D:/vless/.tools/android-sdk" \
 | Kotlin stdlib | 2.3.21（1.8.22 BOM 已移除；runtime 無 1.8.22 jdk7/jdk8 artifact） |
 | Lint | 0 errors / 35 warnings |
 | Tests | 61 passed / 0 failed |
-| Debug APK | 7,140,178 bytes（baseline 6,947,419，+2.77%） |
-| Release APK | 2,279,886 bytes（baseline 2,216,743，+2.85%） |
-| Release SHA-256 | `4b8c9e11c1b0885fe90d2b5f9bf7e4be403e88a30100822cbaaa33af30918c3b` |
+| Debug APK | 7,141,807 bytes（baseline 6,947,419，+2.80%） |
+| Release APK | 2,280,466 bytes（baseline 2,216,743，+2.88%） |
+| Release SHA-256 | `29d9024764a501949d07825fbd92c36f88d138bb098b86cabcab4e5d4b5fe4d3` |
 
 ## 4. 資料相容性
 
@@ -96,10 +96,20 @@ ANDROID_HOME="D:/vless/.tools/android-sdk" \
 | 螢幕關閉注入 | **Pass**（關螢幕 6 秒後 `elapsedRealtime` 仍持續前進） |
 | 測試後資料還原 | **Pass**（保留原有 1 筆 Bookmark、`last_loc=(22.373292 , 114.178859)`、theme=dark） |
 
+### 5.1 懸浮窗選點與選點 UI（後續 UX 更新）
+
+- 懸浮窗底部新增「地圖」按鈕，直接開啟 App 內建 OSM 選點地圖，不需要先進主畫面。
+- 選點完成後**立即套用**到目前 mock 位置，並以獨立 task 關閉選點畫面，返回使用者原本的 App（已用 Google Maps 實測）。
+- 只要任何 FakeGPS Activity 在前景，懸浮搖桿會自動隱藏；回到其他 App 才重新顯示。
+- 懸浮搖桿仍可拖曳，但現在會限制在畫面內（x 0–736、y 0–1568 @ 1440×2560）。
+- 選點底部卡片縮小：縮短提示、降低字級與間距、保留 Copy／Open in Maps／Cancel／Use；9 個語系同步更新。
+- 技術限制：Android App 無法讀取 Google Maps 的攝影機中心／縮放，因此不能直接把 Google Maps 畫面中心轉成座標；本功能改用 App 自己的 OSM 地圖，選完立即套用並返回 Google Maps。
+- 裝置驗證：debug 與 **R8 release（debug 簽章、保留資料）** 都完成「Google Maps → 懸浮窗地圖 → 選點 → 套用 → 返回 Google Maps」，無 crash。
+
 ## 6. 未驗證 / 已知限制
 
-- **Release APK 裝置安裝未驗證**：release 與 emulator 上既有 debug APK 簽章不同，需清除資料；R8 產物已以 release build 與 dex 靜態檢查驗證。
-- **語言切換 UI 未實際切換**：Settings 的語言摘要與 per-app locale（繁體中文）已確認；9 組 strings 未變動。
+- **Release APK 裝置安裝**：shipped APK 以 release keystore 簽章並成功建置；R8/minify 行為已用「release 建置 + debug 簽章」在裝置完整驗證（非 DEBUGGABLE、Start/FGS/mock、懸浮窗選點、Google Maps 返回）。release-key 簽章的 APK 未再次安裝，以避免清除裝置上的既有資料；先前（功能加入前）已安裝並啟動過。
+- **語言切換 UI 未實際切換**：Settings 的語言摘要與 per-app locale（繁體中文）已確認；本功能新增字串已同步到 9 個語系，但未逐一語言切換測試。
 - **OEM / Android 5–14 實機**未驗證，MuMu 為 Android 15。
 - 未量測 startup / memory / CPU / 1 Hz jitter 的遷移前後比較（僅量測 APK size）。
 - 既有行為保留、未修正：
@@ -123,3 +133,5 @@ ANDROID_HOME="D:/vless/.tools/android-sdk" \
 | `a3584f4` | Phase 6：loggerlibrary 與清理 |
 | `c40fce2` | 快速 Stop→Start 排程修正 |
 | `d7c5c0f` | 忽略 Kotlin 編譯器 session data |
+| `82027a0` | 遷移結果與首次裝置 smoke test 文件 |
+| `6693bbf` | 懸浮窗地圖選點、App 內隱藏 overlay、選點 UI 精簡、拖曳邊界 |
