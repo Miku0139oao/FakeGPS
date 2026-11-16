@@ -11,7 +11,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import com.github.fakegps.IJoyStickPresenter
 import com.github.fakegps.ScreenUtils
-import com.tencent.fakegps.R
+import com.github.fakegps.R
 
 /**
  * Floating joystick overlay.
@@ -140,6 +140,12 @@ class JoyStickView(context: Context) : FrameLayout(context) {
             }
         }
         return true
+    }
+
+    override fun performClick(): Boolean {
+        // The panel is dragged rather than clicked, but reporting clicks keeps
+        // the custom view compatible with accessibility services.
+        return super.performClick()
     }
 
     private fun updateViewPosition() {

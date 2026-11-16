@@ -7,10 +7,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.net.toUri
 import com.github.fakegps.SettingsStore
+import com.github.fakegps.JoyStickManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tencent.fakegps.BuildConfig
-import com.tencent.fakegps.R
-import com.tencent.fakegps.databinding.ActivitySettingsBinding
+import com.github.fakegps.BuildConfig
+import com.github.fakegps.R
+import com.github.fakegps.databinding.ActivitySettingsBinding
 
 /**
  * Material settings screen: language, theme, wake lock, and links.
@@ -41,6 +42,21 @@ class SettingsActivity : AppCompatActivity() {
         binding.switchKeepRunning.setOnCheckedChangeListener { _, checked ->
             SettingsStore.setKeepRunningWithScreenOff(this, checked)
         }
+        binding.rowKeepRunning.setOnClickListener {
+            binding.switchKeepRunning.toggle()
+        }
+
+        binding.switchShowJoystick.isChecked = SettingsStore.showJoystick(this)
+        binding.switchShowJoystick.setOnCheckedChangeListener { _, checked ->
+            SettingsStore.setShowJoystick(this, checked)
+            // Apply immediately instead of waiting for the next start/stop.
+            JoyStickManager.get().refreshOverlay()
+        }
+        binding.rowShowJoystick.setOnClickListener {
+            binding.switchShowJoystick.toggle()
+        }
+
+        binding.tvAboutSummary.text = getString(R.string.settings_version, BuildConfig.VERSION_NAME)
 
         updateSummaries()
     }

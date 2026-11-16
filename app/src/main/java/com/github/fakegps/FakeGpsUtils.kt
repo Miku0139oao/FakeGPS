@@ -10,7 +10,7 @@ import android.os.PersistableBundle
 import android.os.Process
 import android.widget.EditText
 import com.github.fakegps.model.LocPoint
-import com.tencent.fakegps.BuildConfig
+import com.github.fakegps.BuildConfig
 import tiger.radio.loggerlibrary.Logger
 
 /**

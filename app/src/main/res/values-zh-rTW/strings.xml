@@ -86,6 +86,8 @@
     <string name="settings_theme_dark">深色</string>
     <string name="settings_keep_running">螢幕關閉時繼續執行</string>
     <string name="settings_keep_running_desc">模擬定位期間持有 wake lock，會增加耗電。</string>
+    <string name="settings_show_joystick">懸浮面板</string>
+    <string name="settings_show_joystick_desc">在其他 App 上顯示搖桿。若其他 App 提示「疊加層」擋住權限視窗，可先關閉這個選項。</string>
     <string name="settings_about">關於</string>
     <string name="settings_version">版本 %1$s</string>
     <string name="settings_source">原始碼</string>
@@ -121,4 +123,17 @@
     <string name="cd_zoom_in">放大</string>
     <string name="cd_zoom_out">縮小</string>
     <string name="open_in_maps">在地圖中開啟</string>
+
+    <string name="settings_section_appearance">外觀</string>
+    <string name="settings_section_behavior">行為</string>
+    <string name="settings_section_about">關於</string>
+    <string name="cd_step_decrease">縮小移動步長</string>
+    <string name="cd_step_increase">放大移動步長</string>
+
+    <string name="bookmark_row_menu">書籤選項</string>
+    <string name="bookmark_rename">重新命名</string>
+    <string name="rename_bookmark_title">重新命名書籤</string>
+    <string name="bookmark_renamed">書籤已重新命名</string>
+    <string name="bookmark_exists">此位置已在書籤中。</string>
+    <string name="bookmark_rename_failed">重新命名失敗。</string>
 </resources>

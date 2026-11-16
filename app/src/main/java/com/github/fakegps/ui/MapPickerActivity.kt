@@ -23,8 +23,8 @@ import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
 import com.github.fakegps.model.LocPoint
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tencent.fakegps.R
-import com.tencent.fakegps.databinding.ActivityMapPickerBinding
+import com.github.fakegps.R
+import com.github.fakegps.databinding.ActivityMapPickerBinding
 import java.util.Locale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -336,7 +336,10 @@ class MapPickerActivity : AppCompatActivity() {
 
     private fun updateSelectedText() {
         val coordinates = String.format(Locale.US, "%.6f, %.6f", latitude, longitude)
-        binding.tvSelected.text = getString(R.string.map_selected, coordinates)
+        // Show only the coordinates so the full longitude fits next to the
+        // copy/open buttons; the label is kept for screen readers.
+        binding.tvSelected.text = coordinates
+        binding.tvSelected.contentDescription = getString(R.string.map_selected, coordinates)
     }
 
     override fun onResume() {

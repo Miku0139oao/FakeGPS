@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">Dunkel</string>
     <string name="settings_keep_running">Bei ausgeschaltetem Bildschirm weiterlaufen</string>
     <string name="settings_keep_running_desc">Hält einen Wake-Lock, solange der simulierte Standort aktiv ist. Verbraucht mehr Akku.</string>
+    <string name="settings_show_joystick">Schwebendes Bedienfeld</string>
+    <string name="settings_show_joystick_desc">Zeigt die Bedienelemente über anderen Apps. Deaktivieren, wenn eine App meldet, dass eine Überlagerung ihre Berechtigungsabfrage blockiert.</string>
     <string name="settings_about">Über</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_source">Quellcode</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">Vergrößern</string>
     <string name="cd_zoom_out">Verkleinern</string>
     <string name="open_in_maps">In Karten öffnen</string>
+
+    <string name="settings_section_appearance">Darstellung</string>
+    <string name="settings_section_behavior">Verhalten</string>
+    <string name="settings_section_about">Über</string>
+    <string name="cd_step_decrease">Schrittweite verringern</string>
+    <string name="cd_step_increase">Schrittweite erhöhen</string>
+
+    <string name="bookmark_row_menu">Lesezeichenaktionen</string>
+    <string name="bookmark_rename">Umbenennen</string>
+    <string name="rename_bookmark_title">Lesezeichen umbenennen</string>
+    <string name="bookmark_renamed">Lesezeichen umbenannt</string>
+    <string name="bookmark_exists">Dieser Ort ist bereits gespeichert.</string>
+    <string name="bookmark_rename_failed">Der Favorit konnte nicht umbenannt werden.</string>
 </resources>

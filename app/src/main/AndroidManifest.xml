@@ -46,12 +46,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.github.fakegps.ui.BookmarkActivity"
-                  android:configChanges="orientation|screenSize"
-                  android:label="@string/title_activity_bookmark"
-                  android:theme="@style/AppTheme.Dialog"
-                  android:windowSoftInputMode="stateHidden"/>
-
         <activity android:name="com.github.fakegps.ui.FlyToActivity"
                   android:configChanges="orientation|screenSize"
                   android:label="@string/label_fly"

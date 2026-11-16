@@ -6,7 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import com.litesuits.orm.LiteOrm
-import com.tencent.fakegps.BuildConfig
+import com.github.fakegps.BuildConfig
 import java.io.File
 import org.osmdroid.config.Configuration
 import tiger.radio.loggerlibrary.Logger

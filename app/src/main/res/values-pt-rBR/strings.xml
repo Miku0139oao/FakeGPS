@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">Escuro</string>
     <string name="settings_keep_running">Continuar em execução com a tela desligada</string>
     <string name="settings_keep_running_desc">Mantém um wake lock enquanto a localização simulada está ativa. Consome mais bateria.</string>
+    <string name="settings_show_joystick">Painel flutuante</string>
+    <string name="settings_show_joystick_desc">Mostra os controles sobre outros apps. Desative se outro app avisar que uma sobreposição está bloqueando o pedido de permissão.</string>
     <string name="settings_about">Sobre</string>
     <string name="settings_version">Versão %1$s</string>
     <string name="settings_source">Código-fonte</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">Aproximar</string>
     <string name="cd_zoom_out">Afastar</string>
     <string name="open_in_maps">Abrir no Maps</string>
+
+    <string name="settings_section_appearance">Aparência</string>
+    <string name="settings_section_behavior">Comportamento</string>
+    <string name="settings_section_about">Sobre</string>
+    <string name="cd_step_decrease">Diminuir o passo</string>
+    <string name="cd_step_increase">Aumentar o passo</string>
+
+    <string name="bookmark_row_menu">Ações do favorito</string>
+    <string name="bookmark_rename">Renomear</string>
+    <string name="rename_bookmark_title">Renomear favorito</string>
+    <string name="bookmark_renamed">Favorito renomeado</string>
+    <string name="bookmark_exists">Este local já está salvo.</string>
+    <string name="bookmark_rename_failed">Não foi possível renomear.</string>
 </resources>

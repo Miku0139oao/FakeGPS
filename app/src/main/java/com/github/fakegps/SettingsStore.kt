@@ -12,6 +12,7 @@ object SettingsStore {
     private const val PREFS = "settings"
     private const val KEY_THEME = "theme"
     private const val KEY_KEEP_RUNNING = "keep_running"
+    private const val KEY_SHOW_JOYSTICK = "show_joystick"
 
     const val THEME_SYSTEM = "system"
     const val THEME_LIGHT = "light"
@@ -45,6 +46,18 @@ object SettingsStore {
     fun setKeepRunningWithScreenOff(context: Context, keepRunning: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_KEEP_RUNNING, keepRunning)
+        }
+    }
+
+    @JvmStatic
+    fun showJoystick(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getBoolean(KEY_SHOW_JOYSTICK, true)
+
+    @JvmStatic
+    fun setShowJoystick(context: Context, show: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit {
+            putBoolean(KEY_SHOW_JOYSTICK, show)
         }
     }
 }

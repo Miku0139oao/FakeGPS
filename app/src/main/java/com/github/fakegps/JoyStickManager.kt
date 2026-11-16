@@ -2,23 +2,24 @@ package com.github.fakegps
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.fakegps.model.LocPoint
-import com.github.fakegps.ui.BookmarkActivity
 import com.github.fakegps.ui.FlyToActivity
 import com.github.fakegps.ui.JoyStickView
 import com.github.fakegps.ui.MainActivity
 import com.github.fakegps.ui.MapPickerActivity
-import com.tencent.fakegps.R
+import com.github.fakegps.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import tiger.radio.loggerlibrary.Logger
 
 /**
@@ -43,6 +44,8 @@ object JoyStickManager : IJoyStickPresenter {
     private lateinit var appContext: Context
     private val movementState = MovementState { SystemClock.elapsedRealtime() }
     private val mainHandler = Handler(Looper.getMainLooper())
+    // Owned by this process-wide singleton; used for short overlay-side writes.
+    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var locationThread: LocationThread? = null
     private var joyStickView: JoyStickView? = null
@@ -61,7 +64,8 @@ object JoyStickManager : IJoyStickPresenter {
     private val engineListener = LocationThread.Listener {
         mainHandler.post {
             stop()
-            Toast.makeText(appContext, R.string.mock_app_not_selected, Toast.LENGTH_LONG).show()
+            Toast.makeText(localizedContext(), R.string.mock_app_not_selected, Toast.LENGTH_LONG)
+                .show()
         }
     }
 
@@ -131,6 +135,15 @@ object JoyStickManager : IJoyStickPresenter {
         }
     }
 
+    /**
+     * Re-applies the overlay visibility after the floating-panel setting
+     * changes. The panel can also be turned off because Android blocks some
+     * permission dialogs while another app draws over the screen.
+     */
+    fun refreshOverlay() {
+        updateOverlayVisibility()
+    }
+
     private fun ensureEngine() {
         if (locationThread != null) {
             return
@@ -160,6 +173,10 @@ object JoyStickManager : IJoyStickPresenter {
     }
 
     fun showJoyStick() {
+        if (!SettingsStore.showJoystick(appContext)) {
+            hideJoyStick()
+            return
+        }
         val localeTag = AppCompatDelegate.getApplicationLocales().toLanguageTags()
         if (joyStickView != null && joyStickLocaleTag != localeTag) {
             // The overlay is inflated from the application context, which does
@@ -178,22 +195,7 @@ object JoyStickManager : IJoyStickPresenter {
         }
     }
 
-    private fun localizedContext(): Context {
-        val locales = AppCompatDelegate.getApplicationLocales()
-        if (locales.isEmpty) {
-            return appContext
-        }
-        val configuration = Configuration(appContext.resources.configuration)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            (locales.unwrap() as? android.os.LocaleList)?.let {
-                configuration.setLocales(it)
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            configuration.locale = locales.get(0) ?: configuration.locale
-        }
-        return appContext.createConfigurationContext(configuration)
-    }
+    private fun localizedContext(): Context = AppLocale.context(appContext)
 
     fun hideJoyStick() {
         val view = joyStickView
@@ -257,7 +259,7 @@ object JoyStickManager : IJoyStickPresenter {
         Logger.d(TAG, "onFlyClick")
         if (movementState.isFlyMode()) {
             stopFlyMode()
-            Toast.makeText(appContext, R.string.stop_fly, Toast.LENGTH_SHORT).show()
+            Toast.makeText(localizedContext(), R.string.stop_fly, Toast.LENGTH_SHORT).show()
         } else {
             FlyToActivity.startPage(appContext)
         }
@@ -266,15 +268,21 @@ object JoyStickManager : IJoyStickPresenter {
     override fun onBookmarkLocationClick() {
         Logger.d(TAG, "onBookmarkLocationClick")
         val locPoint = currentLocPoint
-        if (locPoint != null) {
-            BookmarkActivity.startPage(appContext, appContext.getString(R.string.bookmark), locPoint)
-            Toast.makeText(
-                appContext,
-                appContext.getString(R.string.bookmark_save_hint) + "\n" + locPoint,
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            Toast.makeText(appContext, R.string.service_not_started, Toast.LENGTH_SHORT).show()
+        if (locPoint == null) {
+            Toast.makeText(localizedContext(), R.string.service_not_started, Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
+        // Bookmark straight from the overlay: opening a naming screen would
+        // pull the user out of the app they are testing the location in.
+        ioScope.launch {
+            val result = BookmarkRepository.savePoint(locPoint, BookmarkNames.autoName(locPoint))
+            val message = when (result) {
+                BookmarkRepository.DUPLICATE -> R.string.bookmark_exists
+                -1L -> R.string.bookmark_save_failed
+                else -> R.string.bookmark_saved
+            }
+            Toast.makeText(localizedContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -283,9 +291,10 @@ object JoyStickManager : IJoyStickPresenter {
         val locPoint = currentLocPoint
         if (locPoint != null) {
             FakeGpsUtils.copyToClipboard(appContext, locPoint.toString())
+            val context = localizedContext()
             Toast.makeText(
-                appContext,
-                appContext.getString(R.string.location_copied) + "\n" + locPoint,
+                context,
+                context.getString(R.string.location_copied) + "\n" + locPoint,
                 Toast.LENGTH_LONG
             ).show()
         }

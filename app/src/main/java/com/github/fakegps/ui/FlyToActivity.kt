@@ -17,8 +17,8 @@ import com.github.fakegps.DbUtils
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
 import com.github.fakegps.model.LocPoint
-import com.tencent.fakegps.R
-import com.tencent.fakegps.databinding.ActivityFlyBinding
+import com.github.fakegps.R
+import com.github.fakegps.databinding.ActivityFlyBinding
 import kotlinx.coroutines.launch
 
 class FlyToActivity : BaseBookmarkActivity(), View.OnClickListener {

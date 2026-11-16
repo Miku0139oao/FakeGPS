@@ -1,12 +1,15 @@
 package com.github.fakegps.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -16,14 +19,19 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import com.github.fakegps.BookmarkNames
+import com.github.fakegps.BookmarkRepository
+import com.github.fakegps.CoordinateParser
 import com.github.fakegps.DbUtils
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
 import com.github.fakegps.model.LocPoint
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tencent.fakegps.R
-import com.tencent.fakegps.databinding.ActivityMainBinding
+import com.github.fakegps.R
+import com.github.fakegps.databinding.ActivityMainBinding
 import java.math.BigDecimal
+import kotlinx.coroutines.launch
 
 class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
 
@@ -98,17 +106,15 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         }
         tintMenuIcon(binding.toolbar.menu.findItem(R.id.action_settings))
 
-        val currentLocPoint = JoyStickManager.get().currentLocPoint
-        if (currentLocPoint != null) {
-            binding.inputLoc.setText(currentLocPoint.toString())
-        } else {
-            val lastLocPoint = DbUtils.getLastLocPoint(this)
-            if (!TextUtils.isEmpty(lastLocPoint)) {
-                binding.inputLoc.setText(lastLocPoint)
-            } else {
-                binding.inputLoc.setText(LocPoint(LAT_DEFAULT, LON_DEFAULT).toString())
-            }
-        }
+        // Prefer the live session, then the location last started, then where
+        // the phone actually is, and only then the built-in sample coordinate.
+        // This keeps the app from silently offering a random city on every
+        // launch once the user has used it.
+        val initialPoint = JoyStickManager.get().currentLocPoint
+            ?: CoordinateParser.parse(DbUtils.getLastLocPoint(this))
+            ?: deviceLastKnownPoint()
+            ?: LocPoint(LAT_DEFAULT, LON_DEFAULT)
+        binding.inputLoc.setText(initialPoint.toString())
         binding.inputLoc.setSelection(binding.inputLoc.text?.length ?: 0)
 
         val currentMoveStep = JoyStickManager.get().moveStep
@@ -121,6 +127,8 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         binding.btnPickMap.setOnClickListener(this)
         binding.btnCopy.setOnClickListener(this)
         binding.btnSaveCurrent.setOnClickListener(this)
+        binding.btnStepMinus.setOnClickListener { adjustMoveStep(-1.0) }
+        binding.btnStepPlus.setOnClickListener { adjustMoveStep(1.0) }
 
         initBookmarkList(binding.listBookmark)
 
@@ -185,14 +193,7 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
                     Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show()
                 }
             }
-            R.id.btn_save_current -> {
-                val point = currentOrEnteredPoint()
-                if (point != null) {
-                    BookmarkActivity.startPage(this, getString(R.string.bookmark), point)
-                } else {
-                    Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show()
-                }
-            }
+            R.id.btn_save_current -> saveCurrentLocation()
         }
     }
 
@@ -202,7 +203,10 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
                 DbUtils.saveLastLocPoint(this, it)
             }
             JoyStickManager.get().stop()
-            finish()
+            // Stay on the screen so the user can adjust and start again
+            // instead of being dropped back into whatever app was underneath.
+            updateStatus()
+            updateButtons()
             return
         }
 
@@ -219,6 +223,9 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
 
         pendingStartPoint = point
         pendingStartStep = step
+        // Remember what the user actually started, so reopening the app later
+        // offers this location instead of falling back to the built-in default.
+        DbUtils.saveLastLocPoint(this, point)
         checkPermissionsAndStart()
     }
 
@@ -232,6 +239,7 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         if (step > 0 && point != null) {
             JoyStickManager.get().setMoveStep(step)
             JoyStickManager.get().jumpToLocation(point)
+            DbUtils.saveLastLocPoint(this, point)
             updateStatus()
         } else {
             Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show()
@@ -268,6 +276,54 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         JoyStickManager.get().currentLocPoint
             ?: FakeGpsUtils.getLocPointFromInput(this, binding.inputLoc)
 
+    /**
+     * Saves the current location with one tap. The coordinate-derived name
+     * keeps every row distinct; the row menu can rename it afterwards.
+     */
+    private fun saveCurrentLocation() {
+        val point = currentOrEnteredPoint()
+        if (point == null) {
+            Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show()
+            return
+        }
+        lifecycleScope.launch {
+            val result = BookmarkRepository.savePoint(point, BookmarkNames.autoName(point))
+            val message = when (result) {
+                BookmarkRepository.DUPLICATE -> R.string.bookmark_exists
+                -1L -> R.string.bookmark_save_failed
+                else -> R.string.bookmark_saved
+            }
+            Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Where the phone really is, used as the first-launch default so a new
+     * install does not start the mock in the sample location abroad.
+     */
+    private fun deviceLastKnownPoint(): LocPoint? {
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return null
+        }
+        val manager =
+            getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return null
+        var best: Location? = null
+        for (provider in manager.getProviders(true)) {
+            val location = try {
+                manager.getLastKnownLocation(provider)
+            } catch (ignored: SecurityException) {
+                null
+            } ?: continue
+            if (best == null || location.time > best.time) {
+                best = location
+            }
+        }
+        return best?.let { LocPoint(it.latitude, it.longitude) }
+    }
+
     private fun updateStatus() {
         val started = JoyStickManager.get().isStarted
         binding.tvStatus.setText(
@@ -275,7 +331,45 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         )
         binding.tvStatusHint.visibility = if (started) View.GONE else View.VISIBLE
         val point = currentOrEnteredPoint()
-        binding.tvCurrentCoords.text = point?.toString() ?: "—"
+        binding.tvCurrentCoords.text = point?.toString() ?: getString(R.string.value_placeholder)
+
+        val container = ContextCompat.getColor(
+            this, if (started) R.color.brand_primary_container else R.color.surface_container
+        )
+        val content = ContextCompat.getColor(
+            this, if (started) R.color.brand_on_primary_container else R.color.brand_on_surface
+        )
+        binding.cardStatus.setCardBackgroundColor(container)
+        binding.cardStatus.strokeColor = ContextCompat.getColor(
+            this, if (started) R.color.brand_primary_container else R.color.surface_stroke
+        )
+        binding.tvStatus.setTextColor(content)
+        binding.tvStatusHint.setTextColor(content)
+        binding.tvCurrentCoords.setTextColor(content)
+        binding.viewStatusDot.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                this, if (started) R.color.status_dot_active else R.color.status_dot_inactive
+            )
+        )
+    }
+
+    /** Steps the move-step field by [delta] meters without ever reversing direction. */
+    private fun adjustMoveStep(delta: Double) {
+        val current = FakeGpsUtils.getMoveStepFromInput(this, binding.inputStep)
+        val parsed = if (FakeGpsUtils.isValidMoveStep(current)) current else DEFAULT_MOVE_STEP
+        // Decimal arithmetic: adding Doubles writes artifacts such as
+        // "0.19999999999999996" into the field when stepping down from 1.2.
+        val base = BigDecimal.valueOf(parsed)
+        val step = BigDecimal.valueOf(delta)
+        val next = if (delta < 0) {
+            // Clamp only against the edge the press moves toward, and never
+            // past the value already typed: minus must never increase 0.5 m.
+            base.add(step).max(BigDecimal.valueOf(MIN_MOVE_STEP).min(base))
+        } else {
+            base.add(step).min(BigDecimal.valueOf(MAX_MOVE_STEP).max(base))
+        }
+        binding.inputStep.setText(next.stripTrailingZeros().toPlainString())
+        binding.inputStep.setSelection(binding.inputStep.text?.length ?: 0)
     }
 
     private fun updateButtons() {
@@ -377,12 +471,25 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
 
     override fun onBookmarkSelected(locPoint: LocPoint?) {
         binding.inputLoc.setText(locPoint?.toString() ?: "")
+        if (locPoint != null) {
+            if (JoyStickManager.get().isStarted) {
+                JoyStickManager.get().jumpToLocation(locPoint)
+                DbUtils.saveLastLocPoint(this, locPoint)
+                Toast.makeText(this, R.string.location_applied, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, R.string.start_first, Toast.LENGTH_SHORT).show()
+            }
+        }
         updateStatus()
     }
 
     companion object {
         private const val LAT_DEFAULT = 37.802406
         private const val LON_DEFAULT = -122.401779
+
+        private const val DEFAULT_MOVE_STEP = 2.0
+        private const val MIN_MOVE_STEP = 0.1
+        private const val MAX_MOVE_STEP = 10000.0
 
         private const val KEY_PENDING_LAT = "pending_lat"
         private const val KEY_PENDING_LON = "pending_lon"

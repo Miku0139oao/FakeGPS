@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">Oscuro</string>
     <string name="settings_keep_running">Seguir activo con la pantalla apagada</string>
     <string name="settings_keep_running_desc">Mantiene el bloqueo de activación mientras la ubicación simulada está activa. Consume más batería.</string>
+    <string name="settings_show_joystick">Panel flotante</string>
+    <string name="settings_show_joystick_desc">Muestra los controles sobre otras apps. Desactívalo si otra app avisa de que una superposición bloquea su solicitud de permiso.</string>
     <string name="settings_about">Acerca de</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="settings_source">Código fuente</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">Acercar</string>
     <string name="cd_zoom_out">Alejar</string>
     <string name="open_in_maps">Abrir en Mapas</string>
+
+    <string name="settings_section_appearance">Apariencia</string>
+    <string name="settings_section_behavior">Comportamiento</string>
+    <string name="settings_section_about">Acerca de</string>
+    <string name="cd_step_decrease">Reducir el paso</string>
+    <string name="cd_step_increase">Aumentar el paso</string>
+
+    <string name="bookmark_row_menu">Acciones del marcador</string>
+    <string name="bookmark_rename">Cambiar nombre</string>
+    <string name="rename_bookmark_title">Cambiar nombre del marcador</string>
+    <string name="bookmark_renamed">Marcador renombrado</string>
+    <string name="bookmark_exists">Este lugar ya está guardado.</string>
+    <string name="bookmark_rename_failed">No se pudo cambiar el nombre.</string>
 </resources>

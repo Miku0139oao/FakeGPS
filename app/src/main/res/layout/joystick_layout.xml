@@ -6,46 +6,54 @@
               android:background="@drawable/bg_joystick_panel"
               android:gravity="center_horizontal"
               android:orientation="vertical"
-              android:padding="12dp">
+              android:padding="10dp">
+
+    <!-- Drag affordance -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/bg_overlay_grip"
+        android:importantForAccessibility="no"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="156dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_horizontal"
+        android:layout_marginBottom="6dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_set_loc"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="@dimen/joystick_button"
+            android:layout_height="@dimen/joystick_button"
             android:background="@drawable/bg_joystick_button"
             android:contentDescription="@string/cd_set_location"
-            android:padding="10dp"
+            android:padding="12dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_set_loc"
             app:tint="@color/brand_on_surface"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_fly_to"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="@dimen/joystick_button"
+            android:layout_height="@dimen/joystick_button"
+            android:layout_marginStart="6dp"
             android:background="@drawable/bg_joystick_button"
             android:contentDescription="@string/cd_fly_to"
-            android:padding="10dp"
+            android:padding="12dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_flight_takeoff"
             app:tint="@color/brand_on_surface"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_bookmark"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="@dimen/joystick_button"
+            android:layout_height="@dimen/joystick_button"
+            android:layout_marginStart="6dp"
             android:background="@drawable/bg_joystick_button"
             android:contentDescription="@string/cd_bookmark"
-            android:padding="10dp"
+            android:padding="12dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_bookmark"
             app:tint="@color/brand_on_surface"/>
@@ -55,14 +63,14 @@
         layout="@layout/joystick_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:layout_marginBottom="6dp"/>
 
     <LinearLayout
         android:id="@+id/btn_map_pick"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/bg_joystick_button"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_joystick_accent"
         android:clickable="true"
         android:contentDescription="@string/map_picker_title"
         android:focusable="true"
@@ -76,17 +84,18 @@
             android:layout_height="16dp"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_map"
-            app:tint="@color/brand_on_surface"/>
+            app:tint="@color/brand_on_primary"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="6dp"
             android:ellipsize="end"
             android:importantForAccessibility="no"
             android:maxLines="1"
             android:text="@string/map_picker_title"
-            android:textColor="@color/brand_on_surface"
-            android:textSize="11sp"/>
+            android:textColor="@color/brand_on_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
     </LinearLayout>
 </LinearLayout>

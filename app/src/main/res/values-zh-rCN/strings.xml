@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">深色</string>
     <string name="settings_keep_running">息屏时保持运行</string>
     <string name="settings_keep_running_desc">模拟定位启用时保持唤醒锁。会增加耗电。</string>
+    <string name="settings_show_joystick">悬浮面板</string>
+    <string name="settings_show_joystick_desc">在其他 App 上显示摇杆。若其他 App 提示“叠加层”挡住权限窗口，可先关闭这个选项。</string>
     <string name="settings_about">关于</string>
     <string name="settings_version">版本 %1$s</string>
     <string name="settings_source">源代码</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">放大</string>
     <string name="cd_zoom_out">缩小</string>
     <string name="open_in_maps">在地图中打开</string>
+
+    <string name="settings_section_appearance">外观</string>
+    <string name="settings_section_behavior">行为</string>
+    <string name="settings_section_about">关于</string>
+    <string name="cd_step_decrease">减小移动步长</string>
+    <string name="cd_step_increase">增大移动步长</string>
+
+    <string name="bookmark_row_menu">书签选项</string>
+    <string name="bookmark_rename">重命名</string>
+    <string name="rename_bookmark_title">重命名书签</string>
+    <string name="bookmark_renamed">书签已重命名</string>
+    <string name="bookmark_exists">此位置已在书签中。</string>
+    <string name="bookmark_rename_failed">重命名失败。</string>
 </resources>

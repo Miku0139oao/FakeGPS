@@ -1,11 +1,13 @@
 package com.github.fakegps.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.github.fakegps.BookmarkNames
 import com.github.fakegps.model.BookmarkList
 import com.github.fakegps.model.LocBookmark
-import com.tencent.fakegps.databinding.ListItemBookmarkLayoutBinding
+import com.github.fakegps.databinding.ListItemBookmarkLayoutBinding
 
 /**
  * Bookmark list adapter for the Material bookmark cards.
@@ -17,6 +19,7 @@ class BookmarkAdapter(
     interface Listener {
         fun onBookmarkClick(bookmark: LocBookmark)
         fun onBookmarkLongClick(bookmark: LocBookmark)
+        fun onBookmarkMenuClick(bookmark: LocBookmark, anchor: View)
     }
 
     private val items = BookmarkList()
@@ -37,14 +40,28 @@ class BookmarkAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val item = getItem(position)
-        holder.binding.tvName.text = item.name
-        holder.binding.tvLoc.text = item.locPoint?.toString() ?: ""
-        holder.binding.root.setOnClickListener {
+        val coordinates = item.locPoint?.toString() ?: ""
+        // Older bookmarks were all saved with the generic "Bookmark" name, so
+        // show the coordinates as the title when the name carries no meaning.
+        // The check covers every language the app ships, not just the one
+        // selected right now.
+        val genericName = BookmarkNames.isGenericName(holder.itemView.context, item)
+        holder.binding.tvName.text = if (genericName && coordinates.isNotEmpty()) {
+            coordinates
+        } else {
+            item.name ?: coordinates
+        }
+        holder.binding.tvLoc.text = coordinates
+        holder.binding.tvLoc.visibility = if (genericName) View.GONE else View.VISIBLE
+        holder.binding.bookmarkRow.setOnClickListener {
             listener.onBookmarkClick(item)
         }
-        holder.binding.root.setOnLongClickListener {
+        holder.binding.bookmarkRow.setOnLongClickListener {
             listener.onBookmarkLongClick(item)
             true
+        }
+        holder.binding.btnRowMenu.setOnClickListener { anchor ->
+            listener.onBookmarkMenuClick(item, anchor)
         }
     }
 

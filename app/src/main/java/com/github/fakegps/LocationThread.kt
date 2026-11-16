@@ -10,7 +10,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.SystemClock
 import com.github.fakegps.model.LocPoint
-import com.tencent.fakegps.BuildConfig
+import com.github.fakegps.BuildConfig
 import tiger.radio.loggerlibrary.Logger
 
 /**

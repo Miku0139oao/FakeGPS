@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">ダーク</string>
     <string name="settings_keep_running">画面オフでも実行を継続</string>
     <string name="settings_keep_running_desc">モック位置情報が有効な間、ウェイクロックを保持します。バッテリーの消費が増えます。</string>
+    <string name="settings_show_joystick">フローティングパネル</string>
+    <string name="settings_show_joystick_desc">他のアプリの上に操作パネルを表示します。権限ダイアログがオーバーレイで表示されない場合はオフにしてください。</string>
     <string name="settings_about">アプリ情報</string>
     <string name="settings_version">バージョン %1$s</string>
     <string name="settings_source">ソースコード</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">拡大</string>
     <string name="cd_zoom_out">縮小</string>
     <string name="open_in_maps">地図で開く</string>
+
+    <string name="settings_section_appearance">外観</string>
+    <string name="settings_section_behavior">動作</string>
+    <string name="settings_section_about">このアプリについて</string>
+    <string name="cd_step_decrease">移動ステップを減らす</string>
+    <string name="cd_step_increase">移動ステップを増やす</string>
+
+    <string name="bookmark_row_menu">ブックマークの操作</string>
+    <string name="bookmark_rename">名前を変更</string>
+    <string name="rename_bookmark_title">ブックマーク名を変更</string>
+    <string name="bookmark_renamed">名前を変更しました</string>
+    <string name="bookmark_exists">この場所はすでにブックマークにあります。</string>
+    <string name="bookmark_rename_failed">名前を変更できませんでした。</string>
 </resources>

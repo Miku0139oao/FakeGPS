@@ -36,8 +36,24 @@ object DbUtils {
     }
 
     @JvmStatic
-    fun deleteBookmark(bookmark: LocBookmark?) {
-        if (bookmark == null) return
+    fun updateBookmark(bookmark: LocBookmark?): Boolean {
+        if (bookmark == null) {
+            return false
+        }
+        return try {
+            val rows = FakeGpsApp.getLiteOrm().update(bookmark)
+            if (rows > 0) {
+                notifyBookmarkUpdate()
+            }
+            rows > 0
+        } catch (e: RuntimeException) {
+            Logger.e(TAG, "Unable to update bookmark", e)
+            false
+        }
+    }
+
+    @JvmStatic
+    fun deleteBookmark(bookmark: LocBookmark?) {        if (bookmark == null) return
         try {
             FakeGpsApp.getLiteOrm().delete(bookmark)
             notifyBookmarkUpdate()

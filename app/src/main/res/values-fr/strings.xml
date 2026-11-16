@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">Sombre</string>
     <string name="settings_keep_running">Continuer avec l\'écran éteint</string>
     <string name="settings_keep_running_desc">Maintient un verrou d\'éveil lorsque la position simulée est active. Consomme plus de batterie.</string>
+    <string name="settings_show_joystick">Panneau flottant</string>
+    <string name="settings_show_joystick_desc">Affiche les commandes par-dessus les autres applications. Désactivez-le si une appli signale qu\'une superposition bloque sa demande d\'autorisation.</string>
     <string name="settings_about">À propos</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_source">Code source</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">Zoom avant</string>
     <string name="cd_zoom_out">Zoom arrière</string>
     <string name="open_in_maps">Ouvrir dans Maps</string>
+
+    <string name="settings_section_appearance">Apparence</string>
+    <string name="settings_section_behavior">Comportement</string>
+    <string name="settings_section_about">À propos</string>
+    <string name="cd_step_decrease">Réduire le pas</string>
+    <string name="cd_step_increase">Augmenter le pas</string>
+
+    <string name="bookmark_row_menu">Actions du favori</string>
+    <string name="bookmark_rename">Renommer</string>
+    <string name="rename_bookmark_title">Renommer le favori</string>
+    <string name="bookmark_renamed">Favori renommé</string>
+    <string name="bookmark_exists">Ce lieu est déjà enregistré.</string>
+    <string name="bookmark_rename_failed">Impossible de renommer le favori.</string>
 </resources>

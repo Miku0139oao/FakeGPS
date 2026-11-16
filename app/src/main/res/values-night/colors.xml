@@ -12,6 +12,16 @@
     <color name="brand_on_surface_variant">#C4C6D0</color>
     <color name="map_panel_background">#E61B1B1B</color>
     <color name="joystick_panel">#E61B1B1B</color>
+    <color name="joystick_panel_stroke">#1FFFFFFF</color>
+    <color name="joystick_grip">#40FFFFFF</color>
     <color name="joystick_button">#44474F</color>
     <color name="joystick_ripple">#33FFFFFF</color>
+
+    <!-- Surfaces and accents used by the refreshed layouts. -->
+    <color name="surface_container">#1A1D24</color>
+    <color name="surface_stroke">#2C3038</color>
+    <color name="status_dot_active">#7BD88F</color>
+    <color name="status_dot_inactive">#8A8F98</color>
+    <color name="bookmark_icon_bg">#22314D</color>
+    <color name="count_chip">#2A2E37</color>
 </resources>

@@ -3,7 +3,7 @@ package com.github.fakegps
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import com.tencent.fakegps.BuildConfig
+import com.github.fakegps.BuildConfig
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection

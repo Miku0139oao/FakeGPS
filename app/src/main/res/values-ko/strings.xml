@@ -78,6 +78,8 @@
     <string name="settings_theme_dark">다크</string>
     <string name="settings_keep_running">화면이 꺼져도 계속 실행</string>
     <string name="settings_keep_running_desc">모의 위치가 활성화된 동안 절전 모드로 전환되지 않도록 유지합니다. 배터리를 더 소모합니다.</string>
+    <string name="settings_show_joystick">플로팅 패널</string>
+    <string name="settings_show_joystick_desc">다른 앱 위에 조작 패널을 표시합니다. 권한 대화상자가 오버레이 때문에 표시되지 않으면 끄세요.</string>
     <string name="settings_about">정보</string>
     <string name="settings_version">버전 %1$s</string>
     <string name="settings_source">소스 코드</string>
@@ -112,4 +114,17 @@
     <string name="cd_zoom_in">확대</string>
     <string name="cd_zoom_out">축소</string>
     <string name="open_in_maps">지도에서 열기</string>
+
+    <string name="settings_section_appearance">모양</string>
+    <string name="settings_section_behavior">동작</string>
+    <string name="settings_section_about">정보</string>
+    <string name="cd_step_decrease">이동 단계 줄이기</string>
+    <string name="cd_step_increase">이동 단계 늘리기</string>
+
+    <string name="bookmark_row_menu">북마크 작업</string>
+    <string name="bookmark_rename">이름 변경</string>
+    <string name="rename_bookmark_title">북마크 이름 변경</string>
+    <string name="bookmark_renamed">이름을 변경했습니다</string>
+    <string name="bookmark_exists">이 위치는 이미 북마크에 있습니다.</string>
+    <string name="bookmark_rename_failed">이름을 변경하지 못했습니다.</string>
 </resources>

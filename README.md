@@ -34,8 +34,8 @@ map. **No root is required** — it uses the standard Android mock-location API.
 
 ## Quick start (60 seconds)
 
-1. Download `FakeGPS_v2.2.0.apk` from the
-   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.0)
+1. Download `FakeGPS_v2.2.1.apk` from the
+   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.1)
    and install it.
 2. Enable **Developer options** (Settings → About phone → tap **Build number**
    seven times).
@@ -83,7 +83,7 @@ Notes:
 ### Step 1 — Download and install
 
 1. Open the [Releases page](https://github.com/Miku0139oao/FakeGPS/releases).
-2. Download the signed `FakeGPS_v2.2.0.apk` asset.
+2. Download the signed `FakeGPS_v2.2.1.apk` asset.
 3. Tap the downloaded file. If Android blocks it, allow your browser or file
    manager to **install unknown apps**:
    - Android 8+: **Settings → Apps → Special app access → Install unknown apps
@@ -253,11 +253,13 @@ You can move the mock location without leaving Google Maps.
 
 ### Step 9 — Bookmarks
 
-- **Save:** long-press the star button on the joystick, enter a name, and tap
-  **Save**. You can also tap **Save current location** in the Bookmarks card on
-  the main screen.
-- **Use:** open the main screen and tap a bookmark in the list.
-- **Delete:** long-press a bookmark in the list and confirm.
+- **Save:** tap the star button on the floating panel, or **Save current
+  location** on the main screen. The place is saved immediately with a
+  coordinate name such as `22.3726, 114.1797`; saving the same place twice is
+  skipped.
+- **Rename:** tap **⋮** on the row and choose **Rename**.
+- **Use:** while the mock is running, tap a bookmark in the list to jump there.
+- **Delete:** tap **⋮ → Delete** (long-press works too) and confirm.
 - Bookmarks are stored locally in the app's database. Auto backup is disabled.
 
 ### Step 10 — Stop
@@ -290,6 +292,30 @@ you change:
 
 The same screen links to the source code and the troubleshooting guide, and
 shows the About dialog with the version and OpenStreetMap attribution.
+
+## What's new in v2.2.1
+
+- **Redesigned screens**: the main screen, floating joystick, map picker and
+  settings share one Material 3 surface/typography system; the joystick's arrow
+  buttons are 48 dp with haptic feedback.
+- **Bookmarks in one tap**: save from the main screen or the floating panel
+  without opening a naming dialog. The place is named after its coordinates and
+  duplicates are skipped; **⋮ → Rename / Delete** replaces the hidden
+  long-press gesture.
+- **Names that survive language switches**: legacy "Bookmark" rows show their
+  coordinates in all 9 languages, and a failed rename is reported instead of
+  silently reverting.
+- **The app remembers where you were**: after a stop, a restart or a crash the
+  main screen offers the last started location instead of the sample location
+  in San Francisco; a fresh install falls back to the phone's own last known
+  position when the location permission is granted.
+- **Full-width coordinates**: Chinese IMEs that type `。`/`，` are normalized,
+  so `22。37139，114。17833` works.
+- **Stopping keeps the screen open**, and overlay toasts/notifications follow
+  the language picked in Settings.
+- **The floating panel can be turned off** in Settings. Some apps and browsers
+  refuse to show a permission prompt while another app draws over the screen;
+  turning the panel off keeps mock location running without the overlay.
 
 ## What's new in v2.2.0
 
@@ -401,7 +427,7 @@ Requires JDK 17+ (JDK 21 recommended) and Android SDK Platform 36.
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.0.apk`
+APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.1.apk`
 
 CI runs lint, JVM unit tests, and a debug build on every push and pull request
 (`.github/workflows/android.yml`).
@@ -418,7 +444,7 @@ keyPassword=...
 ```
 
 Keep the keystore and this file outside version control. Verify the result with
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.0.apk`.
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.1.apk`.
 
 ## Features
 

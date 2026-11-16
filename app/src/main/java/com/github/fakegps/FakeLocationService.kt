@@ -14,7 +14,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.ServiceCompat
 import com.github.fakegps.ui.MainActivity
-import com.tencent.fakegps.R
+import com.github.fakegps.R
 import tiger.radio.loggerlibrary.Logger
 
 /**
@@ -77,12 +77,15 @@ class FakeLocationService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // The service context keeps the system language; use the language
+            // picked in the app so the notification matches its screens.
+            val context = AppLocale.context(this)
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                getString(R.string.notification_channel_name),
+                context.getString(R.string.notification_channel_name),
                 NotificationManager.IMPORTANCE_LOW
             )
-            channel.description = getString(R.string.notification_channel_desc)
+            channel.description = context.getString(R.string.notification_channel_desc)
             channel.setShowBadge(false)
             channel.lockscreenVisibility = Notification.VISIBILITY_SECRET
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
@@ -106,9 +109,10 @@ class FakeLocationService : Service() {
             Notification.Builder(this)
         }
 
+        val context = AppLocale.context(this)
         return builder
-            .setContentTitle(getString(R.string.notification_title))
-            .setContentText(getString(R.string.notification_text))
+            .setContentTitle(context.getString(R.string.notification_title))
+            .setContentText(context.getString(R.string.notification_text))
             .setSmallIcon(R.drawable.ic_stat_fakegps)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
