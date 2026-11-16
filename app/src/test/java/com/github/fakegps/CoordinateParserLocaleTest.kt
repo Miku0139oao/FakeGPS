@@ -7,6 +7,27 @@ import org.junit.Test
 class CoordinateParserLocaleTest {
 
     @Test
+    fun fullWidthPunctuationFromChineseImeIsAccepted() {
+        val point = requireNotNull(CoordinateParser.parse("22。37139，114。17833"))
+        assertEquals(22.37139, point.latitude, 1e-6)
+        assertEquals(114.17833, point.longitude, 1e-6)
+    }
+
+    @Test
+    fun fullWidthDigitsAndMinusAreAccepted() {
+        val point = requireNotNull(CoordinateParser.parse("－３３．５，１５１．２５"))
+        assertEquals(-33.5, point.latitude, 1e-6)
+        assertEquals(151.25, point.longitude, 1e-6)
+    }
+
+    @Test
+    fun fullWidthGeoUriIsAccepted() {
+        val point = requireNotNull(CoordinateParser.parse("ｇｅｏ：22。37139，114。17833"))
+        assertEquals(22.37139, point.latitude, 1e-6)
+        assertEquals(114.17833, point.longitude, 1e-6)
+    }
+
+    @Test
     fun dmsParsingIsStableUnderTurkishLocale() {
         val previous = Locale.getDefault()
         try {

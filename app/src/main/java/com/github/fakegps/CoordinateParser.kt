@@ -31,7 +31,7 @@ object CoordinateParser {
         if (input == null) {
             return null
         }
-        val text = input.trim()
+        val text = normalize(input).trim()
         if (text.isEmpty()) {
             return null
         }
@@ -47,6 +47,35 @@ object CoordinateParser {
             point = parseDms(text)
         }
         return point
+    }
+
+    /**
+     * Chinese IMEs type full-width punctuation by default, so a coordinate
+     * typed on a Chinese keyboard arrives as "22。37139，114。17833" and would
+     * otherwise be rejected as invalid. Fold the full-width forms back to
+     * ASCII before matching.
+     */
+    private fun normalize(input: String): String {
+        val builder = StringBuilder(input.length)
+        for (ch in input) {
+            builder.append(
+                when {
+                    ch in '０'..'９' -> '0' + (ch - '０')
+                    ch in 'Ａ'..'Ｚ' -> 'A' + (ch - 'Ａ')
+                    ch in 'ａ'..'ｚ' -> 'a' + (ch - 'ａ')
+                    else -> when (ch) {
+                        '。', '．', '｡' -> '.'
+                        '，' -> ','
+                        '－', '−', '–', '—' -> '-'
+                        '＋' -> '+'
+                        '：' -> ':'
+                        '　' -> ' '
+                        else -> ch
+                    }
+                }
+            )
+        }
+        return builder.toString()
     }
 
     private fun parseDecimal(text: String, pattern: Pattern): LocPoint? {
