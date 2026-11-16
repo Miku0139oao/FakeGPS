@@ -316,6 +316,15 @@ shows the About dialog with the version and OpenStreetMap attribution.
 - **The floating panel can be turned off** in Settings. Some apps and browsers
   refuse to show a permission prompt while another app draws over the screen;
   turning the panel off keeps mock location running without the overlay.
+- **Browsers see the fake location**: the engine now overrides Android's
+  `fused` provider as well as GPS and network, so Chrome, Edge, Samsung
+  Internet, vivo Browser and Google Play Services report the mocked position
+  instead of the real one. The "Display over other apps" permission is also no
+  longer required when the floating panel is off.
+- **Background execution help**: Settings → Behavior → Background execution
+  opens the right screen for the phone (vivo/iQOO, Xiaomi/Redmi/POCO,
+  OPPO/realme/OnePlus, Huawei/Honor, Samsung) or the system battery dialog, so
+  the mock keeps running while another app is in front.
 
 ## What's new in v2.2.0
 
@@ -355,16 +364,16 @@ shows the About dialog with the version and OpenStreetMap attribution.
 |---|---|
 | The app says "FakeGPS Running" but Maps does not move | Is FakeGPS selected in **Developer options → Select mock location app**? Open Developer options and check the line under the entry. Then force-stop and start FakeGPS again. |
 | "Select mock location app" is missing or greyed out | Developer options are off, the device is managed by an MDM/work profile, or the ROM hides it. Try the Settings search icon and type "mock location". |
-| The floating joystick does not appear | Grant **Display over other apps** for FakeGPS. On MIUI/EMUI also enable "Display pop-up windows while running in background" and disable battery restrictions for FakeGPS. |
+| The floating joystick does not appear | Check that the **Floating panel** switch in Settings is on, then grant **Display over other apps** for FakeGPS. On MIUI/EMUI also enable "Display pop-up windows while running in background" and disable battery restrictions for FakeGPS. |
 | The notification is missing | Grant **Notifications** (Android 13+). The foreground service can still run without it, but Android may be more aggressive about killing the process. |
 | The map is blank | The phone has no network, OSM tiles are blocked, or the cache is empty. Move the map/zoom out; coordinate entry still works offline. |
 | "Input is not valid" | Use `lat, lon`, a `geo:` URI, a Google/Apple Maps link, or a DMS string. Latitude must be −90…90, longitude −180…180. |
 | Flight mode does not move | Start mock location first. Check that From/To are valid and Fly Time is a positive integer. |
-| It works for a while, then stops | Disable battery optimization for FakeGPS: **Settings → Apps → FakeGPS → Battery → Unrestricted**. On Xiaomi/OPPO/vivo also allow auto-start and background activity. |
+| It works for a while, then stops | Disable battery optimization for FakeGPS: **Settings → Apps → FakeGPS → Battery → Unrestricted**. On Xiaomi/OPPO/vivo also allow auto-start and background activity. FakeGPS's **Settings → Behavior → Background execution** opens the vendor screen directly. |
 | Android 12+ only offers "Approximate" location | That is fine. FakeGPS never reads your real location; approximate is enough for the foreground service. |
-| The app is killed when the screen is off | Some OEMs kill foreground services anyway. Lock the app in the recent-apps screen and disable battery restrictions. Keep the notification visible. |
+| The app is killed when the screen is off | Some OEMs kill foreground services anyway. Open **Settings → Behavior → Background execution** and allow FakeGPS there, lock the app in the recent-apps screen, and keep the notification visible. |
 | "App not installed" | Uninstall an older copy signed with a different key and install the release APK again. |
-| Google Maps still shows the real location | Some apps cache location or prefer other providers. Test with GPSTest; toggle GPS off/on; restart the app; make sure the mock app selection is still set. |
+| Google Maps still shows the real location | Make sure mock location is running and restart Maps. If another app still shows the real position, allow background execution for FakeGPS; if the phone freezes the app, the mock stops and every app falls back to the real location. |
 
 ## Accepted coordinate formats
 

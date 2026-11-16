@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.net.toUri
+import com.github.fakegps.BackgroundExecution
 import com.github.fakegps.SettingsStore
 import com.github.fakegps.JoyStickManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -56,6 +57,8 @@ class SettingsActivity : AppCompatActivity() {
             binding.switchShowJoystick.toggle()
         }
 
+        binding.rowBackgroundExecution.setOnClickListener { showBackgroundDialog() }
+
         binding.tvAboutSummary.text = getString(R.string.settings_version, BuildConfig.VERSION_NAME)
 
         updateSummaries()
@@ -81,6 +84,40 @@ class SettingsActivity : AppCompatActivity() {
                 else -> R.string.settings_theme_system
             }
         )
+
+        binding.tvBackgroundSummary.setText(
+            when {
+                // Vendor allowlists are separate from the AOSP battery list, so
+                // a positive status there would be misleading.
+                BackgroundExecution.needsBackgroundGuidance() ->
+                    R.string.settings_background_check_action
+                BackgroundExecution.isIgnoringBatteryOptimizations(this) ->
+                    R.string.settings_background_allowed
+                else -> R.string.settings_background_restricted
+            }
+        )
+    }
+
+    private fun showBackgroundDialog() {
+        val guided = BackgroundExecution.needsBackgroundGuidance()
+        val builder = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.background_dialog_title)
+            .setMessage(R.string.background_dialog_message)
+            .setPositiveButton(R.string.background_open_settings) { _, _ ->
+                BackgroundExecution.openBackgroundSettings(this)
+            }
+            .setNegativeButton(R.string.background_later, null)
+        if (guided) {
+            builder.setNeutralButton(R.string.background_open_battery) { _, _ ->
+                BackgroundExecution.requestIgnoreBatteryOptimizations(this)
+            }
+        }
+        builder.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateSummaries()
     }
 
     private fun languageNames(): Array<String> = arrayOf(

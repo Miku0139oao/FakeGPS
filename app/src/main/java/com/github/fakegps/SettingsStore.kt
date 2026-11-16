@@ -13,6 +13,7 @@ object SettingsStore {
     private const val KEY_THEME = "theme"
     private const val KEY_KEEP_RUNNING = "keep_running"
     private const val KEY_SHOW_JOYSTICK = "show_joystick"
+    private const val KEY_BACKGROUND_HINT_SHOWN = "background_hint_shown"
 
     const val THEME_SYSTEM = "system"
     const val THEME_LIGHT = "light"
@@ -58,6 +59,19 @@ object SettingsStore {
     fun setShowJoystick(context: Context, show: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_SHOW_JOYSTICK, show)
+        }
+    }
+
+    /** Whether the one-time "allow background execution" hint was shown. */
+    @JvmStatic
+    fun backgroundHintShown(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getBoolean(KEY_BACKGROUND_HINT_SHOWN, false)
+
+    @JvmStatic
+    fun setBackgroundHintShown(context: Context, shown: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit {
+            putBoolean(KEY_BACKGROUND_HINT_SHOWN, shown)
         }
     }
 }

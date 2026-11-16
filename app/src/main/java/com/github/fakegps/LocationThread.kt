@@ -277,9 +277,19 @@ class LocationThread(
 
     private companion object {
         private const val TAG = "LocationThread"
+
+        /**
+         * Browsers (Chrome, WebView) and Google Play Services ask the system's
+         * fused provider for a location, not GPS/network directly. Without a
+         * fused override they keep returning the real position, so the mock
+         * must cover it as well. The extra entry is best-effort: on devices
+         * without a fused provider the add simply throws and is logged.
+         */
+        private const val FUSED_PROVIDER = "fused"
         private val PROVIDERS = arrayOf(
             LocationManager.GPS_PROVIDER,
-            LocationManager.NETWORK_PROVIDER
+            LocationManager.NETWORK_PROVIDER,
+            FUSED_PROVIDER
         )
         private const val UPDATE_INTERVAL_MS = 1000L
     }

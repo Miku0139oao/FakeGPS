@@ -80,6 +80,15 @@
     <string name="settings_keep_running_desc">モック位置情報が有効な間、ウェイクロックを保持します。バッテリーの消費が増えます。</string>
     <string name="settings_show_joystick">フローティングパネル</string>
     <string name="settings_show_joystick_desc">他のアプリの上に操作パネルを表示します。権限ダイアログがオーバーレイで表示されない場合はオフにしてください。</string>
+    <string name="settings_background_execution">バックグラウンド実行</string>
+    <string name="settings_background_restricted">バッテリー最適化によりモック位置情報が停止する場合があります</string>
+    <string name="settings_background_allowed">バックグラウンド実行は許可されています</string>
+    <string name="settings_background_check_action">バックグラウンド実行が許可されているか確認してください</string>
+    <string name="background_dialog_title">バックグラウンドでもモック位置情報を続ける</string>
+    <string name="background_dialog_message">一部の端末では、バックグラウンド実行が許可されていないアプリを凍結します。その場合モックが停止し、他のアプリは実際の位置に戻ります。\n\nFakeGPS のバックグラウンド実行を許可してください（バッテリー制限なし。自起動を求められた場合も許可してください）。</string>
+    <string name="background_open_settings">設定を開く</string>
+    <string name="background_open_battery">バッテリー最適化</string>
+    <string name="background_later">あとで</string>
     <string name="settings_about">アプリ情報</string>
     <string name="settings_version">バージョン %1$s</string>
     <string name="settings_source">ソースコード</string>

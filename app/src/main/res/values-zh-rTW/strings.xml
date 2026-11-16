@@ -88,6 +88,15 @@
     <string name="settings_keep_running_desc">模擬定位期間持有 wake lock，會增加耗電。</string>
     <string name="settings_show_joystick">懸浮面板</string>
     <string name="settings_show_joystick_desc">在其他 App 上顯示搖桿。若其他 App 提示「疊加層」擋住權限視窗，可先關閉這個選項。</string>
+    <string name="settings_background_execution">背景執行</string>
+    <string name="settings_background_restricted">受電池最佳化限制，可能暫停模擬定位</string>
+    <string name="settings_background_allowed">已允許背景執行</string>
+    <string name="settings_background_check_action">請確認已允許背景執行</string>
+    <string name="background_dialog_title">讓模擬定位在背景持續運作</string>
+    <string name="background_dialog_message">部分手機會凍結未允許背景執行的 App，模擬定位就會停止，其他 App 改回真實位置。\n\n請允許 FakeGPS 在背景執行（不受電池限制；若手機詢問自啟動，也請允許）。</string>
+    <string name="background_open_settings">前往設定</string>
+    <string name="background_open_battery">電池最佳化</string>
+    <string name="background_later">稍後</string>
     <string name="settings_about">關於</string>
     <string name="settings_version">版本 %1$s</string>
     <string name="settings_source">原始碼</string>

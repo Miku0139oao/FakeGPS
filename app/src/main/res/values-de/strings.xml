@@ -80,6 +80,15 @@
     <string name="settings_keep_running_desc">Hält einen Wake-Lock, solange der simulierte Standort aktiv ist. Verbraucht mehr Akku.</string>
     <string name="settings_show_joystick">Schwebendes Bedienfeld</string>
     <string name="settings_show_joystick_desc">Zeigt die Bedienelemente über anderen Apps. Deaktivieren, wenn eine App meldet, dass eine Überlagerung ihre Berechtigungsabfrage blockiert.</string>
+    <string name="settings_background_execution">Hintergrundausführung</string>
+    <string name="settings_background_restricted">Die Akku-Optimierung kann den simulierten Standort anhalten</string>
+    <string name="settings_background_allowed">Hintergrundausführung ist erlaubt</string>
+    <string name="settings_background_check_action">Prüfe, ob die Hintergrundausführung erlaubt ist</string>
+    <string name="background_dialog_title">Simulierten Standort im Hintergrund fortsetzen</string>
+    <string name="background_dialog_message">Manche Geräte frieren Apps ein, die nicht im Hintergrund laufen dürfen. Die Simulation stoppt dann und andere Apps fallen auf den echten Standort zurück.\n\nErlaube FakeGPS die Ausführung im Hintergrund (keine Akku-Beschränkung; erlaube den Autostart, wenn das Gerät danach fragt).</string>
+    <string name="background_open_settings">Einstellungen öffnen</string>
+    <string name="background_open_battery">Akku-Optimierung</string>
+    <string name="background_later">Später</string>
     <string name="settings_about">Über</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_source">Quellcode</string>

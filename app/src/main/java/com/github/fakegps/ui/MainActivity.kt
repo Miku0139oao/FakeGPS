@@ -22,10 +22,12 @@ import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.github.fakegps.BookmarkNames
 import com.github.fakegps.BookmarkRepository
+import com.github.fakegps.BackgroundExecution
 import com.github.fakegps.CoordinateParser
 import com.github.fakegps.DbUtils
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
+import com.github.fakegps.SettingsStore
 import com.github.fakegps.model.LocPoint
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.github.fakegps.R
@@ -406,7 +408,13 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+        // The overlay permission is only needed while the floating panel is
+        // enabled; with it off, requiring the permission would block Start for
+        // users who deliberately avoid overlays.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            SettingsStore.showJoystick(this) &&
+            !Settings.canDrawOverlays(this)
+        ) {
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.overlay_permission_title)
                 .setMessage(R.string.overlay_permission_message)
@@ -437,6 +445,28 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
                     }
                 }
                 .setNegativeButton(R.string.cancel, null)
+                .show()
+            return
+        }
+
+        // Some vendors freeze apps that are not on their background allowlist a
+        // few seconds after the last activity stops. With the floating panel off
+        // there is nothing keeping the process visible, so the mock would stop
+        // and apps would fall back to the real location. Point this out once.
+        if (BackgroundExecution.needsBackgroundGuidance() &&
+            !SettingsStore.showJoystick(this) &&
+            !SettingsStore.backgroundHintShown(this)
+        ) {
+            SettingsStore.setBackgroundHintShown(this, true)
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.background_dialog_title)
+                .setMessage(R.string.background_dialog_message)
+                .setPositiveButton(R.string.background_open_settings) { _, _ ->
+                    BackgroundExecution.openBackgroundSettings(this)
+                    doStart()
+                }
+                .setNegativeButton(R.string.background_later) { _, _ -> doStart() }
+                .setCancelable(false)
                 .show()
             return
         }

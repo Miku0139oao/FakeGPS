@@ -80,6 +80,15 @@
     <string name="settings_keep_running_desc">Maintient un verrou d\'éveil lorsque la position simulée est active. Consomme plus de batterie.</string>
     <string name="settings_show_joystick">Panneau flottant</string>
     <string name="settings_show_joystick_desc">Affiche les commandes par-dessus les autres applications. Désactivez-le si une appli signale qu\'une superposition bloque sa demande d\'autorisation.</string>
+    <string name="settings_background_execution">Exécution en arrière-plan</string>
+    <string name="settings_background_restricted">L\'optimisation de la batterie peut suspendre la position simulée</string>
+    <string name="settings_background_allowed">Exécution en arrière-plan autorisée</string>
+    <string name="settings_background_check_action">Vérifiez que l\'exécution en arrière-plan est autorisée</string>
+    <string name="background_dialog_title">Maintenir la position simulée en arrière-plan</string>
+    <string name="background_dialog_message">Certains téléphones gèlent les applications non autorisées à s\'exécuter en arrière-plan. La simulation s\'arrête et les applications reviennent à la position réelle.\n\nAutorisez FakeGPS à s\'exécuter en arrière-plan (sans restriction de batterie ; autorisez le démarrage automatique si le téléphone le demande).</string>
+    <string name="background_open_settings">Ouvrir les réglages</string>
+    <string name="background_open_battery">Optimisation de la batterie</string>
+    <string name="background_later">Plus tard</string>
     <string name="settings_about">À propos</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_source">Code source</string>

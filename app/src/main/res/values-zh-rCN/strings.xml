@@ -80,6 +80,15 @@
     <string name="settings_keep_running_desc">模拟定位启用时保持唤醒锁。会增加耗电。</string>
     <string name="settings_show_joystick">悬浮面板</string>
     <string name="settings_show_joystick_desc">在其他 App 上显示摇杆。若其他 App 提示“叠加层”挡住权限窗口，可先关闭这个选项。</string>
+    <string name="settings_background_execution">后台运行</string>
+    <string name="settings_background_restricted">受电池优化限制，可能暂停模拟定位</string>
+    <string name="settings_background_allowed">已允许后台运行</string>
+    <string name="settings_background_check_action">请确认已允许后台运行</string>
+    <string name="background_dialog_title">让模拟定位在后台持续运行</string>
+    <string name="background_dialog_message">部分手机会冻结未允许后台运行的 App，模拟定位就会停止，其他 App 改回真实位置。\n\n请允许 FakeGPS 在后台运行（不受电池限制；若手机询问自启动，也请允许）。</string>
+    <string name="background_open_settings">前往设置</string>
+    <string name="background_open_battery">电池优化</string>
+    <string name="background_later">稍后</string>
     <string name="settings_about">关于</string>
     <string name="settings_version">版本 %1$s</string>
     <string name="settings_source">源代码</string>

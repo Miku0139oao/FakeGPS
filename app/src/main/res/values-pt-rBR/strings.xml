@@ -80,6 +80,15 @@
     <string name="settings_keep_running_desc">Mantém um wake lock enquanto a localização simulada está ativa. Consome mais bateria.</string>
     <string name="settings_show_joystick">Painel flutuante</string>
     <string name="settings_show_joystick_desc">Mostra os controles sobre outros apps. Desative se outro app avisar que uma sobreposição está bloqueando o pedido de permissão.</string>
+    <string name="settings_background_execution">Execução em segundo plano</string>
+    <string name="settings_background_restricted">A otimização de bateria pode pausar a localização simulada</string>
+    <string name="settings_background_allowed">Execução em segundo plano permitida</string>
+    <string name="settings_background_check_action">Verifique se a execução em segundo plano está permitida</string>
+    <string name="background_dialog_title">Manter a localização simulada em segundo plano</string>
+    <string name="background_dialog_message">Alguns celulares congelam apps que não podem rodar em segundo plano. A simulação para e os apps voltam à localização real.\n\nPermita que o FakeGPS rode em segundo plano (sem restrição de bateria; permita a inicialização automática se o aparelho pedir).</string>
+    <string name="background_open_settings">Abrir configurações</string>
+    <string name="background_open_battery">Otimização de bateria</string>
+    <string name="background_later">Depois</string>
     <string name="settings_about">Sobre</string>
     <string name="settings_version">Versão %1$s</string>
     <string name="settings_source">Código-fonte</string>
