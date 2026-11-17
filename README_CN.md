@@ -30,7 +30,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 ## 60 秒快速開始
 
-1. 從 [最新 Release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.1) 下載 `FakeGPS_v2.2.1.apk` 並安裝。
+1. 從 [最新 Release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.2) 下載 `FakeGPS_v2.2.2.apk` 並安裝。
 2. 開啟 **開發人員選項**（設定 → 關於手機 → 連續點擊 **版本號碼** 7 次）。
 3. 到 **設定 → 系統 → 開發人員選項 → 選取模擬定位應用程式**，選擇 **FakeGPS**。
 4. 開啟 FakeGPS，允許 **位置**、**通知**、**顯示在其他應用程式上層**，然後按 **Start**。
@@ -70,7 +70,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 ### 步驟 1 — 下載與安裝
 
 1. 開啟 [Releases 頁面](https://github.com/Miku0139oao/FakeGPS/releases)。
-2. 下載已簽章的 `FakeGPS_v2.2.1.apk`。
+2. 下載已簽章的 `FakeGPS_v2.2.2.apk`。
 3. 點擊下載的檔案。若 Android 阻止安裝，請允許瀏覽器或檔案管理器「安裝未知的應用程式」：
    - Android 8+：**設定 → 應用程式 → 特殊應用程式存取權 → 安裝未知的應用程式 → 你的瀏覽器／檔案管理器 → 允許來自此來源**。
    - 較舊的 Android：**設定 → 安全性 → 未知的來源**。
@@ -246,6 +246,12 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 同一頁也提供原始碼、疑難排解連結，以及包含版本與 OpenStreetMap 標示的「關於」對話框。
 
+## v2.2.2 更新內容
+
+- **執行中直接換位置**：主畫面改座標後按 **使用此地點**（或鍵盤完成鍵）、地圖選點、書籤，以及 **Move Step** 的 ＋／－ 與輸入步長，都會立即套用到執行中的模擬，不需要先「停止」再「開始」。執行中第二顆按鈕會顯示為 **使用此地點**。
+- **主畫面跟著懸浮窗更新**：用懸浮方向鍵或懸浮選點移動後，回到主畫面的座標欄會顯示目前位置；輸入到一半的草稿不會被覆蓋。
+- **Move Step 無效值自動修正**：套用位置時若步長欄位無效，欄位會回復成引擎實際使用的步長，不再出現欄位與實際值不一致。
+
 ## v2.2.1 更新內容
 
 - **重新設計的畫面**：主畫面、懸浮搖桿、選點地圖與設定頁共用同一套 Material 3 表面／字體系統；搖桿方向鍵改為 48dp 並加入震動回饋。
@@ -341,7 +347,7 @@ Release 版本不寫座標日誌。Debug 版本會寫到 App 的內部檔案目�
 ./gradlew assembleDebug
 ```
 
-APK 輸出：`app/build/outputs/apk/debug/FakeGPS_v2.2.1.apk`
+APK 輸出：`app/build/outputs/apk/debug/FakeGPS_v2.2.2.apk`
 
 CI 會在每次 push 與 pull request 執行 lint、JVM 單元測試與 debug build
 （`.github/workflows/android.yml`）。
@@ -358,7 +364,7 @@ keyPassword=...
 ```
 
 請把 keystore 與這個檔案放在版本控制之外。用
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.1.apk`
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.2.apk`
 驗證結果。
 
 ## 功能列表

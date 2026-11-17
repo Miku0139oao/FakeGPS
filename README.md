@@ -34,8 +34,8 @@ map. **No root is required** — it uses the standard Android mock-location API.
 
 ## Quick start (60 seconds)
 
-1. Download `FakeGPS_v2.2.1.apk` from the
-   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.1)
+1. Download `FakeGPS_v2.2.2.apk` from the
+   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.2)
    and install it.
 2. Enable **Developer options** (Settings → About phone → tap **Build number**
    seven times).
@@ -83,7 +83,7 @@ Notes:
 ### Step 1 — Download and install
 
 1. Open the [Releases page](https://github.com/Miku0139oao/FakeGPS/releases).
-2. Download the signed `FakeGPS_v2.2.1.apk` asset.
+2. Download the signed `FakeGPS_v2.2.2.apk` asset.
 3. Tap the downloaded file. If Android blocks it, allow your browser or file
    manager to **install unknown apps**:
    - Android 8+: **Settings → Apps → Special app access → Install unknown apps
@@ -301,6 +301,19 @@ you change:
 The same screen links to the source code and the troubleshooting guide, and
 shows the About dialog with the version and OpenStreetMap attribution.
 
+## What's new in v2.2.2
+
+- **Change the location while it runs**: the coordinate field with **Use
+  location** (or the keyboard's Done key), the map picker, bookmark rows and the
+  **Move Step** controls all apply to the running simulation immediately. The
+  secondary button reads **Use location** while running instead of implying a
+  restart.
+- **The main screen follows the floating panel**: after moving with the arrows
+  or the panel's map picker, the coordinate field updates to the live position;
+  an unsaved edit in the field is never overwritten.
+- An invalid **Move Step** value now snaps back to the step the engine is
+  actually using.
+
 ## What's new in v2.2.1
 
 - **Redesigned screens**: the main screen, floating joystick, map picker and
@@ -444,7 +457,7 @@ Requires JDK 17+ (JDK 21 recommended) and Android SDK Platform 36.
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.1.apk`
+APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.2.apk`
 
 CI runs lint, JVM unit tests, and a debug build on every push and pull request
 (`.github/workflows/android.yml`).
@@ -461,7 +474,7 @@ keyPassword=...
 ```
 
 Keep the keystore and this file outside version control. Verify the result with
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.1.apk`.
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.2.apk`.
 
 ## Features
 
