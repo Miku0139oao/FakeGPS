@@ -136,4 +136,17 @@
     <string name="bookmark_renamed">书签已重命名</string>
     <string name="bookmark_exists">此位置已在书签中。</string>
     <string name="bookmark_rename_failed">重命名失败。</string>
+    <string name="settings_auto_update">检查更新</string>
+    <string name="settings_auto_update_desc">每天向 GitHub 查询一次最新版本；不会发送账号或个人数据。</string>
+    <string name="settings_check_update">立即检查</string>
+    <string name="settings_update_never">尚未检查</string>
+    <string name="settings_update_last">上次检查：%1$s</string>
+    <string name="settings_checking_update">正在检查更新…</string>
+    <string name="settings_update_latest">已是最新版本（%1$s）。</string>
+    <string name="settings_update_failed">无法检查更新，请检查网络。</string>
+    <string name="update_dialog_title">有新版本 %1$s</string>
+    <string name="update_dialog_message">当前版本 %1$s，最新版本 %2$s。</string>
+    <string name="update_download">下载</string>
+    <string name="update_release_page">版本说明</string>
+    <string name="update_later">稍后</string>
 </resources>

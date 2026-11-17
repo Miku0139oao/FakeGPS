@@ -136,4 +136,17 @@
     <string name="bookmark_renamed">이름을 변경했습니다</string>
     <string name="bookmark_exists">이 위치는 이미 북마크에 있습니다.</string>
     <string name="bookmark_rename_failed">이름을 변경하지 못했습니다.</string>
+    <string name="settings_auto_update">업데이트 확인</string>
+    <string name="settings_auto_update_desc">하루에 한 번 정도 GitHub에서 최신 릴리스를 확인합니다. 계정이나 개인 정보는 전송하지 않습니다.</string>
+    <string name="settings_check_update">지금 확인</string>
+    <string name="settings_update_never">아직 확인하지 않음</string>
+    <string name="settings_update_last">마지막 확인 %1$s</string>
+    <string name="settings_checking_update">업데이트 확인 중…</string>
+    <string name="settings_update_latest">최신 버전입니다(%1$s).</string>
+    <string name="settings_update_failed">업데이트를 확인할 수 없습니다. 네트워크를 확인하세요.</string>
+    <string name="update_dialog_title">새 버전이 있습니다: %1$s</string>
+    <string name="update_dialog_message">현재 버전 %1$s, 최신 버전 %2$s.</string>
+    <string name="update_download">다운로드</string>
+    <string name="update_release_page">릴리스 노트</string>
+    <string name="update_later">나중에</string>
 </resources>

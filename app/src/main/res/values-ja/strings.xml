@@ -136,4 +136,17 @@
     <string name="bookmark_renamed">名前を変更しました</string>
     <string name="bookmark_exists">この場所はすでにブックマークにあります。</string>
     <string name="bookmark_rename_failed">名前を変更できませんでした。</string>
+    <string name="settings_auto_update">更新を確認</string>
+    <string name="settings_auto_update_desc">1 日に 1 回程度、GitHub に最新リリースを問い合わせます。アカウントや個人情報は送信しません。</string>
+    <string name="settings_check_update">今すぐ確認</string>
+    <string name="settings_update_never">まだ確認していません</string>
+    <string name="settings_update_last">最終確認：%1$s</string>
+    <string name="settings_checking_update">更新を確認しています…</string>
+    <string name="settings_update_latest">最新バージョンです（%1$s）。</string>
+    <string name="settings_update_failed">更新を確認できませんでした。ネットワークを確認してください。</string>
+    <string name="update_dialog_title">新しいバージョンがあります：%1$s</string>
+    <string name="update_dialog_message">現在のバージョンは %1$s、最新は %2$s です。</string>
+    <string name="update_download">ダウンロード</string>
+    <string name="update_release_page">リリースノート</string>
+    <string name="update_later">あとで</string>
 </resources>

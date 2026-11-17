@@ -136,4 +136,17 @@
     <string name="bookmark_renamed">Lesezeichen umbenannt</string>
     <string name="bookmark_exists">Dieser Ort ist bereits gespeichert.</string>
     <string name="bookmark_rename_failed">Der Favorit konnte nicht umbenannt werden.</string>
+    <string name="settings_auto_update">Nach Updates suchen</string>
+    <string name="settings_auto_update_desc">Fragt etwa einmal täglich die neueste Version bei GitHub ab. Es werden keine Konten oder persönlichen Daten gesendet.</string>
+    <string name="settings_check_update">Jetzt prüfen</string>
+    <string name="settings_update_never">Noch nicht geprüft</string>
+    <string name="settings_update_last">Zuletzt geprüft: %1$s</string>
+    <string name="settings_checking_update">Suche nach Updates…</string>
+    <string name="settings_update_latest">Du hast die neueste Version (%1$s).</string>
+    <string name="settings_update_failed">Update-Prüfung fehlgeschlagen. Netzwerk prüfen.</string>
+    <string name="update_dialog_title">Update verfügbar: %1$s</string>
+    <string name="update_dialog_message">Du hast %1$s. Die neueste Version ist %2$s.</string>
+    <string name="update_download">Herunterladen</string>
+    <string name="update_release_page">Versionshinweise</string>
+    <string name="update_later">Später</string>
 </resources>

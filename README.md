@@ -34,8 +34,8 @@ map. **No root is required** — it uses the standard Android mock-location API.
 
 ## Quick start (60 seconds)
 
-1. Download `FakeGPS_v2.2.2.apk` from the
-   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.2)
+1. Download `FakeGPS_v2.2.3.apk` from the
+   [latest release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.3)
    and install it.
 2. Enable **Developer options** (Settings → About phone → tap **Build number**
    seven times).
@@ -83,7 +83,7 @@ Notes:
 ### Step 1 — Download and install
 
 1. Open the [Releases page](https://github.com/Miku0139oao/FakeGPS/releases).
-2. Download the signed `FakeGPS_v2.2.2.apk` asset.
+2. Download the signed `FakeGPS_v2.2.3.apk` asset.
 3. Tap the downloaded file. If Android blocks it, allow your browser or file
    manager to **install unknown apps**:
    - Android 8+: **Settings → Apps → Special app access → Install unknown apps
@@ -301,6 +301,19 @@ you change:
 The same screen links to the source code and the troubleshooting guide, and
 shows the About dialog with the version and OpenStreetMap attribution.
 
+## What's new in v2.2.3
+
+- **Update check**: when the app opens (once a day after a successful check,
+  retried at most hourly while a check fails) it asks GitHub whether a newer
+  release exists. If there is one, a dialog shows the version and the release
+  notes, with **Download** opening the APK in the browser and **Release notes**
+  opening the release page.
+- **Controls**: Settings → Behavior → **Check for updates** turns the automatic
+  check off; Settings → About → **Check now** runs it on demand and reports
+  "You have the latest version" or a network failure.
+- Only a plain HTTPS request to GitHub's public Releases API is made, with a
+  generic client name — no account, device ID or location.
+
 ## What's new in v2.2.2
 
 - **Change the location while it runs**: the coordinate field with **Use
@@ -438,7 +451,10 @@ table.
 No account, no analytics, no telemetry. Map tiles are requested from the
 OpenStreetMap tile server, which needs a network connection. Address searches
 are sent to Android's geocoder or OpenStreetMap Nominatim when you use the map
-search bar; no account is involved. Bookmarks and last coordinates stay on the
+search bar; no account is involved. The update check asks GitHub's public
+Releases API about once a day (at most hourly while a check fails) with a
+generic client name; no device identifier, location or account is sent, and it
+can be turned off in Settings. Bookmarks and last coordinates stay on the
 device; automatic backup is disabled.
 
 **Can I use it on a work/school phone?**
@@ -457,7 +473,7 @@ Requires JDK 17+ (JDK 21 recommended) and Android SDK Platform 36.
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.2.apk`
+APK output: `app/build/outputs/apk/debug/FakeGPS_v2.2.3.apk`
 
 CI runs lint, JVM unit tests, and a debug build on every push and pull request
 (`.github/workflows/android.yml`).
@@ -474,7 +490,7 @@ keyPassword=...
 ```
 
 Keep the keystore and this file outside version control. Verify the result with
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.2.apk`.
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.3.apk`.
 
 ## Features
 

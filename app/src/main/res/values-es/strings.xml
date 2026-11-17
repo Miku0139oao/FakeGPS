@@ -136,4 +136,17 @@
     <string name="bookmark_renamed">Marcador renombrado</string>
     <string name="bookmark_exists">Este lugar ya está guardado.</string>
     <string name="bookmark_rename_failed">No se pudo cambiar el nombre.</string>
+    <string name="settings_auto_update">Buscar actualizaciones</string>
+    <string name="settings_auto_update_desc">Consulta en GitHub la última versión aproximadamente una vez al día. No se envía ninguna cuenta ni dato personal.</string>
+    <string name="settings_check_update">Comprobar ahora</string>
+    <string name="settings_update_never">Aún no se ha comprobado</string>
+    <string name="settings_update_last">Última comprobación: %1$s</string>
+    <string name="settings_checking_update">Buscando actualizaciones…</string>
+    <string name="settings_update_latest">Tienes la última versión (%1$s).</string>
+    <string name="settings_update_failed">No se pudo comprobar. Revisa la conexión.</string>
+    <string name="update_dialog_title">Actualización disponible: %1$s</string>
+    <string name="update_dialog_message">Tienes %1$s. La última versión es %2$s.</string>
+    <string name="update_download">Descargar</string>
+    <string name="update_release_page">Notas de la versión</string>
+    <string name="update_later">Más tarde</string>
 </resources>

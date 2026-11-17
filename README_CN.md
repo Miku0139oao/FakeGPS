@@ -30,7 +30,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 ## 60 秒快速開始
 
-1. 從 [最新 Release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.2) 下載 `FakeGPS_v2.2.2.apk` 並安裝。
+1. 從 [最新 Release](https://github.com/Miku0139oao/FakeGPS/releases/tag/v2.2.3) 下載 `FakeGPS_v2.2.3.apk` 並安裝。
 2. 開啟 **開發人員選項**（設定 → 關於手機 → 連續點擊 **版本號碼** 7 次）。
 3. 到 **設定 → 系統 → 開發人員選項 → 選取模擬定位應用程式**，選擇 **FakeGPS**。
 4. 開啟 FakeGPS，允許 **位置**、**通知**、**顯示在其他應用程式上層**，然後按 **Start**。
@@ -70,7 +70,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 ### 步驟 1 — 下載與安裝
 
 1. 開啟 [Releases 頁面](https://github.com/Miku0139oao/FakeGPS/releases)。
-2. 下載已簽章的 `FakeGPS_v2.2.2.apk`。
+2. 下載已簽章的 `FakeGPS_v2.2.3.apk`。
 3. 點擊下載的檔案。若 Android 阻止安裝，請允許瀏覽器或檔案管理器「安裝未知的應用程式」：
    - Android 8+：**設定 → 應用程式 → 特殊應用程式存取權 → 安裝未知的應用程式 → 你的瀏覽器／檔案管理器 → 允許來自此來源**。
    - 較舊的 Android：**設定 → 安全性 → 未知的來源**。
@@ -246,6 +246,12 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 
 同一頁也提供原始碼、疑難排解連結，以及包含版本與 OpenStreetMap 標示的「關於」對話框。
 
+## v2.2.3 更新內容
+
+- **自動檢查更新**：開啟 App 時（成功查詢後 24 小時內不再查）向 GitHub 查詢最新版本。有新版本時會顯示版本號與更新說明，按 **下載** 用瀏覽器開啟 APK，按 **版本說明** 開啟 Release 頁面。
+- **開關與手動檢查**：設定 → 行為 → **檢查更新** 可關閉自動檢查；設定 → 關於 → **立即檢查** 可隨時檢查，並顯示「已是最新版本」或網路失敗訊息。
+- 只會向 GitHub 公開的 Releases API 發送一次 HTTPS 請求（通用客戶端名稱），不傳送帳號、裝置識別碼或位置。
+
 ## v2.2.2 更新內容
 
 - **執行中直接換位置**：主畫面改座標後按 **使用此地點**（或鍵盤完成鍵）、地圖選點、書籤，以及 **Move Step** 的 ＋／－ 與輸入步長，都會立即套用到執行中的模擬，不需要先「停止」再「開始」。執行中第二顆按鈕會顯示為 **使用此地點**。
@@ -331,7 +337,7 @@ FakeGPS 是一個 GPS 模擬器：它會依照你指定的座標持續輸出模�
 通常可以，只要 FakeGPS 已被選為模擬定位應用程式。如果地圖不更新，啟動 FakeGPS 後重啟地圖，並查看疑難排解。
 
 **我的資料會被上傳嗎？**
-沒有帳號、沒有分析、沒有遙測。地圖圖磚會向 OpenStreetMap 圖磚伺服器請求，因此需要網路。使用地圖搜尋列時，查詢會送到 Android geocoder 或 OpenStreetMap Nominatim；不涉及帳號。書籤與最後座標只留在裝置上，自動備份已關閉。
+沒有帳號、沒有分析、沒有遙測。地圖圖磚會向 OpenStreetMap 圖磚伺服器請求，因此需要網路。使用地圖搜尋列時，查詢會送到 Android geocoder 或 OpenStreetMap Nominatim；不涉及帳號。更新檢查在成功查詢後 24 小時內不再詢問（查詢失敗時最快一小時後重試一次），只向 GitHub 公開的 Releases API 送出請求，帶通用客戶端名稱，不傳送裝置識別碼、位置或帳號，且可在設定中關閉。書籤與最後座標只留在裝置上，自動備份已關閉。
 
 **可以在公司／學校手機上用嗎？**
 不要繞過 MDM 或雇主限制。開發人員選項可能被政策鎖住。
@@ -347,7 +353,7 @@ Release 版本不寫座標日誌。Debug 版本會寫到 App 的內部檔案目�
 ./gradlew assembleDebug
 ```
 
-APK 輸出：`app/build/outputs/apk/debug/FakeGPS_v2.2.2.apk`
+APK 輸出：`app/build/outputs/apk/debug/FakeGPS_v2.2.3.apk`
 
 CI 會在每次 push 與 pull request 執行 lint、JVM 單元測試與 debug build
 （`.github/workflows/android.yml`）。
@@ -364,7 +370,7 @@ keyPassword=...
 ```
 
 請把 keystore 與這個檔案放在版本控制之外。用
-`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.2.apk`
+`apksigner verify --print-certs app/build/outputs/apk/release/FakeGPS_v2.2.3.apk`
 驗證結果。
 
 ## 功能列表

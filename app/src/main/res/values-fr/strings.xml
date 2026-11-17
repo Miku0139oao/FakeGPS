@@ -136,4 +136,17 @@
     <string name="bookmark_renamed">Favori renommé</string>
     <string name="bookmark_exists">Ce lieu est déjà enregistré.</string>
     <string name="bookmark_rename_failed">Impossible de renommer le favori.</string>
+    <string name="settings_auto_update">Rechercher des mises à jour</string>
+    <string name="settings_auto_update_desc">Interroge GitHub environ une fois par jour pour la dernière version. Aucun compte ni donnée personnelle n\'est envoyé.</string>
+    <string name="settings_check_update">Vérifier maintenant</string>
+    <string name="settings_update_never">Pas encore vérifié</string>
+    <string name="settings_update_last">Dernière vérification : %1$s</string>
+    <string name="settings_checking_update">Recherche de mises à jour…</string>
+    <string name="settings_update_latest">Vous avez la dernière version (%1$s).</string>
+    <string name="settings_update_failed">Impossible de vérifier. Vérifiez le réseau.</string>
+    <string name="update_dialog_title">Mise à jour disponible : %1$s</string>
+    <string name="update_dialog_message">Vous avez %1$s. La dernière version est %2$s.</string>
+    <string name="update_download">Télécharger</string>
+    <string name="update_release_page">Notes de version</string>
+    <string name="update_later">Plus tard</string>
 </resources>

@@ -2,6 +2,8 @@ package com.github.fakegps.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateUtils
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -9,6 +11,7 @@ import androidx.core.net.toUri
 import com.github.fakegps.BackgroundExecution
 import com.github.fakegps.SettingsStore
 import com.github.fakegps.JoyStickManager
+import com.github.fakegps.UpdateCheck
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.github.fakegps.BuildConfig
 import com.github.fakegps.R
@@ -59,6 +62,13 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.rowBackgroundExecution.setOnClickListener { showBackgroundDialog() }
 
+        binding.switchAutoUpdate.isChecked = SettingsStore.autoUpdateCheck(this)
+        binding.switchAutoUpdate.setOnCheckedChangeListener { _, checked ->
+            SettingsStore.setAutoUpdateCheck(this, checked)
+        }
+        binding.rowAutoUpdate.setOnClickListener { binding.switchAutoUpdate.toggle() }
+        binding.rowCheckUpdate.setOnClickListener { checkForUpdates() }
+
         binding.tvAboutSummary.text = getString(R.string.settings_version, BuildConfig.VERSION_NAME)
 
         updateSummaries()
@@ -96,6 +106,23 @@ class SettingsActivity : AppCompatActivity() {
                 else -> R.string.settings_background_restricted
             }
         )
+
+        val lastCheck = SettingsStore.lastUpdateCheck(this)
+        binding.tvUpdateSummary.text = if (lastCheck == 0L) {
+            getString(R.string.settings_update_never)
+        } else {
+            getString(
+                R.string.settings_update_last,
+                DateUtils.getRelativeTimeSpanString(
+                    lastCheck, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS
+                )
+            )
+        }
+    }
+
+    private fun checkForUpdates() {
+        Toast.makeText(this, R.string.settings_checking_update, Toast.LENGTH_SHORT).show()
+        UpdateCheck.checkNow(this) { updateSummaries() }
     }
 
     private fun showBackgroundDialog() {

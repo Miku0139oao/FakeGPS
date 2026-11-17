@@ -31,6 +31,7 @@ import com.github.fakegps.DbUtils
 import com.github.fakegps.FakeGpsUtils
 import com.github.fakegps.JoyStickManager
 import com.github.fakegps.SettingsStore
+import com.github.fakegps.UpdateCheck
 import com.github.fakegps.model.LocPoint
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.github.fakegps.R
@@ -201,6 +202,9 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         }
         updateStatus()
         updateButtons()
+        // At most once a day; silent when offline or already current. Also runs
+        // when the activity returns to the front without being recreated.
+        UpdateCheck.maybeAutoCheck(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
