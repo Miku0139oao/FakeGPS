@@ -12,6 +12,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.github.fakegps.BookmarkNames
 import com.github.fakegps.BookmarkRepository
@@ -42,6 +45,11 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
     // Pending start params - saved while requesting permissions.
     private var pendingStartPoint: LocPoint? = null
     private var pendingStartStep = 0.0
+
+    // The coordinate field is only overwritten while it holds no unsaved edit,
+    // so moving from the floating panel never clobbers something half-typed.
+    private var inputDirty = false
+    private var updatingInputProgrammatically = false
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -116,8 +124,7 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
             ?: CoordinateParser.parse(DbUtils.getLastLocPoint(this))
             ?: deviceLastKnownPoint()
             ?: LocPoint(LAT_DEFAULT, LON_DEFAULT)
-        binding.inputLoc.setText(initialPoint.toString())
-        binding.inputLoc.setSelection(binding.inputLoc.text?.length ?: 0)
+        setInputPoint(initialPoint)
 
         val currentMoveStep = JoyStickManager.get().moveStep
         binding.inputStep.setText(
@@ -126,6 +133,33 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
 
         binding.btnStart.setOnClickListener(this)
         binding.btnSetLoc.setOnClickListener(this)
+        // Typing a coordinate and pressing the keyboard's Done key applies it
+        // straight away while the simulation is running; no stop/start needed.
+        binding.inputLoc.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE &&
+                JoyStickManager.get().isStarted
+            ) {
+                onSetLocationClicked()
+                true
+            } else {
+                false
+            }
+        }
+        binding.inputLoc.doAfterTextChanged {
+            if (!updatingInputProgrammatically) {
+                inputDirty = true
+            }
+        }
+        binding.inputStep.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE &&
+                JoyStickManager.get().isStarted
+            ) {
+                applyMoveStepFromInput()
+                true
+            } else {
+                false
+            }
+        }
         binding.btnPickMap.setOnClickListener(this)
         binding.btnCopy.setOnClickListener(this)
         binding.btnSaveCurrent.setOnClickListener(this)
@@ -160,6 +194,11 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        // The floating panel can move the simulation while this screen is in the
+        // back stack. Follow it, but never overwrite a half-typed coordinate.
+        if (JoyStickManager.get().isStarted && !inputDirty) {
+            JoyStickManager.get().currentLocPoint?.let { setInputPoint(it) }
+        }
         updateStatus()
         updateButtons()
     }
@@ -231,21 +270,74 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         checkPermissionsAndStart()
     }
 
+    /**
+     * Applies the entered coordinate and move step without stopping the
+     * simulation. The engine keeps running and simply jumps, which is what the
+     * map picker, bookmarks and the floating panel already do.
+     */
     private fun onSetLocationClicked() {
         if (!JoyStickManager.get().isStarted) {
             Toast.makeText(this, R.string.start_first, Toast.LENGTH_SHORT).show()
             return
         }
-        val step = FakeGpsUtils.getMoveStepFromInput(this, binding.inputStep)
         val point = FakeGpsUtils.getLocPointFromInput(this, binding.inputLoc)
-        if (step > 0 && point != null) {
-            JoyStickManager.get().setMoveStep(step)
-            JoyStickManager.get().jumpToLocation(point)
-            DbUtils.saveLastLocPoint(this, point)
-            updateStatus()
-        } else {
+        if (point == null) {
             Toast.makeText(this, R.string.input_invalid, Toast.LENGTH_SHORT).show()
+            return
         }
+        applyPoint(point)
+    }
+
+    /** Jumps the running simulation to [point] and reports it. */
+    private fun applyPoint(point: LocPoint) {
+        // A bad step must not block applying the coordinate, but the field must
+        // not keep a value the engine is silently ignoring either.
+        val step = FakeGpsUtils.getMoveStepFromInput(this, binding.inputStep)
+        if (FakeGpsUtils.isValidMoveStep(step)) {
+            JoyStickManager.get().setMoveStep(step)
+        } else {
+            binding.inputStep.setText(
+                BigDecimal.valueOf(JoyStickManager.get().moveStep)
+                    .stripTrailingZeros().toPlainString()
+            )
+            binding.inputStep.setSelection(binding.inputStep.text?.length ?: 0)
+        }
+        JoyStickManager.get().jumpToLocation(point)
+        DbUtils.saveLastLocPoint(this, point)
+        setInputPoint(point)
+        hideKeyboard()
+        Toast.makeText(this, R.string.location_applied, Toast.LENGTH_SHORT).show()
+        updateStatus()
+    }
+
+    private fun setInputPoint(point: LocPoint) = setInputText(point.toString())
+
+    /** Writes the field without counting it as an unsaved user edit. */
+    private fun setInputText(text: String) {
+        updatingInputProgrammatically = true
+        binding.inputLoc.setText(text)
+        binding.inputLoc.setSelection(binding.inputLoc.text?.length ?: 0)
+        updatingInputProgrammatically = false
+        inputDirty = false
+    }
+
+    /** Pushes the step typed in the field to the running engine. */
+    private fun applyMoveStepFromInput() {
+        val step = FakeGpsUtils.getMoveStepFromInput(this, binding.inputStep)
+        if (!FakeGpsUtils.isValidMoveStep(step)) {
+            Toast.makeText(this, R.string.move_step_invalid, Toast.LENGTH_SHORT).show()
+            return
+        }
+        JoyStickManager.get().setMoveStep(step)
+        hideKeyboard()
+        updateStatus()
+    }
+
+    private fun hideKeyboard() {
+        val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        manager?.hideSoftInputFromWindow(binding.inputLoc.windowToken, 0)
+        binding.inputLoc.clearFocus()
+        binding.inputStep.clearFocus()
     }
 
     private fun handleMapResult(result: ActivityResult) {
@@ -258,9 +350,15 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         if (FakeGpsUtils.isValidLatitude(latitude) &&
             FakeGpsUtils.isValidLongitude(longitude)
         ) {
-            binding.inputLoc.setText(LocPoint(latitude, longitude).toString())
-            binding.inputLoc.setSelection(binding.inputLoc.text?.length ?: 0)
-            updateStatus()
+            val point = LocPoint(latitude, longitude)
+            if (JoyStickManager.get().isStarted) {
+                // Choosing on the map while the simulation runs should move it
+                // immediately instead of quietly filling the text field.
+                applyPoint(point)
+            } else {
+                setInputPoint(point)
+                updateStatus()
+            }
         }
     }
 
@@ -372,13 +470,25 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
         }
         binding.inputStep.setText(next.stripTrailingZeros().toPlainString())
         binding.inputStep.setSelection(binding.inputStep.text?.length ?: 0)
+        // The +/- buttons are part of the live controls: while the simulation
+        // runs, the floating panel's arrows must move by the new distance
+        // immediately instead of waiting for a stop/start.
+        if (JoyStickManager.get().isStarted) {
+            JoyStickManager.get().setMoveStep(next.toDouble())
+        }
     }
 
     private fun updateButtons() {
+        val started = JoyStickManager.get().isStarted
         binding.btnStart.setText(
-            if (JoyStickManager.get().isStarted) R.string.btn_stop else R.string.btn_start
+            if (started) R.string.btn_stop else R.string.btn_start
         )
-        binding.btnSetLoc.isEnabled = JoyStickManager.get().isStarted
+        // While running, the secondary button applies the entered coordinate to
+        // the live session; the label says so instead of implying a restart.
+        binding.btnSetLoc.setText(
+            if (started) R.string.use_this_location else R.string.btn_set_new_loc
+        )
+        binding.btnSetLoc.isEnabled = started
     }
 
     /**
@@ -500,13 +610,15 @@ class MainActivity : BaseBookmarkActivity(), View.OnClickListener {
     }
 
     override fun onBookmarkSelected(locPoint: LocPoint?) {
-        binding.inputLoc.setText(locPoint?.toString() ?: "")
-        if (locPoint != null) {
-            if (JoyStickManager.get().isStarted) {
-                JoyStickManager.get().jumpToLocation(locPoint)
-                DbUtils.saveLastLocPoint(this, locPoint)
-                Toast.makeText(this, R.string.location_applied, Toast.LENGTH_SHORT).show()
-            } else {
+        when {
+            locPoint == null -> setInputText("")
+            JoyStickManager.get().isStarted -> {
+                // Same path as the map picker: a bookmark applies at once,
+                // including any move step typed in the field.
+                applyPoint(locPoint)
+            }
+            else -> {
+                setInputPoint(locPoint)
                 Toast.makeText(this, R.string.start_first, Toast.LENGTH_SHORT).show()
             }
         }

@@ -169,6 +169,12 @@ Settings**, choose FakeGPS, then press **Start** again.
 
 If Maps still shows the real location, see [Troubleshooting](#troubleshooting).
 
+To move the simulation while it is already running, open FakeGPS again and
+change anything — the coordinate field plus **Use location** (or the keyboard's
+Done key), **MAP** to pick a new point, a bookmark row, or the **Move Step**
+buttons. Every one of them is applied immediately; there is no need to stop and
+start again.
+
 ### Step 6 — Use the floating joystick
 
 The joystick stays on top of other apps. Drag the background to move it
@@ -222,7 +228,9 @@ You can move the mock location without leaving Google Maps.
 3. Tap a result to move the marker and camera to that place.
 4. Pan/zoom the map, then **tap**, **long-press**, or **drag the marker**.
 5. The bottom panel shows the selected coordinates.
-6. Tap **Use location** to fill the field, or **Cancel** to go back.
+6. Tap **Use location**. While the simulation is running the point is applied
+   immediately; when it is stopped the field is only filled, and **Start**
+   begins there. **Cancel** goes back without changing anything.
 
 <img src="screenshot/guide-search.png" width="320" alt="Address search results">
 
